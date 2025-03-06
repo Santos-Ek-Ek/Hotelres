@@ -140,6 +140,15 @@
                             </select>
                         </div>
                         <div class="col-md-3">
+                            <label for="editar-precio" class="col-form-label">Estado:</label>
+                            <select class="form-control" id="editar-estado" name="estado">
+                                <option disabled selected>Seleccione una opción</option>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="Reservado">Reservado</option>
+                                    <option value="Ocupado">Ocupado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label for="editar-precio" class="col-form-label">Precio:</label>
                             <input type="number" class="form-control" id="editar-precio" name="precio">
                         </div>
@@ -296,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('editar-categoria').value = data.habitacion.tipo_habitacion_id;
                 document.getElementById('editar-precio').value = data.habitacion.precio;
                 document.getElementById('editar-detalles').value = data.habitacion.descripcion;
+                document.getElementById('editar-estado').value = data.habitacion.estado;
                 const imagenPrincipal = document.getElementById('editar-imagen-principal');
                 if (data.habitacion.imagen_habitacion) {
                     imagenPrincipal.src = `{{ asset('') }}${data.habitacion.imagen_habitacion}`;

@@ -110,6 +110,7 @@ public function update(Request $request, string $id)
     $habitacion->tipo_habitacion_id = $request->input('categoria');
     $habitacion->precio = $request->input('precio');
     $habitacion->descripcion = $request->input('detalles');
+    $habitacion->estado = $request->input('estado');
 
     // Actualizar la imagen principal si se proporciona una nueva
     if ($request->hasFile('file')) {
