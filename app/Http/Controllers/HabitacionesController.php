@@ -158,7 +158,8 @@ public function destroy(string $id)
 
         // Devolver una respuesta JSON de éxito
         return response()->json([
-            
+            'success' => true,
+            'message' => 'Habitación eliminada correctamente.',
         ]);
     } catch (\Exception $e) {
         // Devolver una respuesta JSON de error en caso de fallo
