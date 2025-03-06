@@ -20,6 +20,6 @@ class tipoHabitacion extends Model
     // Relación con habitaciones (si aplica)
     public function habitaciones()
     {
-        // return $this->hasMany(Habitacion::class); // Si tienes un modelo Habitacion
+        return $this->hasMany(Habitacion::class); // Si tienes un modelo Habitacion
     }
 }

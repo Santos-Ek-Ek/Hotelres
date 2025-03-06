@@ -14,22 +14,22 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form class="row g-3" action="" method="POST" enctype="multipart/form-data">
+        <form class="row g-3" action="{{ route('habitaciones.store') }}" method="POST" enctype="multipart/form-data">
           @csrf
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label for="recipient-name" class="col-form-label">Número:</label>
             <input type="text" class="form-control" id="recipient-name" name="nombre">
           </div>
           <div class="col-md-2">
           <label for="recipient-name" class="col-form-label">Tipo de habitación:</label>
-            <select class="form-control" name ="categoria">
-                <option disabled selected>Seleccione una opción</option>
-
-            <option class="form-control" value=""></option>>
-
-            </select>
+          <select class="form-control" name="categoria">
+            <option disabled selected>Seleccione una opción</option>
+            @foreach($tipos as $tipo)
+                <option class="form-control" value="{{ $tipo->id }}">{{ $tipo->tipo_cuarto }}</option>
+            @endforeach
+        </select>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <label for="recipient-name" class="col-form-label">Cantidad de habitaciones:</label>
             <input type="number" class="form-control" id="recipient-name" name="cantidad">
           </div>
@@ -45,7 +45,7 @@
           <div id="contenedorInpu" class="row">
     <div class="col-md-3" value="">
         <div class="input-group mb-3">
-            <input type="file" name="" accept="image/*" class="form-control">
+            <input type="file" name="imagenes[]" accept="image/*" class="form-control">
             <button class="btn btn-outline-secondary" type="button" >+</button>
         </div>
     </div>
@@ -77,20 +77,22 @@
                 <thead>
                     <th scope="col">ID</th>
                     <th scope="col">FOTO</th>
-                    <th scope="col">NOMBRE</th>
+                    <th scope="col">No. HABITACIÓN</th>
                     <th scope="col">DETALLES</th>
-                    <th scope="col">CATEGORÍA</th>
-                    <th scope="col">VENDEDOR</th>
+                    <th scope="col">TIPO DE HABITACIÓN</th>
+                    <th scope="col">PRECIO</th>
+                    <th scope="col">ESTADO</th>
                     <th scope="col">ACCIONES</th>
                 </thead>
                 <tbody>
-  
+                    @foreach ($habitaciones as $habitacion)
                     <tr>
-                      <th></th>
-                      <td><img width="100" height="100" src="" alt=""></td>
-                      <td></td>
-                      <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;"></p></td>
-                      <td></td>
+                      <th>{{ $habitacion->id }}</th>
+                      <td><img width="100" height="100" src="{{ $habitacion->imagen_habitacion }}" alt=""></td>
+                      <td>{{$habitacion->numero_habitacion}}</td>
+                      <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;">{{ $habitacion->descripcion }}</p></td>
+                      <td>{{$habitacion->tipoHabitacion->tipo_cuarto}}</td>
+                      <td>$ {{$habitacion->precio}}</td>
                       <td></td>
                       <td>
                 
@@ -107,7 +109,7 @@
             </form>
                 </td>
                     </tr>
-
+            @endforeach
                 </tbody>
               </table>
             </div>
@@ -128,4 +130,15 @@
 </div>
       </div>
     </div>
+    <script>
+    document.querySelector('.btn-outline-secondary').addEventListener('click', function() {
+        const newInput = `<div class="col-md-3">
+                            <div class="input-group mb-3">
+                                <input type="file" name="imagenes[]" accept="image/*" class="form-control">
+                                <button class="btn btn-outline-secondary" type="button">+</button>
+                            </div>
+                          </div>`;
+        document.getElementById('contenedorInpu').insertAdjacentHTML('beforeend', newInput);
+    });
+</script>
 @endsection

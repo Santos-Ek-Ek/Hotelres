@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\tipoHabitacionesController;
+use App\Http\Controllers\HabitacionesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,13 +33,18 @@ Route::get('/reservaciones', function () {
 Route::get('/usuarios', function () {
     return view('administrador.usuarios');
 });
-Route::get('/productos', function () {
-    return view('administrador.productos');
-});
+// Route::get('/productos', function () {
+//     return view('administrador.productos');
+// });
 Route::get('/categorias', [tipoHabitacionesController::class, 'index'])->name('categorias.index');
 Route::post('/tipo-habitacion', [tipoHabitacionesController::class, 'store'])->name('tipo-habitacion.store');
 Route::put('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'update'])->name('tipo-habitacion.update');
 Route::delete('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'destroy'])->name('tipo-habitacion.destroy');
+// routes/web.php
+Route::post('/habitaciones', [HabitacionesController::class, 'store'])->name('habitaciones.store');
+
+Route::get('/productos', [HabitacionesController::class, 'index'])->name('productos.index');
+
 
 
 Route::get('/pedidos', function () {
