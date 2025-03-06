@@ -10,7 +10,7 @@
             
                 
                 <div class="col-auto">
-                <input type="text" placeholder="Tipo de habitación" class="form-control mb-2" id="searchInput">
+                <input type="text" placeholder="Buscar tipo de habitación" class="form-control mb-2" id="searchInput">
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#modalTipoHabitacion">Agregar</button>
