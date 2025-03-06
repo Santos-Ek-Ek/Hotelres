@@ -2,27 +2,26 @@
 @section('titulo', 'Productos')
 @section('content')
 <div>
-<script src="{{ asset('js/prod.js') }}"></script>
 
 <div style="margin-top:20px;">
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Agregar producto <i class='bx bxs-add-to-queue'></i></button>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Agregar habitación <i class='bx bxs-add-to-queue'></i></button>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 <div class="modal-dialog modal-xl">
 <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar producto</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar habitación</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form class="row g-3" action="" method="POST" enctype="multipart/form-data">
           @csrf
           <div class="col-md-3">
-            <label for="recipient-name" class="col-form-label">Nombre:</label>
+            <label for="recipient-name" class="col-form-label">Número:</label>
             <input type="text" class="form-control" id="recipient-name" name="nombre">
           </div>
           <div class="col-md-2">
-          <label for="recipient-name" class="col-form-label">Categoría:</label>
+          <label for="recipient-name" class="col-form-label">Tipo de habitación:</label>
             <select class="form-control" name ="categoria">
                 <option disabled selected>Seleccione una opción</option>
 
@@ -31,11 +30,11 @@
             </select>
           </div>
           <div class="col-md-2">
-            <label for="recipient-name" class="col-form-label">Disponibles:</label>
+            <label for="recipient-name" class="col-form-label">Cantidad de habitaciones:</label>
             <input type="number" class="form-control" id="recipient-name" name="cantidad">
           </div>
           <div class="col-md-3">
-            <label for="recipient-name" class="col-form-label">Imagen del producto:</label>
+            <label for="recipient-name" class="col-form-label">Imagen de la habitación:</label>
             <input type="file" name="file" id="" accept="image/*" class="form-control">
           </div>
           <div class="col-md-2">
