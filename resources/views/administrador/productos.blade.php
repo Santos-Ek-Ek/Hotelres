@@ -11,7 +11,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar habitación</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="btn-cancelar1" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Primera Parte: Ingresar Cantidad -->
@@ -21,7 +21,7 @@
                         <input type="number" class="form-control" id="cantidad-habitaciones" name="cantidad" min="1">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cancelar2">Cancelar</button>
                         <button type="button" class="btn btn-primary" id="btn-continuar">Continuar</button>
                     </div>
                 </div>
@@ -32,7 +32,8 @@
     @csrf
     <div id="forms-container"></div> <!-- Aquí se agregarán los formularios dinámicos -->
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-secondary" id="btn-volver">Volver</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cancelar3">Cancelar</button>
         <button type="submit" class="btn btn-primary">Guardar</button>
     </div>
 </form>
@@ -199,6 +200,56 @@
             alert('Por favor, ingrese una cantidad válida.');
         }
     });
+    // Agregar funcionalidad para el botón "Volver"
+    document.getElementById('btn-volver').addEventListener('click', function() {
+        // Ocultar la segunda parte
+        document.getElementById('parte2').style.display = 'none';
+
+        // Mostrar la primera parte
+        document.getElementById('parte1').style.display = 'block';
+    });
+    // Agregar funcionalidad para el botón "Cancelar"
+// Agregar funcionalidad para el botón "Cancelar"
+document.getElementById('btn-cancelar1').addEventListener('click', function() {
+    // Reiniciar el modal
+    reiniciarModal();
+
+    // Cerrar el modal manualmente
+    const modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+    modal.hide();
+});
+// Agregar funcionalidad para el botón "Cancelar"
+document.getElementById('btn-cancelar2').addEventListener('click', function() {
+    // Reiniciar el modal
+    reiniciarModal();
+
+    // Cerrar el modal manualmente
+    const modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+    modal.hide();
+});// Agregar funcionalidad para el botón "Cancelar"
+document.getElementById('btn-cancelar3').addEventListener('click', function() {
+    // Reiniciar el modal
+    reiniciarModal();
+
+    // Cerrar el modal manualmente
+    const modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+    modal.hide();
+});
+
+// Función para reiniciar el modal
+function reiniciarModal() {
+    // Ocultar la segunda parte
+    document.getElementById('parte2').style.display = 'none';
+
+    // Mostrar la primera parte
+    document.getElementById('parte1').style.display = 'block';
+
+    // Limpiar el campo de cantidad
+    document.getElementById('cantidad-habitaciones').value = '';
+
+    // Limpiar los formularios dinámicos
+    document.getElementById('forms-container').innerHTML = '';
+}
 </script>
 
 @endsection
