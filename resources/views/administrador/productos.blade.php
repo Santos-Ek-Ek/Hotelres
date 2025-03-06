@@ -131,14 +131,23 @@
       </div>
     </div>
     <script>
+    // Función para agregar un nuevo input de archivo
     document.querySelector('.btn-outline-secondary').addEventListener('click', function() {
         const newInput = `<div class="col-md-3">
                             <div class="input-group mb-3">
                                 <input type="file" name="imagenes[]" accept="image/*" class="form-control">
-                                <button class="btn btn-outline-secondary" type="button">+</button>
+                                <button class="btn btn-outline-danger remove-input" type="button">-</button>
                             </div>
                           </div>`;
         document.getElementById('contenedorInpu').insertAdjacentHTML('beforeend', newInput);
+    });
+
+    // Función para eliminar el input de archivo cuando se hace clic en el botón "-"
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.classList.contains('remove-input')) {
+            // Eliminar el contenedor del input
+            event.target.closest('.col-md-3').remove();
+        }
     });
 </script>
 @endsection
