@@ -76,7 +76,15 @@
                       <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;">{{ $habitacion->descripcion }}</p></td>
                       <td>{{$habitacion->tipoHabitacion->tipo_cuarto}}</td>
                       <td>$ {{$habitacion->precio}}</td>
-                      <td>{{ $habitacion->estado }}</td>
+                      <td class="
+    @if($habitacion->estado == 'Disponible') text-success
+    @elseif($habitacion->estado == 'Reservado') text-warning
+    @elseif($habitacion->estado == 'Ocupado') text-danger
+    @endif
+">
+    {{ $habitacion->estado }}
+</td>
+
                       <td>
                 
                       <a class="btn btn-outline-danger eliminar-habitacion" data-id="{{ $habitacion->id }}" data-bs-toggle="modal" data-bs-target="#confirmarEliminarModal" style="margin-top: 40px; align-items: center; margin-left:10px;">
