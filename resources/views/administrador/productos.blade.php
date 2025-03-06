@@ -142,7 +142,7 @@
                             <div id="editar-imagen-principal-container">
                                 <img id="editar-imagen-principal" src="" alt="Imagen principal" class="img-fluid mb-2" style="max-width: 100px;">
                             </div>
-                            <input type="file" class="form-control" id="editar-file" name="file" accept="image/*">
+                            <input type="file" class="form-control" id="editar-file" name="file" accept="image/*" onchange="mostrarVistaPrevia(event)">
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -179,6 +179,26 @@
     </div>
 
 <script>
+    function mostrarVistaPrevia(event) {
+    const input = event.target; // Obtener el input de archivo
+    const contenedorImagen = document.getElementById('editar-imagen-principal-container');
+    const imagenPrincipal = document.getElementById('editar-imagen-principal');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader(); // Crear un FileReader para leer la imagen
+
+        // Cuando se cargue la imagen, actualizar la vista previa
+        reader.onload = function (e) {
+            imagenPrincipal.src = e.target.result; // Establecer la nueva imagen
+            imagenPrincipal.style.display = 'block'; // Mostrar la imagen
+        };
+
+        reader.readAsDataURL(input.files[0]); // Leer la imagen como URL
+    } else {
+        // Si no se selecciona una imagen, ocultar la vista previa
+        imagenPrincipal.style.display = 'none';
+    }
+}
     document.querySelectorAll('.editar-habitacion').forEach(button => {
     button.addEventListener('click', function() {
         const habitacionId = this.getAttribute('data-id');
