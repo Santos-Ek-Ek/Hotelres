@@ -76,7 +76,7 @@
                       <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;">{{ $habitacion->descripcion }}</p></td>
                       <td>{{$habitacion->tipoHabitacion->tipo_cuarto}}</td>
                       <td>$ {{$habitacion->precio}}</td>
-                      <td></td>
+                      <td>{{ $habitacion->estado }}</td>
                       <td>
                 
                       <a class="btn btn-outline-danger eliminar-habitacion" data-id="{{ $habitacion->id }}" data-bs-toggle="modal" data-bs-target="#confirmarEliminarModal" style="margin-top: 40px; align-items: center; margin-left:10px;">
@@ -408,6 +408,15 @@ document.addEventListener('click', function(event) {
                 <div class="col-md-3">
                     <label for="file-${i}" class="col-form-label">Imagen de la habitación:</label>
                     <input type="file" name="file[]" id="file-${i}" accept="image/*" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label for="estado-${i}" class="col-form-label">Estado:</label>
+                    <select class="form-control" name="estado[]">
+                        <option disabled selected>Seleccione una opción</option>
+                            <option class="form-control" value="Disponible">Disponible</option>
+                            <option class="form-control" value="Reservado">Reservado</option>
+                            <option class="form-control" value="Ocupado">Ocupado</option>
+                    </select>
                 </div>
                 <div class="col-md-3">
                     <label for="precio-${i}" class="col-form-label">Precio:</label>

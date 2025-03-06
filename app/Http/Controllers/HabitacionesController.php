@@ -36,6 +36,9 @@ class HabitacionesController extends Controller
                 $habitacion->tipo_habitacion_id = $request->input('categoria')[$index];
                 $habitacion->precio = $request->input('precio')[$index];
                 $habitacion->descripcion = $request->input('detalles')[$index];
+                $estado = $request->input('estado');
+                $habitacion->estado = is_array($estado) && isset($estado[$index]) ? $estado[$index] : 'Disponible';
+                
 
                 // Guardar la imagen principal
                 if ($request->hasFile('file') && isset($request->file('file')[$index])) {
