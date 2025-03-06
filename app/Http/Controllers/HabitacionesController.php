@@ -144,8 +144,28 @@ public function update(Request $request, string $id)
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
+public function destroy(string $id)
+{
+    try {
+        // Buscar la habitación por su ID
+        $habitacion = Habitacion::findOrFail($id);
+
+        // Eliminar las imágenes adicionales asociadas a la habitación
+        $habitacion->imagenes()->delete();
+
+        // Eliminar la habitación
+        $habitacion->delete();
+
+        // Devolver una respuesta JSON de éxito
+        return response()->json([
+            
+        ]);
+    } catch (\Exception $e) {
+        // Devolver una respuesta JSON de error en caso de fallo
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al eliminar la habitación: ' . $e->getMessage(),
+        ], 500);
     }
+}
 }

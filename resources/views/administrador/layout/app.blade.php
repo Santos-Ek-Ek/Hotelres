@@ -114,7 +114,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>-->
               <li class="nav-item">
-                <a href="habitacion" class="nav-link">
+                <a href="habitacion_vista" class="nav-link">
                 <i class="nav-icon fas fa-hotel"></i>
                   <p>Habitaciones</p>
                 </a>

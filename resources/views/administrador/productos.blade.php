@@ -73,9 +73,9 @@
                       <td></td>
                       <td>
                 
-                <a  class="btn btn-outline-danger" style="margin-top: 40px; align-items: center; margin-left:10px;">
-                    <i class='bx bxs-trash'></i>
-                </a>
+                      <a class="btn btn-outline-danger eliminar-habitacion" data-id="{{ $habitacion->id }}" data-bs-toggle="modal" data-bs-target="#confirmarEliminarModal" style="margin-top: 40px; align-items: center; margin-left:10px;">
+    <i class='bx bxs-trash'></i>
+</a>
 
                 <a class="btn btn-outline-primary editar-habitacion" data-id="{{ $habitacion->id }}" style="margin-top: 40px; align-items: center; margin-left:10px;">
     <i class="bx bxs-edit"></i>
@@ -176,8 +176,63 @@
         </div>
     </div>
 </div>
+<!-- Modal de Confirmación para Eliminar -->
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarEliminarModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar esta habitación?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
     </div>
 
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    let habitacionId;
+
+    // Escuchar el clic en el botón de eliminar
+    document.querySelectorAll('.eliminar-habitacion').forEach(button => {
+        button.addEventListener('click', function() {
+            habitacionId = this.getAttribute('data-id');
+        });
+    });
+
+    // Escuchar el clic en el botón de confirmar eliminación
+    document.getElementById('confirmarEliminar').addEventListener('click', function() {
+        if (habitacionId) {
+            // Obtener el token CSRF del meta tag
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // Enviar la solicitud de eliminación con el token CSRF
+            fetch(`/eliminar_habitacion/${habitacionId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken, // Incluir el token CSRF
+                    'Content-Type': 'application/json', // Opcional, dependiendo de tu backend
+                },
+            })
+            .then(data => {                    // Recargar la página para actualizar la lista de habitaciones
+                    window.location.reload();
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar la habitación');
+            });
+        }
+    });
+});
+</script>
 <script>
     function mostrarVistaPrevia(event) {
     const input = event.target; // Obtener el input de archivo

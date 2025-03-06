@@ -43,9 +43,10 @@ Route::delete('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'dest
 
 Route::post('/habitaciones_agregar', [HabitacionesController::class, 'store'])->name('habitaciones.store');
 Route::put('/habitaciones/{id}', [HabitacionesController::class, 'update'])->name('habitaciones.update');
-Route::get('/habitacion', [HabitacionesController::class, 'index'])->name('habitacion.index');
+Route::get('/habitacion_vista', [HabitacionesController::class, 'index'])->name('habitacion.index');
 Route::delete('/habitaciones/imagenes/{id}', [HabitacionesController::class, 'eliminarImagen'])->name('habitaciones.imagenes.eliminar');
 Route::get('/habitaciones/{id}/edit', [HabitacionesController::class, 'edit'])->name('habitaciones.edit');
+Route::delete('/eliminar_habitacion/{id}', [HabitacionesController::class, 'destroy'])->name('habitaciones.destroy');
 
 Route::get('/pedidos', function () {
     return view('administrador.pedidos');
