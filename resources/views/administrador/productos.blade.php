@@ -139,6 +139,9 @@
                         </div>
                         <div class="col-md-3">
                             <label for="editar-file" class="col-form-label">Imagen de la habitación:</label>
+                            <div id="editar-imagen-principal-container">
+                                <img id="editar-imagen-principal" src="" alt="Imagen principal" class="img-fluid mb-2" style="max-width: 100px;">
+                            </div>
                             <input type="file" class="form-control" id="editar-file" name="file" accept="image/*">
                         </div>
                     </div>
@@ -151,9 +154,6 @@
                     <div class="row mt-3">
                         <div class="col-md-12">
                             <label class="col-form-label">Otras vistas:</label>
-                            <div id="editar-contenedor-imagenes" class="row">
-                                <!-- Aquí se mostrarán las imágenes actuales -->
-                            </div>
                             <div class="row mt-3">
                                 <div class="col-md-3">
                                     <div class="input-group mb-3">
@@ -161,6 +161,9 @@
                                         <button type="button" class="btn btn-outline-secondary agregar-imagen-editar">+</button>
                                     </div>
                                 </div>
+                            </div>
+                            <div id="editar-contenedor-imagenes" class="row">
+                                <!-- Aquí se mostrarán las imágenes actuales -->
                             </div>
                         </div>
                     </div>
@@ -189,6 +192,14 @@
                 document.getElementById('editar-categoria').value = data.habitacion.tipo_habitacion_id;
                 document.getElementById('editar-precio').value = data.habitacion.precio;
                 document.getElementById('editar-detalles').value = data.habitacion.descripcion;
+                const imagenPrincipal = document.getElementById('editar-imagen-principal');
+                if (data.habitacion.imagen_habitacion) {
+                    imagenPrincipal.src = `{{ asset('') }}${data.habitacion.imagen_habitacion}`;
+                    imagenPrincipal.style.display = 'block';
+                } else {
+                    imagenPrincipal.style.display = 'none';
+                }
+
 
                 // Mostrar las imágenes adicionales
                 const contenedorImagenes = document.getElementById('editar-contenedor-imagenes');
