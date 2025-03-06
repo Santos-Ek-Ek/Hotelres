@@ -1,5 +1,5 @@
 @extends('administrador.layout.app')
-@section('titulo', 'Productos')
+@section('titulo', 'Habitaciones')
 @section('content')
 <div>
 

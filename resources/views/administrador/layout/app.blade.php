@@ -32,7 +32,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
   <!-- Preloader -->
   <div class="preloader flex-column justify-content-center align-items-center">
-    <img class="animation__wobble" src=" {{ asset('img/Logo.png') }}" alt="AdminLTELogo" height="60" width="60">
+    <img class="animation__wobble" src=" {{ asset('img/logo.jpeg') }}" alt="AdminLTELogo" height="60" width="60">
   </div>
 
   <!-- Navbar -->
@@ -66,7 +66,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="" class="brand-link">
-    <img src="{{ asset('img/Logo1.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: 1">
+    <img src="{{ asset('img/logo.jpeg') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: 1">
       <span class="brand-text font-weight-light">Zamna-Express</span>
     </a>
 
@@ -114,7 +114,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>-->
               <li class="nav-item">
-                <a href="productos" class="nav-link">
+                <a href="habitacion" class="nav-link">
                 <i class="nav-icon fas fa-hotel"></i>
                   <p>Habitaciones</p>
                 </a>
