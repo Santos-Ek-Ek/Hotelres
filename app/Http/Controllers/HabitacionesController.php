@@ -30,7 +30,7 @@ class HabitacionesController extends Controller
                 $habitacion = new Habitacion();
                 $habitacion->numero_habitacion = $request->input('nombre');
                 $habitacion->tipo_habitacion_id = $request->input('categoria');
-                $habitacion->cantidad_habitaciones = $request->input('cantidad');
+                // $habitacion->cantidad_habitaciones = $request->input('cantidad');
                 $habitacion->precio = $request->input('precio');
                 $habitacion->descripcion = $request->input('detalles');
                 

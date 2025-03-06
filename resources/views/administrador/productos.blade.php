@@ -7,62 +7,38 @@
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Agregar habitación <i class='bx bxs-add-to-queue'></i></button>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-<div class="modal-dialog modal-xl">
-<div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar habitación</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form class="row g-3" action="{{ route('habitaciones.store') }}" method="POST" enctype="multipart/form-data">
-          @csrf
-          <div class="col-md-2">
-            <label for="recipient-name" class="col-form-label">Número:</label>
-            <input type="text" class="form-control" id="recipient-name" name="nombre">
-          </div>
-          <div class="col-md-2">
-          <label for="recipient-name" class="col-form-label">Tipo de habitación:</label>
-          <select class="form-control" name="categoria">
-            <option disabled selected>Seleccione una opción</option>
-            @foreach($tipos as $tipo)
-                <option class="form-control" value="{{ $tipo->id }}">{{ $tipo->tipo_cuarto }}</option>
-            @endforeach
-        </select>
-          </div>
-          <div class="col-md-3">
-            <label for="recipient-name" class="col-form-label">Cantidad de habitaciones:</label>
-            <input type="number" class="form-control" id="recipient-name" name="cantidad">
-          </div>
-          <div class="col-md-3">
-            <label for="recipient-name" class="col-form-label">Imagen de la habitación:</label>
-            <input type="file" name="file" id="" accept="image/*" class="form-control">
-          </div>
-          <div class="col-md-2">
-            <label for="recipient-name" class="col-form-label">Precio:</label>
-            <input type="number" name="precio" id="recipient-name" class="form-control">
-          </div>
-          <label for="recipient-name" class="col-form-label">Otras vistas:</label>
-          <div id="contenedorInpu" class="row">
-    <div class="col-md-3" value="">
-        <div class="input-group mb-3">
-            <input type="file" name="imagenes[]" accept="image/*" class="form-control">
-            <button class="btn btn-outline-secondary" type="button" >+</button>
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar habitación</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Primera Parte: Ingresar Cantidad -->
+                <div id="parte1">
+                    <div class="col-md-3">
+                        <label for="cantidad-habitaciones" class="col-form-label">Cantidad de habitaciones:</label>
+                        <input type="number" class="form-control" id="cantidad-habitaciones" name="cantidad" min="1">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btn-continuar">Continuar</button>
+                    </div>
+                </div>
+
+                <!-- Segunda Parte: Formularios Dinámicos -->
+                <div id="parte2" style="display: none;">
+                    <form class="row g-3" action="{{ route('habitaciones.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div id="forms-container"></div> <!-- Aquí se agregarán los formularios dinámicos -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-</div>
-
-          <div class="mb-3">
-            <label for="message-text" class="col-form-label">Descripción:</label>
-            <textarea class="form-control" id="message-text" name="detalles"></textarea>
-          </div>
-          <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </div>
-        </form>
-      </div>
-
     </div>
 </div>
 </div>
@@ -130,24 +106,99 @@
 </div>
       </div>
     </div>
-    <script>
-    // Función para agregar un nuevo input de archivo
-    document.querySelector('.btn-outline-secondary').addEventListener('click', function() {
-        const newInput = `<div class="col-md-3">
-                            <div class="input-group mb-3">
-                                <input type="file" name="imagenes[]" accept="image/*" class="form-control">
-                                <button class="btn btn-outline-danger remove-input" type="button">-</button>
-                            </div>
-                          </div>`;
-        document.getElementById('contenedorInpu').insertAdjacentHTML('beforeend', newInput);
-    });
 
-    // Función para eliminar el input de archivo cuando se hace clic en el botón "-"
-    document.addEventListener('click', function(event) {
-        if (event.target && event.target.classList.contains('remove-input')) {
-            // Eliminar el contenedor del input
-            event.target.closest('.col-md-3').remove();
+<script>
+    document.getElementById('btn-continuar').addEventListener('click', function() {
+        const cantidad = document.getElementById('cantidad-habitaciones').value;
+        if (cantidad > 0) {
+            // Ocultar la primera parte
+            document.getElementById('parte1').style.display = 'none';
+
+            // Mostrar la segunda parte
+            document.getElementById('parte2').style.display = 'block';
+
+            // Generar los formularios dinámicos
+            const formsContainer = document.getElementById('forms-container');
+            formsContainer.innerHTML = ''; // Limpiar el contenedor
+
+            for (let i = 1; i <= cantidad; i++) {
+                const form = `
+                    <div class="form-group mb-4">
+                        <h4>Habitación ${i}</h4>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="nombre-${i}" class="col-form-label">Número:</label>
+                                <input type="text" class="form-control" id="nombre-${i}" name="nombre[]">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="categoria-${i}" class="col-form-label">Tipo de habitación:</label>
+                                <select class="form-control" name="categoria[]">
+                                    <option disabled selected>Seleccione una opción</option>
+                                    @foreach($tipos as $tipo)
+                                        <option class="form-control" value="{{ $tipo->id }}">{{ $tipo->tipo_cuarto }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="file-${i}" class="col-form-label">Imagen de la habitación:</label>
+                                <input type="file" name="file[]" id="file-${i}" accept="image/*" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="precio-${i}" class="col-form-label">Precio:</label>
+                                <input type="number" name="precio[]" id="precio-${i}" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label for="detalles-${i}" class="col-form-label">Descripción:</label>
+                                <textarea class="form-control" id="detalles-${i}" name="detalles[]"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label class="col-form-label">Otras vistas:</label>
+                                <div id="contenedorInpu-${i}" class="row">
+                                    <div class="col-md-3">
+                                        <div class="input-group mb-3">
+                                            <input type="file" name="imagenes-${i}[]" accept="image/*" class="form-control">
+                                            <button class="btn btn-outline-secondary agregar-imagen" type="button" data-habitacion="${i}">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-4"> <!-- Separador entre formularios -->
+                    </div>
+                `;
+                formsContainer.insertAdjacentHTML('beforeend', form);
+            }
+
+            // Agregar funcionalidad para añadir más imágenes
+            document.querySelectorAll('.agregar-imagen').forEach(button => {
+                button.addEventListener('click', function() {
+                    const habitacionId = this.getAttribute('data-habitacion');
+                    const nuevoInput = `
+                        <div class="col-md-3">
+                            <div class="input-group mb-3">
+                                <input type="file" name="imagenes-${habitacionId}[]" accept="image/*" class="form-control">
+                                <button class="btn btn-outline-danger eliminar-imagen" type="button">-</button>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById(`contenedorInpu-${habitacionId}`).insertAdjacentHTML('beforeend', nuevoInput);
+                });
+            });
+
+            // Agregar funcionalidad para eliminar imágenes
+            document.addEventListener('click', function(event) {
+                if (event.target && event.target.classList.contains('eliminar-imagen')) {
+                    event.target.closest('.col-md-3').remove();
+                }
+            });
+        } else {
+            alert('Por favor, ingrese una cantidad válida.');
         }
     });
 </script>
+
 @endsection
