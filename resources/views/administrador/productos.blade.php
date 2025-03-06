@@ -4,8 +4,14 @@
 <div>
 
 <div style="margin-top:20px;">
+<div class="form-row align-items-center">
+    <div class="col-auto">
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Agregar habitación <i class='bx bxs-add-to-queue'></i></button>
-
+</div>
+<div class="col-auto" style="margin-top: 7px;">
+                <input type="text" placeholder="Buscar habitación" class="form-control mb-2" id="searchInput">
+                </div>
+</div>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -196,6 +202,29 @@
 </div>
     </div>
 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const tableBody = document.querySelector('#tbl2 tbody');
+
+    searchInput.addEventListener('input', function() {
+        const searchText = searchInput.value.toLowerCase(); // Obtener el texto de búsqueda en minúsculas
+
+        // Recorrer todas las filas de la tabla
+        Array.from(tableBody.querySelectorAll('tr')).forEach(function(row) {
+            const rowText = row.textContent.toLowerCase(); // Obtener el texto de la fila en minúsculas
+
+            // Mostrar u ocultar la fila según si coincide con el texto de búsqueda
+            if (rowText.includes(searchText)) {
+                row.style.display = ''; // Mostrar la fila
+            } else {
+                row.style.display = 'none'; // Ocultar la fila
+            }
+        });
+    });
+});
+    </script>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     let habitacionId;
