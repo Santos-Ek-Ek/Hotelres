@@ -59,8 +59,13 @@ class tipoHabitacionesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $tipo = tipoHabitacion::findOrFail($id); // Encuentra el tipo de habitación por ID, o muestra un error 404 si no lo encuentra
+    
+        $tipo->delete(); // Elimina el tipo de habitación
+    
+        return redirect()->back()->with('success', 'Tipo de habitación eliminado correctamente.');
     }
+    
 }

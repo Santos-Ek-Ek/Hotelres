@@ -10,7 +10,7 @@
             
                 
                 <div class="col-auto">
-                    <input type="text" placeholder="Nombre de la categoría" class="form-control mb-2" name="nombre">
+                <input type="text" placeholder="Tipo de habitación" class="form-control mb-2" id="searchInput">
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#modalTipoHabitacion">Agregar</button>
@@ -40,19 +40,21 @@
                 <td>{{ $tipo->numero_camas }}</td>
                 <td>{{ $tipo->descripcion }}</td>
                 <td>
-                <a class="btn btn-outline-danger">
-                            <i class="bx bxs-trash"></i>
-                </a>
+                <form id="deleteForm" action="{{ route('tipo-habitacion.destroy', $tipo->id) }}" method="POST" style="display:inline;">
+    @csrf
+    @method('DELETE')
+    <!-- El botón ahora solo abre el modal -->
+    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <i class="bx bxs-trash"></i>
+    </button>
+</form>
+
+
                 <a class="btn btn-outline-primary editarTipo" data-id="{{ $tipo->id }}" data-tipo="{{ $tipo->tipo_cuarto }}"
     data-personas="{{ $tipo->cantidad_maxima_personas }}" data-camas="{{ $tipo->numero_camas }}"
     data-descripcion="{{ $tipo->descripcion }}" data-bs-toggle="modal" data-bs-target="#modalEditarTipo">
     <i class='bx bxs-edit-alt'></i>
 </a>
-
-                    <form  method="POST" style="display: none;">
-                            @csrf
-                            @method('DELETE')
-                    </form>
                 </td>
                 </tr>
                 @endforeach
@@ -132,6 +134,26 @@
         </div>
     </div>
 </div>
+<!-- Modal de confirmación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmación de Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar este tipo de habitación?
+            </div>
+            <div class="modal-footer">
+                <!-- Botón para cerrar el modal sin hacer nada -->
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <!-- Botón para confirmar la eliminación -->
+                <button type="button" id="confirmDelete" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -152,6 +174,63 @@
 });
 
 </script>
+<script>
+    // Este script espera a que el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener el botón de confirmación de eliminación
+        var confirmDeleteBtn = document.getElementById('confirmDelete');
+        
+        // Obtener el formulario de eliminación
+        var deleteForm = document.getElementById('deleteForm');
+        
+        // Cuando se haga clic en el botón de confirmación, enviar el formulario
+        confirmDeleteBtn.addEventListener('click', function() {
+            // Enviar el formulario
+            deleteForm.submit();
+        });
+    });
+</script>
+<script>
+    // Esperar a que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener el input de búsqueda
+        const searchInput = document.getElementById('searchInput');
+        
+        // Obtener las filas de la tabla (las que contienen los datos de tipos de habitación)
+        const table = document.getElementById('tbl3');
+        const rows = table.getElementsByTagName('tr');
+
+        // Evento de input (se ejecuta cada vez que se escribe en el campo)
+        searchInput.addEventListener('input', function() {
+            // Obtener el valor del input (lo que escribe el usuario)
+            const query = searchInput.value.toLowerCase();
+
+            // Iterar sobre las filas de la tabla
+            for (let i = 1; i < rows.length; i++) {  // Comenzamos desde 1 para evitar la fila de encabezado
+                const cells = rows[i].getElementsByTagName('td');
+                let match = false;
+
+                // Iteramos sobre las celdas de cada fila (buscamos el texto en las columnas de la tabla)
+                for (let j = 0; j < cells.length; j++) {
+                    const cellText = cells[j].textContent.toLowerCase();
+                    if (cellText.includes(query)) {
+                        match = true;
+                        break; // Si encontramos una coincidencia, dejamos de buscar en esa fila
+                    }
+                }
+
+                // Mostrar u ocultar la fila dependiendo de si hay coincidencia
+                if (match) {
+                    rows[i].style.display = '';  // Mostrar fila
+                } else {
+                    rows[i].style.display = 'none';  // Ocultar fila
+                }
+            }
+        });
+    });
+</script>
+
+
 </div>
 
 @endsection

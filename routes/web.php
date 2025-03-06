@@ -38,6 +38,8 @@ Route::get('/productos', function () {
 Route::get('/categorias', [tipoHabitacionesController::class, 'index'])->name('categorias.index');
 Route::post('/tipo-habitacion', [tipoHabitacionesController::class, 'store'])->name('tipo-habitacion.store');
 Route::put('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'update'])->name('tipo-habitacion.update');
+Route::delete('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'destroy'])->name('tipo-habitacion.destroy');
+
 
 Route::get('/pedidos', function () {
     return view('administrador.pedidos');
