@@ -28,14 +28,14 @@
 
                 <!-- Segunda Parte: Formularios Dinámicos -->
                 <div id="parte2" style="display: none;">
-                    <form class="row g-3" action="{{ route('habitaciones.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div id="forms-container"></div> <!-- Aquí se agregarán los formularios dinámicos -->
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                        </div>
-                    </form>
+                <form class="row g-3" action="{{ route('habitaciones.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    <div id="forms-container"></div> <!-- Aquí se agregarán los formularios dinámicos -->
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
                 </div>
             </div>
         </div>
@@ -121,57 +121,57 @@
             const formsContainer = document.getElementById('forms-container');
             formsContainer.innerHTML = ''; // Limpiar el contenedor
 
-            for (let i = 1; i <= cantidad; i++) {
-                const form = `
-                    <div class="form-group mb-4">
-                        <h4>Habitación ${i}</h4>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label for="nombre-${i}" class="col-form-label">Número:</label>
-                                <input type="text" class="form-control" id="nombre-${i}" name="nombre[]">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="categoria-${i}" class="col-form-label">Tipo de habitación:</label>
-                                <select class="form-control" name="categoria[]">
-                                    <option disabled selected>Seleccione una opción</option>
-                                    @foreach($tipos as $tipo)
-                                        <option class="form-control" value="{{ $tipo->id }}">{{ $tipo->tipo_cuarto }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="file-${i}" class="col-form-label">Imagen de la habitación:</label>
-                                <input type="file" name="file[]" id="file-${i}" accept="image/*" class="form-control">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="precio-${i}" class="col-form-label">Precio:</label>
-                                <input type="number" name="precio[]" id="precio-${i}" class="form-control">
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <label for="detalles-${i}" class="col-form-label">Descripción:</label>
-                                <textarea class="form-control" id="detalles-${i}" name="detalles[]"></textarea>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <label class="col-form-label">Otras vistas:</label>
-                                <div id="contenedorInpu-${i}" class="row">
-                                    <div class="col-md-3">
-                                        <div class="input-group mb-3">
-                                            <input type="file" name="imagenes-${i}[]" accept="image/*" class="form-control">
-                                            <button class="btn btn-outline-secondary agregar-imagen" type="button" data-habitacion="${i}">+</button>
-                                        </div>
-                                    </div>
-                                </div>
+            for (let i = 0; i < cantidad; i++) {
+    const form = `
+        <div class="form-group mb-4">
+            <h4>Registro ${i + 1}</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="nombre-${i}" class="col-form-label">Número:</label>
+                    <input type="text" class="form-control" id="nombre-${i}" name="nombre[]">
+                </div>
+                <div class="col-md-3">
+                    <label for="categoria-${i}" class="col-form-label">Tipo de habitación:</label>
+                    <select class="form-control" name="categoria[]">
+                        <option disabled selected>Seleccione una opción</option>
+                        @foreach($tipos as $tipo)
+                            <option class="form-control" value="{{ $tipo->id }}">{{ $tipo->tipo_cuarto }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="file-${i}" class="col-form-label">Imagen de la habitación:</label>
+                    <input type="file" name="file[]" id="file-${i}" accept="image/*" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label for="precio-${i}" class="col-form-label">Precio:</label>
+                    <input type="number" name="precio[]" id="precio-${i}" class="form-control">
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <label for="detalles-${i}" class="col-form-label">Descripción:</label>
+                    <textarea class="form-control" id="detalles-${i}" name="detalles[]"></textarea>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <label class="col-form-label">Otras vistas:</label>
+                    <div id="contenedorInpu-${i}" class="row">
+                        <div class="col-md-3">
+                            <div class="input-group mb-3">
+                                <input type="file" name="imagenes-${i}[]" accept="image/*" class="form-control">
+                                <button class="btn btn-outline-secondary agregar-imagen" type="button" data-habitacion="${i}">+</button>
                             </div>
                         </div>
-                        <hr class="my-4"> <!-- Separador entre formularios -->
                     </div>
-                `;
-                formsContainer.insertAdjacentHTML('beforeend', form);
-            }
+                </div>
+            </div>
+            <hr class="my-4"> <!-- Separador entre formularios -->
+        </div>
+    `;
+    formsContainer.insertAdjacentHTML('beforeend', form);
+}
 
             // Agregar funcionalidad para añadir más imágenes
             document.querySelectorAll('.agregar-imagen').forEach(button => {

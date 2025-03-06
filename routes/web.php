@@ -40,8 +40,8 @@ Route::get('/categorias', [tipoHabitacionesController::class, 'index'])->name('c
 Route::post('/tipo-habitacion', [tipoHabitacionesController::class, 'store'])->name('tipo-habitacion.store');
 Route::put('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'update'])->name('tipo-habitacion.update');
 Route::delete('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'destroy'])->name('tipo-habitacion.destroy');
-// routes/web.php
-Route::post('/habitaciones', [HabitacionesController::class, 'store'])->name('habitaciones.store');
+
+Route::post('/habitaciones_agregar', [HabitacionesController::class, 'store'])->name('habitaciones.store');
 
 Route::get('/productos', [HabitacionesController::class, 'index'])->name('productos.index');
 

@@ -26,41 +26,49 @@ class HabitacionesController extends Controller
      */
     public function store(Request $request)
     {
-                // Guardar la habitación
+        // Verificar si hay datos de habitaciones
+        if ($request->has('nombre') && is_array($request->input('nombre'))) {
+            // Iterar sobre cada habitación
+            foreach ($request->input('nombre') as $index => $nombre) {
+                // Crear una nueva habitación
                 $habitacion = new Habitacion();
-                $habitacion->numero_habitacion = $request->input('nombre');
-                $habitacion->tipo_habitacion_id = $request->input('categoria');
-                // $habitacion->cantidad_habitaciones = $request->input('cantidad');
-                $habitacion->precio = $request->input('precio');
-                $habitacion->descripcion = $request->input('detalles');
-                
+                $habitacion->numero_habitacion = $nombre;
+                $habitacion->tipo_habitacion_id = $request->input('categoria')[$index];
+                $habitacion->precio = $request->input('precio')[$index];
+                $habitacion->descripcion = $request->input('detalles')[$index];
+
                 // Guardar la imagen principal
-                if ($request->hasFile('file')) {
-                    $imagenPrincipal = $request->file('file');
+                if ($request->hasFile('file') && isset($request->file('file')[$index])) {
+                    $imagenPrincipal = $request->file('file')[$index];
                     $nombreImagenPrincipal = $imagenPrincipal->getClientOriginalName(); // Obtener el nombre original del archivo
                     $rutaImagenPrincipal = public_path('habitaciones/' . $nombreImagenPrincipal); // Ruta completa en public_path
                     $imagenPrincipal->move(public_path('habitaciones'), $nombreImagenPrincipal); // Mover el archivo a public/habitaciones
                     $habitacion->imagen_habitacion = 'habitaciones/' . $nombreImagenPrincipal; // Guardar la ruta relativa en la base de datos
                 }
+
                 // Guardar la habitación en la base de datos
                 $habitacion->save();
-        
-                // Guardar las imágenes adicionales, si existen
-                if ($request->hasFile('imagenes')) {
-                    foreach ($request->file('imagenes') as $imagen) {
-                        $nombreImagen = $imagen->getClientOriginalName(); // Obtener el nombre original del archivo
-                        $rutaImagen = public_path('habitaciones/otros/' . $nombreImagen); // Ruta completa en public_path
-                        $imagen->move(public_path('habitaciones/otros'), $nombreImagen); // Mover el archivo a public/habitaciones/otros
-            
-                        // Guardar cada imagen en la base de datos
-                        habitacion_imagenes::create([
-                            'habitacion_id' => $habitacion->id,
-                            'imagen' => 'habitaciones/otros/' . $nombreImagen, // Guardar la ruta relativa en la base de datos
-                        ]);
+
+                if ($request->hasFile("imagenes-{$index}")) {
+                    foreach ($request->file("imagenes-{$index}") as $imagen) {
+                        if ($imagen->isValid()) { // Verifica si el archivo es válido
+                            $nombreImagen = $imagen->getClientOriginalName(); // Obtener el nombre original del archivo
+                            $rutaImagen = public_path('habitaciones/otros/' . $nombreImagen); // Ruta completa en public_path
+                            $imagen->move(public_path('habitaciones/otros'), $nombreImagen); // Mover el archivo a public/habitaciones/otros
+                
+                            // Guardar cada imagen en la base de datos
+                            habitacion_imagenes::create([
+                                'habitacion_id' => $habitacion->id,
+                                'imagen' => 'habitaciones/otros/' . $nombreImagen, // Guardar la ruta relativa en la base de datos
+                            ]);
+                        }
                     }
                 }
-                // Redirigir al usuario con un mensaje de éxito
-                return redirect()->back()->with('success', 'Habitación agregada correctamente.');
+            }
+        }
+
+        // Redirigir al usuario con un mensaje de éxito
+        return redirect()->back()->with('success', 'Habitaciones agregadas correctamente.');
     }
     /**
      * Display the specified resource.

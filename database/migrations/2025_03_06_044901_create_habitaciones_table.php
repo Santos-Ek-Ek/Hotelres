@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('numero_habitacion'); // Número de la habitación
             $table->string('descripcion'); // Número de la habitación
             $table->unsignedBigInteger('tipo_habitacion_id'); // ID del tipo de habitación (relación con tipos_habitaciones)
-            $table->integer('cantidad_habitaciones'); // Cantidad de habitaciones disponibles
             $table->string('imagen_habitacion'); // Imagen principal de la habitación (puede ser la primera imagen)
             $table->decimal('precio', 8, 2); // Precio de la habitación
             $table->timestamps(); // Fechas de creación y actualización
