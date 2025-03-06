@@ -81,10 +81,65 @@ class HabitacionesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+
+     public function edit(string $id)
+{
+    $habitacion = Habitacion::with('imagenes')->findOrFail($id);
+    return response()->json([
+        'habitacion' => $habitacion,
+        'imagenes' => $habitacion->imagenes,
+    ]);
+}
+public function eliminarImagen(string $id)
+{
+    $imagen = habitacion_imagenes::findOrFail($id);
+    $imagen->delete();
+
+    return response()->json(['success' => true]);
+}
+public function update(Request $request, string $id)
+{
+    // Buscar la habitación por su ID
+    $habitacion = Habitacion::findOrFail($id);
+
+    // Actualizar los campos de la habitación
+    $habitacion->numero_habitacion = $request->input('nombre');
+    $habitacion->tipo_habitacion_id = $request->input('categoria');
+    $habitacion->precio = $request->input('precio');
+    $habitacion->descripcion = $request->input('detalles');
+
+    // Actualizar la imagen principal si se proporciona una nueva
+    if ($request->hasFile('file')) {
+        $imagenPrincipal = $request->file('file');
+        $nombreImagenPrincipal = $imagenPrincipal->getClientOriginalName(); // Obtener el nombre original del archivo
+        $rutaImagenPrincipal = public_path('habitaciones/' . $nombreImagenPrincipal); // Ruta completa en public_path
+        $imagenPrincipal->move(public_path('habitaciones'), $nombreImagenPrincipal); // Mover el archivo a public/habitaciones
+        $habitacion->imagen_habitacion = 'habitaciones/' . $nombreImagenPrincipal; // Guardar la ruta relativa en la base de datos
     }
+
+    // Guardar los cambios en la base de datos
+    $habitacion->save();
+
+    // Guardar las nuevas imágenes adicionales, si existen
+    if ($request->hasFile('nuevas_imagenes')) {
+        foreach ($request->file('nuevas_imagenes') as $imagen) {
+            if ($imagen->isValid()) { // Verifica si el archivo es válido
+                $nombreImagen = $imagen->getClientOriginalName(); // Obtener el nombre original del archivo
+                $rutaImagen = public_path('habitaciones/otros/' . $nombreImagen); // Ruta completa en public_path
+                $imagen->move(public_path('habitaciones/otros'), $nombreImagen); // Mover el archivo a public/habitaciones/otros
+
+                // Guardar cada imagen en la base de datos
+                habitacion_imagenes::create([
+                    'habitacion_id' => $habitacion->id,
+                    'imagen' => 'habitaciones/otros/' . $nombreImagen, // Guardar la ruta relativa en la base de datos
+                ]);
+            }
+        }
+    }
+
+    // Redirigir al usuario con un mensaje de éxito
+    return redirect()->back()->with('success', 'Habitación actualizada correctamente.');
+}
 
     /**
      * Remove the specified resource from storage.

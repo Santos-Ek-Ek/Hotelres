@@ -77,9 +77,9 @@
                     <i class='bx bxs-trash'></i>
                 </a>
 
-            <a >
-                <i class="bx bxs-edit btn btn-outline-primary" style="margin-top: 40px; align-items: center; margin-left:10px;"></i>
-            </a>
+                <a class="btn btn-outline-primary editar-habitacion" data-id="{{ $habitacion->id }}" style="margin-top: 40px; align-items: center; margin-left:10px;">
+    <i class="bx bxs-edit"></i>
+</a>
             <form action="" method="post"   style="display: none;">
                 @csrf
                 @method('DELETE')
@@ -106,7 +106,157 @@
     </div>
 </div>
       </div>
+
+<!--Modal Editar-->
+<div class="modal fade" id="editarHabitacionModal" tabindex="-1" aria-labelledby="editarHabitacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarHabitacionModalLabel">Editar Habitación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-editar-habitacion" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="editar-nombre" class="col-form-label">Número:</label>
+                            <input type="text" class="form-control" id="editar-nombre" name="nombre">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="editar-categoria" class="col-form-label">Tipo de habitación:</label>
+                            <select class="form-control" id="editar-categoria" name="categoria">
+                                <option disabled selected>Seleccione una opción</option>
+                                @foreach($tipos as $tipo)
+                                    <option value="{{ $tipo->id }}">{{ $tipo->tipo_cuarto }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="editar-precio" class="col-form-label">Precio:</label>
+                            <input type="number" class="form-control" id="editar-precio" name="precio">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="editar-file" class="col-form-label">Imagen de la habitación:</label>
+                            <input type="file" class="form-control" id="editar-file" name="file" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label for="editar-detalles" class="col-form-label">Descripción:</label>
+                            <textarea class="form-control" id="editar-detalles" name="detalles"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label class="col-form-label">Otras vistas:</label>
+                            <div id="editar-contenedor-imagenes" class="row">
+                                <!-- Aquí se mostrarán las imágenes actuales -->
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-3">
+                                    <div class="input-group mb-3">
+                                        <input type="file" name="nuevas_imagenes[]" accept="image/*" class="form-control">
+                                        <button type="button" class="btn btn-outline-secondary agregar-imagen-editar">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
+    </div>
+
+<script>
+    document.querySelectorAll('.editar-habitacion').forEach(button => {
+    button.addEventListener('click', function() {
+        const habitacionId = this.getAttribute('data-id');
+
+        // Obtener los datos de la habitación y sus imágenes adicionales
+        fetch(`/habitaciones/${habitacionId}/edit`)
+            .then(response => response.json())
+            .then(data => {
+                // Prellenar el formulario de edición con los datos de la habitación
+                document.getElementById('editar-nombre').value = data.habitacion.numero_habitacion;
+                document.getElementById('editar-categoria').value = data.habitacion.tipo_habitacion_id;
+                document.getElementById('editar-precio').value = data.habitacion.precio;
+                document.getElementById('editar-detalles').value = data.habitacion.descripcion;
+
+                // Mostrar las imágenes adicionales
+                const contenedorImagenes = document.getElementById('editar-contenedor-imagenes');
+                contenedorImagenes.innerHTML = ''; // Limpiar el contenedor
+
+                data.imagenes.forEach(imagen => {
+                    const imagenHtml = `
+                        <div class="col-md-3">
+                            <div class="card mb-3">
+                                <img src="{{ asset('${imagen.imagen}') }}" class="card-img-top" alt="Imagen">
+                                <div class="card-body">
+                                    <button type="button" class="btn btn-outline-danger eliminar-imagen-editar" data-imagen-id="${imagen.id}">Eliminar</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    contenedorImagenes.insertAdjacentHTML('beforeend', imagenHtml);
+                });
+
+                // Actualizar la acción del formulario para incluir el ID de la habitación
+                document.getElementById('form-editar-habitacion').action = `/habitaciones/${habitacionId}`;
+
+                // Mostrar el modal de edición
+                const modal = new bootstrap.Modal(document.getElementById('editarHabitacionModal'));
+                modal.show();
+            })
+            .catch(error => console.error('Error:', error));
+    });
+});
+document.addEventListener('click', function(event) {
+    if (event.target && event.target.classList.contains('eliminar-imagen-editar')) {
+        const imagenId = event.target.getAttribute('data-imagen-id');
+
+        // Enviar una solicitud para eliminar la imagen
+        fetch(`/habitaciones/imagenes/${imagenId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Eliminar la imagen del DOM
+                event.target.closest('.col-md-3').remove();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+});
+document.querySelector('.agregar-imagen-editar').addEventListener('click', function() {
+    const nuevoInput = `
+        <div class="col-md-3">
+            <div class="input-group mb-3">
+                <input type="file" name="nuevas_imagenes[]" accept="image/*" class="form-control">
+                <button type="button" class="btn btn-outline-danger eliminar-nueva-imagen">-</button>
+            </div>
+        </div>
+    `;
+    document.getElementById('editar-contenedor-imagenes').insertAdjacentHTML('beforeend', nuevoInput);
+});
+
+document.addEventListener('click', function(event) {
+    if (event.target && event.target.classList.contains('eliminar-nueva-imagen')) {
+        event.target.closest('.col-md-3').remove();
+    }
+});
+</script>
 
 <script>
     document.getElementById('btn-continuar').addEventListener('click', function() {

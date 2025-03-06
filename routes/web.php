@@ -42,10 +42,10 @@ Route::put('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'update'
 Route::delete('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'destroy'])->name('tipo-habitacion.destroy');
 
 Route::post('/habitaciones_agregar', [HabitacionesController::class, 'store'])->name('habitaciones.store');
-
+Route::put('/habitaciones/{id}', [HabitacionesController::class, 'update'])->name('habitaciones.update');
 Route::get('/productos', [HabitacionesController::class, 'index'])->name('productos.index');
-
-
+Route::delete('/habitaciones/imagenes/{id}', [HabitacionesController::class, 'eliminarImagen'])->name('habitaciones.imagenes.eliminar');
+Route::get('/habitaciones/{id}/edit', [HabitacionesController::class, 'edit'])->name('habitaciones.edit');
 
 Route::get('/pedidos', function () {
     return view('administrador.pedidos');
