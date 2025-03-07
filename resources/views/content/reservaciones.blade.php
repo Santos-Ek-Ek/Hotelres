@@ -152,50 +152,51 @@
                 </div> -->
 
                 <div class="card shadow p-4" style="width: 22rem;">
-        <h5 class="text-center font-weight-bold mb-4">Resumen de la reserva</h5>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <span>7 mar 2025</span>
-            <i class="fas fa-arrow-right"></i>
-            <span>10 mar 2025</span>
-        </div>
-        <div class="d-flex align-items-center justify-content-center mb-4">
-            <i class="fas fa-moon"></i>
-            <span class="ml-2">&nbsp;3 noches</span>
-        </div>
-        <hr>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <span>5x Standar</span>
-            <span>MXN 12,750.00</span>
-        </div>
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-user-friends"></i>
-                <span class="ml-2">&nbsp; 2</span>
-            </div>
-            <button class="btn btn-link text-danger p-0">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-        <hr>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <span>Subtotal</span>
-            <span>MXN 10,537.20</span>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <span>Impuestos y tasas <i class="fas fa-info-circle"></i></span>
-            <span>MXN 2,212.80</span>
-        </div>
-        <div class="d-flex justify-content-between align-items-center font-weight-bold mb-4">
-            <span>Total</span>
-            <span>MXN 12,750.00</span>
-        </div>
-        <hr>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <span>Depósito</span>
-            <span>MXN 12,750.00</span>
-        </div>
-        <button class="btn btn-custom btn-block mb-4">Reservar ahora</button>
+    <h5 class="text-center font-weight-bold mb-4">Resumen de la reserva</h5>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <span>7 mar 2025</span>
+        <i class="fas fa-arrow-right"></i>
+        <span>10 mar 2025</span>
     </div>
+    <div class="d-flex align-items-center justify-content-center mb-4">
+        <i class="fas fa-moon"></i>
+        <span class="ml-2">&nbsp;</span>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span id="resumenHabitacion"></span>
+        <span id="resumenPrecio"></span>
+    </div>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-user-friends"></i>
+            <span class="ml-2" id="resumenHuespedes">&nbsp; </span>
+        </div>
+        <button class="btn btn-link text-danger p-0">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Subtotal</span>
+                        <span id="resumenSubtotal"></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span>Impuestos y tasas</span>
+                        <span id="resumenImpuestos"></span>
+                    </div>
+
+    <div class="d-flex justify-content-between align-items-center font-weight-bold mb-4">
+        <span>Total</span>
+        <span id="resumenTotal"></span>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <span>Depósito</span>
+        <span id="resumenDeposito"></span>
+    </div>
+    <button class="btn btn-custom btn-block mb-4">Reservar ahora</button>
+</div>
             </div>
         </div>
     </div>
@@ -350,7 +351,7 @@
                                                         <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, 1, ${cantidad_disponible})">+</button>
                                                     </div>
                                                 </div>
-                                                <button class="btn btn-warning ms-3 add-btn">Añadir</button>
+<button class="btn btn-warning ms-3 add-btn" data-tipo="${habitacion.tipo_habitacion.tipo_cuarto}" data-precio="${precioTotal}" data-noches="${noches}">Añadir</button>
                                             </div>
                                         </div>
                                     </div>
@@ -376,6 +377,43 @@
 
             input.value = cantidad;
         }
+        
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('add-btn')) {
+                const tipoHabitacion = event.target.getAttribute('data-tipo');
+                const precioTotal = event.target.getAttribute('data-precio');
+                const noches = event.target.getAttribute('data-noches');
+                const cantidad = event.target.closest('.card-body').querySelector('input').value;
+                const maxPersonas = event.target.closest('.card-body').querySelector('select').value;
+                agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas);
+            }
+        });
+
+        function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas) {
+    // Actualizar la cantidad y el tipo de cuarto
+    document.getElementById('resumenHabitacion').textContent = `${cantidad}x ${tipoHabitacion}`;
+    
+    // Actualizar el precio total
+    document.getElementById('resumenPrecio').textContent = `MXN ${precioTotal}`;
+    
+    // Actualizar el número de huéspedes
+    document.getElementById('resumenHuespedes').textContent = ` ${maxPersonas}`;
+    
+    // Calcular y actualizar el total
+    const subtotal = parseFloat(precioTotal.replace('MXN ', '').replace(',', ''));
+    const impuestos = subtotal * 0.16; // Suponiendo un 16% de impuestos
+    const subtotal2 = subtotal - impuestos;
+    const total = subtotal2 + impuestos;
+    
+    document.getElementById('resumenTotal').textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    document.getElementById('resumenImpuestos').textContent = `MXN ${impuestos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    document.getElementById('resumenSubtotal').textContent = `MXN ${subtotal2.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+
+    
+    // Actualizar el depósito (puede ser igual al total o un porcentaje)
+    document.getElementById('resumenDeposito').textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+}
     </script>
 </body>
 </html>
