@@ -92,7 +92,7 @@
 
     <div style="background-color: #FFC107; width:100%;">
         <header class="header d-flex justify-content-between align-items-center">
-            <h1 class="text-black">Hacienda de Izamal</h1>
+            <h1 class="text-black">Hotel Truck</h1>
             <div class="d-flex align-items-center">
                 <div class="d-flex align-items-center bg-white header-input mr-2">
                     <input type="text" class="form-control border-0" id="checkinbus" placeholder="14 mar 2025">
