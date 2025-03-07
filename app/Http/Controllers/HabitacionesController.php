@@ -34,7 +34,6 @@ class HabitacionesController extends Controller
                 $habitacion = new Habitacion();
                 $habitacion->numero_habitacion = $nombre;
                 $habitacion->tipo_habitacion_id = $request->input('categoria')[$index];
-                $habitacion->precio = $request->input('precio')[$index];
                 $habitacion->descripcion = $request->input('detalles')[$index];
                 $estado = $request->input('estado');
                 $habitacion->estado = is_array($estado) && isset($estado[$index]) ? $estado[$index] : 'Disponible';
@@ -108,7 +107,6 @@ public function update(Request $request, string $id)
     // Actualizar los campos de la habitación
     $habitacion->numero_habitacion = $request->input('nombre');
     $habitacion->tipo_habitacion_id = $request->input('categoria');
-    $habitacion->precio = $request->input('precio');
     $habitacion->descripcion = $request->input('detalles');
     $habitacion->estado = $request->input('estado');
 

@@ -75,7 +75,7 @@
                       <td>{{$habitacion->numero_habitacion}}</td>
                       <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;">{{ $habitacion->descripcion }}</p></td>
                       <td>{{$habitacion->tipoHabitacion->tipo_cuarto}}</td>
-                      <td>$ {{$habitacion->precio}}</td>
+                      <td>$ {{$habitacion->tipoHabitacion->precio}}</td>
                       <td class="
     @if($habitacion->estado == 'Disponible') text-success
     @elseif($habitacion->estado == 'Reservado') text-warning
@@ -140,15 +140,15 @@
                         </div>
                         <div class="col-md-3">
                             <label for="editar-categoria" class="col-form-label">Tipo de habitación:</label>
-                            <select class="form-control" id="editar-categoria" name="categoria">
+                            <select class="form-control tipo-habitacion-editar" id="editar-categoria" name="categoria">
                                 <option disabled selected>Seleccione una opción</option>
                                 @foreach($tipos as $tipo)
-                                    <option value="{{ $tipo->id }}">{{ $tipo->tipo_cuarto }}</option>
+                                    <option value="{{ $tipo->id }}" data-precio="{{ $tipo->precio }}">{{ $tipo->tipo_cuarto }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="editar-precio" class="col-form-label">Estado:</label>
+                            <label for="editar-estado" class="col-form-label">Estado:</label>
                             <select class="form-control" id="editar-estado" name="estado">
                                 <option disabled selected>Seleccione una opción</option>
                                     <option value="Disponible">Disponible</option>
@@ -158,7 +158,7 @@
                         </div>
                         <div class="col-md-3">
                             <label for="editar-precio" class="col-form-label">Precio:</label>
-                            <input type="number" class="form-control" id="editar-precio" name="precio">
+                            <input type="number" class="form-control" id="editar-precio" name="precio" disabled>
                         </div>
                         <div class="col-md-3">
                             <label for="editar-file" class="col-form-label">Imagen de la habitación:</label>
@@ -300,6 +300,14 @@ document.addEventListener('DOMContentLoaded', function() {
         imagenPrincipal.style.display = 'none';
     }
 }
+document.addEventListener('DOMContentLoaded', function() {
+    // Asignar el precio automáticamente al editar
+    document.querySelectorAll('.tipo-habitacion-editar').forEach(select => {
+        select.addEventListener('change', function() {
+            const precio = this.options[this.selectedIndex].getAttribute('data-precio');
+            document.getElementById('editar-precio').value = precio;
+        });
+    });
     document.querySelectorAll('.editar-habitacion').forEach(button => {
     button.addEventListener('click', function() {
         const habitacionId = this.getAttribute('data-id');
@@ -311,9 +319,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Prellenar el formulario de edición con los datos de la habitación
                 document.getElementById('editar-nombre').value = data.habitacion.numero_habitacion;
                 document.getElementById('editar-categoria').value = data.habitacion.tipo_habitacion_id;
-                document.getElementById('editar-precio').value = data.habitacion.precio;
                 document.getElementById('editar-detalles').value = data.habitacion.descripcion;
                 document.getElementById('editar-estado').value = data.habitacion.estado;
+                const selectTipoHabitacion = document.getElementById('editar-categoria');
+                    const precio = selectTipoHabitacion.options[selectTipoHabitacion.selectedIndex].getAttribute('data-precio');
+                    document.getElementById('editar-precio').value = precio;
                 const imagenPrincipal = document.getElementById('editar-imagen-principal');
                 if (data.habitacion.imagen_habitacion) {
                     imagenPrincipal.src = `{{ asset('') }}${data.habitacion.imagen_habitacion}`;
@@ -350,6 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Error:', error));
     });
+});
 });
 document.addEventListener('click', function(event) {
     if (event.target && event.target.classList.contains('eliminar-imagen-editar')) {
@@ -392,102 +403,108 @@ document.addEventListener('click', function(event) {
 </script>
 
 <script>
-    document.getElementById('btn-continuar').addEventListener('click', function() {
-        const cantidad = document.getElementById('cantidad-habitaciones').value;
-        if (cantidad > 0) {
-            // Ocultar la primera parte
-            document.getElementById('parte1').style.display = 'none';
+document.getElementById('btn-continuar').addEventListener('click', function() {
+    const cantidad = document.getElementById('cantidad-habitaciones').value;
+    if (cantidad > 0) {
+        // Ocultar la primera parte
+        document.getElementById('parte1').style.display = 'none';
 
-            // Mostrar la segunda parte
-            document.getElementById('parte2').style.display = 'block';
+        // Mostrar la segunda parte
+        document.getElementById('parte2').style.display = 'block';
 
-            // Generar los formularios dinámicos
-            const formsContainer = document.getElementById('forms-container');
-            formsContainer.innerHTML = ''; // Limpiar el contenedor
+        // Generar los formularios dinámicos
+        const formsContainer = document.getElementById('forms-container');
+        formsContainer.innerHTML = ''; // Limpiar el contenedor
 
-            for (let i = 0; i < cantidad; i++) {
-    const form = `
-        <div class="form-group mb-4">
-            <h4>Registro ${i + 1}</h4>
-            <div class="row">
-                <div class="col-md-3">
-                    <label for="nombre-${i}" class="col-form-label">Número:</label>
-                    <input type="text" class="form-control" id="nombre-${i}" name="nombre[]">
-                </div>
-                <div class="col-md-3">
-                    <label for="categoria-${i}" class="col-form-label">Tipo de habitación:</label>
-                    <select class="form-control" name="categoria[]">
-                        <option disabled selected>Seleccione una opción</option>
-                        @foreach($tipos as $tipo)
-                            <option class="form-control" value="{{ $tipo->id }}">{{ $tipo->tipo_cuarto }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="file-${i}" class="col-form-label">Imagen de la habitación:</label>
-                    <input type="file" name="file[]" id="file-${i}" accept="image/*" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label for="estado-${i}" class="col-form-label">Estado:</label>
-                    <select class="form-control" name="estado[]">
-                        <option disabled selected>Seleccione una opción</option>
-                            <option class="form-control" value="Disponible">Disponible</option>
-                            <option class="form-control" value="Reservado">Reservado</option>
-                            <option class="form-control" value="Ocupado">Ocupado</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="precio-${i}" class="col-form-label">Precio:</label>
-                    <input type="number" name="precio[]" id="precio-${i}" class="form-control">
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-md-12">
-                    <label for="detalles-${i}" class="col-form-label">Descripción:</label>
-                    <textarea class="form-control" id="detalles-${i}" name="detalles[]"></textarea>
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-md-12">
-                    <label class="col-form-label">Otras vistas:</label>
-                    <div id="contenedorInpu-${i}" class="row">
+        for (let i = 0; i < cantidad; i++) {
+            const form = `
+                <div class="form-group mb-4">
+                    <h4>Registro ${i + 1}</h4>
+                    <div class="row">
                         <div class="col-md-3">
-                            <div class="input-group mb-3">
-                                <input type="file" name="imagenes-${i}[]" accept="image/*" class="form-control">
-                                <button class="btn btn-outline-secondary agregar-imagen" type="button" data-habitacion="${i}">+</button>
+                            <label for="nombre-${i}" class="col-form-label">Número:</label>
+                            <input type="text" class="form-control" id="nombre-${i}" name="nombre[]">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="categoria-${i}" class="col-form-label">Tipo de habitación:</label>
+                            <select class="form-control tipo-habitacion" id="categoria-${i}" name="categoria[]" data-index="${i}">
+                                <option disabled selected>Seleccione una opción</option>
+                                @foreach($tipos as $tipo)
+                                    <option value="{{ $tipo->id }}" data-precio="{{ $tipo->precio }}">{{ $tipo->tipo_cuarto }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="file-${i}" class="col-form-label">Imagen de la habitación:</label>
+                            <input type="file" name="file[]" id="file-${i}" accept="image/*" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="estado-${i}" class="col-form-label">Estado:</label>
+                            <select class="form-control" name="estado[]">
+                                <option disabled selected>Seleccione una opción</option>
+                                <option value="Disponible">Disponible</option>
+                                <option value="Reservado">Reservado</option>
+                                <option value="Ocupado">Ocupado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="precio-${i}" class="col-form-label">Precio:</label>
+                            <input type="number" name="precio[]" id="precio-${i}" class="form-control precio" disabled>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label for="detalles-${i}" class="col-form-label">Descripción:</label>
+                            <textarea class="form-control" id="detalles-${i}" name="detalles[]"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <label class="col-form-label">Otras vistas:</label>
+                            <div id="contenedorInpu-${i}" class="row">
+                                <div class="col-md-3">
+                                    <div class="input-group mb-3">
+                                        <input type="file" name="imagenes-${i}[]" accept="image/*" class="form-control">
+                                        <button class="btn btn-outline-secondary agregar-imagen" type="button" data-habitacion="${i}">+</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <hr class="my-4"> <!-- Separador entre formularios -->
                 </div>
-            </div>
-            <hr class="my-4"> <!-- Separador entre formularios -->
-        </div>
-    `;
-    formsContainer.insertAdjacentHTML('beforeend', form);
-}
+            `;
+            formsContainer.insertAdjacentHTML('beforeend', form);
+        }
 
-            // Agregar funcionalidad para añadir más imágenes
-            document.querySelectorAll('.agregar-imagen').forEach(button => {
-                button.addEventListener('click', function() {
-                    const habitacionId = this.getAttribute('data-habitacion');
-                    const nuevoInput = `
-                        <div class="col-md-3">
-                            <div class="input-group mb-3">
-                                <input type="file" name="imagenes-${habitacionId}[]" accept="image/*" class="form-control">
-                                <button class="btn btn-outline-danger eliminar-imagen" type="button">-</button>
-                            </div>
+        // Agregar funcionalidad para añadir más imágenes
+        document.querySelectorAll('.agregar-imagen').forEach(button => {
+            button.addEventListener('click', function() {
+                const habitacionId = this.getAttribute('data-habitacion');
+                const nuevoInput = `
+                    <div class="col-md-3">
+                        <div class="input-group mb-3">
+                            <input type="file" name="imagenes-${habitacionId}[]" accept="image/*" class="form-control">
+                            <button class="btn btn-outline-danger eliminar-imagen" type="button">-</button>
                         </div>
-                    `;
-                    document.getElementById(`contenedorInpu-${habitacionId}`).insertAdjacentHTML('beforeend', nuevoInput);
-                });
+                    </div>
+                `;
+                document.getElementById(`contenedorInpu-${habitacionId}`).insertAdjacentHTML('beforeend', nuevoInput);
             });
-
+        });
             // Agregar funcionalidad para eliminar imágenes
             document.addEventListener('click', function(event) {
                 if (event.target && event.target.classList.contains('eliminar-imagen')) {
                     event.target.closest('.col-md-3').remove();
                 }
             });
+            document.querySelectorAll('.tipo-habitacion').forEach(select => {
+            select.addEventListener('change', function() {
+                const index = this.getAttribute('data-index');
+                const precio = this.options[this.selectedIndex].getAttribute('data-precio');
+                document.getElementById(`precio-${index}`).value = precio;
+            });
+        });
         } else {
             alert('Por favor, ingrese una cantidad válida.');
         }
