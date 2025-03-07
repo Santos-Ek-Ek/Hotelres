@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="card p-3">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <img src="${habitacion.imagen_habitacion}" class="img-fluid rounded" alt="Habitación">
+                                    <img src="${habitacion.imagen_habitacion}" class="img-fluid rounded"  style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" alt="Habitación">
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
