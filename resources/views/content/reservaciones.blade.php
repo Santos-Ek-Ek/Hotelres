@@ -145,13 +145,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+                // Calcular el número de noches
+                const checkinDate = moment(checkin, 'D-M-YYYY');
+        const checkoutDate = moment(checkout, 'D-M-YYYY');
+        const noches = checkoutDate.diff(checkinDate, 'days');
+
+        if (noches <= 0) {
+            alert('La fecha de salida debe ser posterior a la fecha de llegada.');
+            return;
+        }
+
         // Enviar la solicitud al servidor
         fetch(`/buscar-habitaciones?checkin=${checkin}&checkout=${checkout}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     console.log(data); // Debugging: Log the data to the console
-                    mostrarHabitaciones(data.habitacionesPorTipo);
+                    mostrarHabitaciones(data.habitacionesPorTipo, noches);
                 } else {
                     alert('Error al buscar habitaciones.');
                 }
@@ -159,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error:', error));
     });
 
-    function mostrarHabitaciones(habitacionesPorTipo) {
+    function mostrarHabitaciones(habitacionesPorTipo, noches) {
         const habitacionesContainer = document.getElementById('habitacionesContainer');
         habitacionesContainer.innerHTML = ''; // Limpiar el contenedor
 
@@ -173,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             habitacionesContainer.innerHTML = '<p>No hay habitaciones disponibles para las fechas seleccionadas.</p>';
             return;
         }
+        const nochesTexto = noches === 1 ? '1 noche' : `${noches} noches`;
 
         habitacionesPorTipo.forEach(grupo => {
             const { tipo_habitacion, cantidad_disponible, habitaciones } = grupo;
@@ -198,9 +209,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <h5 class="card-title">${habitacion.tipo_habitacion.tipo_cuarto}</h5>
                                         <p><i class="fas fa-users"></i> ${habitacion.tipo_habitacion.cantidad_maxima_personas}</p>
                                         <p>${habitacion.descripcion}</p>
-                                        <p><strong>Estado:</strong> ${habitacion.estado}</p> 
-                                        <h5 class="fw-bold">MXN ${habitacion.precio} <span class="text-muted">2 noches</span></h5>
-                                        
+
+                                        <h5 class="fw-bold">MXN ${habitacion.precio}</h5>
+                                        <div class="me-3">
+                                         <span class="text-muted">${nochesTexto}</span>
+                                        </div>
                                         <div class="d-flex align-items-center">
                                             <div class="me-3">
                                                 <label class="fw-bold">Huéspedes</label>
