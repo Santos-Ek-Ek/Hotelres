@@ -193,6 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (habitaciones.length > 0) {
                 const habitacion = habitaciones[0]
+                const precioTotal = habitacion.precio * noches;
                 let options = '';
                 for (let i = 1; i <= habitacion.tipo_habitacion.cantidad_maxima_personas; i++) {
                     options += `<option value="${i}">${i}</option>`;
@@ -210,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <p><i class="fas fa-users"></i> ${habitacion.tipo_habitacion.cantidad_maxima_personas}</p>
                                         <p>${habitacion.descripcion}</p>
 
-                                        <h5 class="fw-bold">MXN ${habitacion.precio}</h5>
+                                        <h5 class="fw-bold">MXN ${precioTotal}</h5>
                                         <div class="me-3">
                                          <span class="text-muted">${nochesTexto}</span>
                                         </div>
