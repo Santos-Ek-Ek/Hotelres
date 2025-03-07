@@ -63,7 +63,10 @@
         }
     </style>
 </head>
-<body class="bg-light">
+<div id="apartado1" style="    width: 100%;
+    height: 100%;
+    background-color: #FFC107;">
+<div class="bg-light">
     <header class="header d-flex justify-content-between align-items-center">
         <h1>Hotel Truck</h1>
         <button disabled class="btn btn-light d-flex align-items-center">
@@ -71,7 +74,7 @@
             MXN
         </button>
     </header>
-    <main class="position-relative">
+    <main class="position-relative" >
         <img src="img/pasillo2.jpeg" alt="A beautiful swimming pool with a person standing at the far end, surrounded by greenery and a building in the background" class="main-image">
         <div class="position-absolute top-50 start-50 translate-middle">
             <div class="booking-form text-center">
@@ -87,10 +90,10 @@
                 <button id="btnBuscar" class="btn btn-warning text-white">Buscar</button>
             </div>
         </div>
- 
+</div>
     </main>
-
-    <div style="background-color: #FFC107; width:100%;">
+</div>
+    <div id="apartado2" style="display: none; background-color: #FFC107; width:100%;">
         <header class="header d-flex justify-content-between align-items-center">
             <h1 class="text-black">Hotel Truck</h1>
             <div class="d-flex align-items-center">
@@ -106,13 +109,22 @@
             </div>
         </header>
         
-        <div class="row" id="habitacionesContainer">
+        <div class="row" id="habitacionesContainer" style="background-color: #FFC107; width:100%;">
         <!-- Aquí se mostrarán las habitaciones disponibles -->
 
             </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.getElementById('btnBuscar').addEventListener('click', function() {
+            // Oculta el primer apartado
+            document.getElementById('apartado1').style.display = 'none';
+            
+            // Muestra el segundo apartado
+            document.getElementById('apartado2').style.display = 'block';
+        });
+    </script>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Configurar Flatpickr para los inputs de fecha
