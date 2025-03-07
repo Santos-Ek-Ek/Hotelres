@@ -158,14 +158,29 @@ public function buscarHabitaciones(Request $request)
     $checkin = \Carbon\Carbon::createFromFormat('d-m-Y', $checkin)->format('Y-m-d');
     $checkout = \Carbon\Carbon::createFromFormat('d-m-Y', $checkout)->format('Y-m-d');
 
-    // Lógica para buscar habitaciones disponibles
-    $habitaciones = Habitacion::with('tipoHabitacion') // Cargar la relación tipoHabitacion
-        ->where('estado', 'Disponible') // Filtrar por estado "disponible"
+    // Obtener las habitaciones disponibles
+    $habitaciones = Habitacion::with('tipoHabitacion')
+        ->where('estado', 'Disponible')
         ->get();
+
+    // Agrupar habitaciones por tipo_habitacion_id y contar cuántas hay disponibles
+    $habitacionesPorTipo = [];
+    foreach ($habitaciones as $habitacion) {
+        $tipoId = $habitacion->tipo_habitacion_id;
+        if (!isset($habitacionesPorTipo[$tipoId])) {
+            $habitacionesPorTipo[$tipoId] = [
+                'tipo_habitacion' => $habitacion->tipoHabitacion,
+                'cantidad_disponible' => 0,
+                'habitaciones' => [],
+            ];
+        }
+        $habitacionesPorTipo[$tipoId]['cantidad_disponible']++;
+        $habitacionesPorTipo[$tipoId]['habitaciones'][] = $habitacion;
+    }
 
     return response()->json([
         'success' => true,
-        'habitaciones' => $habitaciones,
+        'habitacionesPorTipo' => array_values($habitacionesPorTipo), // Convertir a array indexado
     ]);
 }
     /**

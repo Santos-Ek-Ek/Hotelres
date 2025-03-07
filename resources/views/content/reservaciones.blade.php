@@ -150,7 +150,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    mostrarHabitaciones(data.habitaciones);
+                    console.log(data); // Debugging: Log the data to the console
+                    mostrarHabitaciones(data.habitacionesPorTipo);
                 } else {
                     alert('Error al buscar habitaciones.');
                 }
@@ -158,43 +159,94 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error:', error));
     });
 
-    function mostrarHabitaciones(habitaciones) {
-    const habitacionesContainer = document.getElementById('habitacionesContainer');
-    habitacionesContainer.innerHTML = ''; // Limpiar el contenedor
+    function mostrarHabitaciones(habitacionesPorTipo) {
+        const habitacionesContainer = document.getElementById('habitacionesContainer');
+        habitacionesContainer.innerHTML = ''; // Limpiar el contenedor
 
-    if (habitaciones.length === 0) {
-        habitacionesContainer.innerHTML = '<p>No hay habitaciones disponibles para las fechas seleccionadas.</p>';
-        return;
-    }
-
-    habitaciones.forEach(habitacion => {
-        let options = '';
-        for (let i = 1; i <= habitacion.tipo_habitacion.cantidad_maxima_personas; i++) {
-            options += `<option value="${i}">${i}</option>`;
+        // Validate that habitacionesPorTipo is an array
+        if (!Array.isArray(habitacionesPorTipo)) {
+            habitacionesContainer.innerHTML = '<p>No hay habitaciones disponibles para las fechas seleccionadas.</p>';
+            return;
         }
-        const card = `
-            <div class="col-md-8">
-                <div class="card p-3">
-                    <img src="${habitacion.imagen_habitacion}" class="card-img-top" alt="Habitación">
-                    <div class="card-body">
-                        <h5 class="card-title">${habitacion.tipo_habitacion.tipo_cuarto}</h5>
-                        <p><i class="fas fa-users"></i> ${habitacion.tipo_habitacion.cantidad_maxima_personas}</p>
-                        <p>${habitacion.descripcion}</p>
-                        <p><strong>Estado:</strong> ${habitacion.estado}</p> <!-- Mostrar el estado -->
-                        <h5 class="fw-bold">MXN ${habitacion.precio}</h5>
-                        <label>Huéspedes</label>
-                        <select class="form-select w-25 d-inline">
-                            ${options}
-                        </select>
-                        <button class="btn add-btn">Añadir</button>
+
+        if (habitacionesPorTipo.length === 0) {
+            habitacionesContainer.innerHTML = '<p>No hay habitaciones disponibles para las fechas seleccionadas.</p>';
+            return;
+        }
+
+        habitacionesPorTipo.forEach(grupo => {
+            const { tipo_habitacion, cantidad_disponible, habitaciones } = grupo;
+            const tipoContainer = document.createElement('div');
+            tipoContainer.classList.add('mb-4');
+
+            // Título del tipo de habitación
+            tipoContainer.innerHTML = `
+                <h3>${tipo_habitacion.nombre}</h3>
+                <p><strong>Disponibles:</strong> ${cantidad_disponible}</p>
+            `;
+
+            habitaciones.forEach(habitacion => {
+                let options = '';
+                for (let i = 1; i <= habitacion.tipo_habitacion.cantidad_maxima_personas; i++) {
+                    options += `<option value="${i}">${i}</option>`;
+                }
+                const card = `
+                    <div class="col-md-8">
+                        <div class="card p-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="${habitacion.imagen_habitacion}" class="img-fluid rounded" alt="Habitación">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${habitacion.tipo_habitacion.tipo_cuarto}</h5>
+                                        <p><i class="fas fa-users"></i> ${habitacion.tipo_habitacion.cantidad_maxima_personas}</p>
+                                        <p>${habitacion.descripcion}</p>
+                                        <p><strong>Estado:</strong> ${habitacion.estado}</p> 
+                                        <h5 class="fw-bold">MXN ${habitacion.precio} <span class="text-muted">2 noches</span></h5>
+                                        
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <label class="fw-bold">Huéspedes</label>
+                                                <select class="form-select w-auto d-inline">
+                                                    ${options}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="fw-bold">Cantidad</label>
+                                                <div class="d-flex">
+                                                    <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, -1, ${cantidad_disponible})">-</button>
+                                                    <input type="text" class="form-control text-center w-25" value="1" readonly>
+                                                    <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, 1, ${cantidad_disponible})">+</button>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-warning ms-3 add-btn">Añadir</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><br>
                     </div>
-                </div>
-            </div>
-        `;
-        habitacionesContainer.insertAdjacentHTML('beforeend', card);
-    });
-}
+                `;
+                habitacionesContainer.insertAdjacentHTML('beforeend', card);
+            });
+        });
+    }
 });
+
+// Función para cambiar la cantidad de habitaciones seleccionadas
+function cambiarCantidad(boton, delta, cantidadDisponible) {
+    const input = boton.parentElement.querySelector('input');
+    let cantidad = parseInt(input.value);
+
+    cantidad += delta;
+
+    // Validar que la cantidad no sea menor que 1 ni mayor que la cantidad disponible
+    if (cantidad < 1) cantidad = 1;
+    if (cantidad > cantidadDisponible) cantidad = cantidadDisponible;
+
+    input.value = cantidad;
+}
     </script>
 </body>
 </html>
