@@ -176,16 +176,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         habitacionesPorTipo.forEach(grupo => {
             const { tipo_habitacion, cantidad_disponible, habitaciones } = grupo;
-            const tipoContainer = document.createElement('div');
-            tipoContainer.classList.add('mb-4');
 
-            // Título del tipo de habitación
-            tipoContainer.innerHTML = `
-                <h3>${tipo_habitacion.nombre}</h3>
-                <p><strong>Disponibles:</strong> ${cantidad_disponible}</p>
-            `;
 
-            habitaciones.forEach(habitacion => {
+
+
+            if (habitaciones.length > 0) {
+                const habitacion = habitaciones[0]
                 let options = '';
                 for (let i = 1; i <= habitacion.tipo_habitacion.cantidad_maxima_personas; i++) {
                     options += `<option value="${i}">${i}</option>`;
@@ -229,9 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 habitacionesContainer.insertAdjacentHTML('beforeend', card);
-            });
-        });
     }
+});
+}
 });
 
 // Función para cambiar la cantidad de habitaciones seleccionadas
@@ -247,6 +243,7 @@ function cambiarCantidad(boton, delta, cantidadDisponible) {
 
     input.value = cantidad;
 }
+
     </script>
 </body>
 </html>
