@@ -27,6 +27,7 @@
                 <th scope="col">NOMBRE</th>
                 <th scope="col">MÁXIMO DE PERSONAS</th>
                 <th scope="col">No. CAMAS</th>
+                <th scope="col">PRECIO</th>
                 <th scope="col">DESCRIPCIÓN</th>
                 <th scope="col">ACCIONES</th>
                 </tr>
@@ -38,6 +39,7 @@
                 <td>{{ $tipo->tipo_cuarto }}</td>
                 <td>{{ $tipo->cantidad_maxima_personas }}</td>
                 <td>{{ $tipo->numero_camas }}</td>
+                <td>{{ $tipo->precio }}</td>
                 <td>{{ $tipo->descripcion }}</td>
                 <td>
                 <form id="deleteForm" action="{{ route('tipo-habitacion.destroy', $tipo->id) }}" method="POST" style="display:inline;">
@@ -51,7 +53,7 @@
 
 
                 <a class="btn btn-outline-primary editarTipo" data-id="{{ $tipo->id }}" data-tipo="{{ $tipo->tipo_cuarto }}"
-    data-personas="{{ $tipo->cantidad_maxima_personas }}" data-camas="{{ $tipo->numero_camas }}"
+    data-personas="{{ $tipo->cantidad_maxima_personas }}" data-camas="{{ $tipo->numero_camas }}" data-precio="{{ $tipo->precio }}" 
     data-descripcion="{{ $tipo->descripcion }}" data-bs-toggle="modal" data-bs-target="#modalEditarTipo">
     <i class='bx bxs-edit-alt'></i>
 </a>
@@ -90,6 +92,10 @@
                         <input type="number" class="form-control" id="numeroCamas" name="numero_camas" required>
                     </div>
                     <div class="mb-3">
+                        <label for="precio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="precio" name="precio" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
                     </div>
@@ -123,6 +129,10 @@
                     <div class="mb-3">
                         <label for="editNumeroCamas" class="form-label">Número de Camas</label>
                         <input type="number" class="form-control" id="editNumeroCamas" name="numero_camas" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editprecio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="editPrecio" name="precio" required>
                     </div>
                     <div class="mb-3">
                         <label for="editDescripcion" class="form-label">Descripción</label>
@@ -165,6 +175,7 @@
             document.getElementById("editTipoCuarto").value = this.dataset.tipo;
             document.getElementById("editCantidadPersonas").value = this.dataset.personas;
             document.getElementById("editNumeroCamas").value = this.dataset.camas;
+            document.getElementById("editPrecio").value = this.dataset.precio;
             document.getElementById("editDescripcion").value = this.dataset.descripcion;
 
             // Modificar el action del formulario para incluir el ID correcto

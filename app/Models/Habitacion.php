@@ -9,7 +9,7 @@ class Habitacion extends Model
 {
     use HasFactory;
     protected $table = 'habitaciones';
-    protected $fillable = ['numero_habitacion', 'tipo_habitacion_id','estado', 'descripcion','imagen_habitacion', 'precio'];
+    protected $fillable = ['numero_habitacion', 'tipo_habitacion_id','estado', 'descripcion','imagen_habitacion'];
 
     // Relación con la tabla tipos_habitaciones
     public function tipoHabitacion()

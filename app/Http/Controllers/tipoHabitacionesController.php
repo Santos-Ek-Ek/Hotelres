@@ -25,6 +25,7 @@ class tipoHabitacionesController extends Controller
        $tipo->tipo_cuarto = $request->input('tipo_cuarto');
        $tipo->cantidad_maxima_personas = $request->input('cantidad_maxima_personas');
        $tipo->numero_camas = $request->input('numero_camas');
+       $tipo->precio = $request->input('precio');
        $tipo->descripcion = $request->input('descripcion');
 
        $tipo->save();
@@ -48,6 +49,7 @@ class tipoHabitacionesController extends Controller
         $tipo->tipo_cuarto = $request->input('tipo_cuarto');
         $tipo->cantidad_maxima_personas = $request->input('cantidad_maxima_personas');
         $tipo->numero_camas = $request->input('numero_camas');
+        $tipo->precio = $request->input('precio');
         $tipo->descripcion = $request->input('descripcion');
     
         $tipo->save();

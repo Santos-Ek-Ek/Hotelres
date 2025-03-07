@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('tipo_cuarto'); // Ej: Suite, Doble, Individual
             $table->integer('cantidad_maxima_personas'); // Ej: 2, 4, 6
             $table->integer('numero_camas'); // Número de camas en la habitación
+            $table->decimal('precio', 10, 2); // Precio de la habitación
             $table->text('descripcion')->nullable(); // Descripción opcional
             $table->timestamps();
         });

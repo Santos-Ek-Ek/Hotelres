@@ -15,7 +15,6 @@ return new class extends Migration
             $table->unsignedBigInteger('tipo_habitacion_id'); // ID del tipo de habitación (relación con tipos_habitaciones)
             $table->string('imagen_habitacion'); // Imagen principal de la habitación (puede ser la primera imagen)
             $table->string('estado')->default('Disponible'); // Imagen principal de la habitación (puede ser la primera imagen)
-            $table->decimal('precio', 8, 2); // Precio de la habitación
             $table->timestamps(); // Fechas de creación y actualización
 
             // Clave foránea que hace referencia a la tabla tipos_habitaciones

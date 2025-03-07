@@ -14,6 +14,7 @@ class tipoHabitacion extends Model
         'tipo_cuarto',
         'cantidad_maxima_personas',
         'numero_camas',
+        'precio',
         'descripcion'
     ];
 
