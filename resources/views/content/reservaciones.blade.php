@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +7,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
     <style>
         .row{
@@ -78,6 +81,14 @@
             top: 20px; /* Distancia desde la parte superior */
             height: fit-content; /* Ajusta la altura al contenido */
         }
+
+        .btn-custom {
+            background-color: #FFD700;
+            color: white;
+        }
+        .mb-4{
+            margin-bottom: 0.5rem !important;
+        }
     </style>
 </head>
 <div id="apartado1" style="    width: 100%;
@@ -135,21 +146,73 @@
 
             <!-- Columna derecha: Sección fija -->
             <div class="sidebar">
-                <div class="card text-center p-3">
+                <!-- <div class="card text-center p-3">
                     <i class="bi bi-bed fs-1"></i>
                     <p>No se han agregado alojamientos</p>
-                </div>
+                </div> -->
+
+                <div class="card shadow p-4" style="width: 22rem;">
+        <h5 class="text-center font-weight-bold mb-4">Resumen de la reserva</h5>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <span>7 mar 2025</span>
+            <i class="fas fa-arrow-right"></i>
+            <span>10 mar 2025</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-center mb-4">
+            <i class="fas fa-moon"></i>
+            <span class="ml-2">&nbsp;3 noches</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span>5x Standar</span>
+            <span>MXN 12,750.00</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-user-friends"></i>
+                <span class="ml-2">&nbsp; 2</span>
+            </div>
+            <button class="btn btn-link text-danger p-0">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span>Subtotal</span>
+            <span>MXN 10,537.20</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <span>Impuestos y tasas <i class="fas fa-info-circle"></i></span>
+            <span>MXN 2,212.80</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center font-weight-bold mb-4">
+            <span>Total</span>
+            <span>MXN 12,750.00</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <span>Depósito</span>
+            <span>MXN 12,750.00</span>
+        </div>
+        <button class="btn btn-custom btn-block mb-4">Reservar ahora</button>
+    </div>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            if (typeof flatpickr !== "undefined" && flatpickr.l10ns.es) {
+                console.log("Flatpickr y la localización en español cargados correctamente.");
+            } else {
+                console.error("Error: Flatpickr o la localización en español no se han cargado correctamente.");
+            }
+
             // Configurar Flatpickr para los inputs de fecha
             flatpickr("#checkin", {
                 dateFormat: "d-m-Y", // Formato de fecha
                 minDate: "today", // Fecha mínima: hoy
+                locale: "es", // Idioma español
                 onChange: function(selectedDates, dateStr) {
                     document.getElementById('checkinbus').value = dateStr; // Actualizar el input de fecha en el header
                 }
@@ -158,6 +221,7 @@
             flatpickr("#checkout", {
                 dateFormat: "d-m-Y", // Formato de fecha
                 minDate: "today", // Fecha mínima: hoy
+                locale: "es", // Idioma español
                 onChange: function(selectedDates, dateStr) {
                     document.getElementById('checkoutbus').value = dateStr; // Actualizar el input de fecha en el header
                 }
@@ -166,11 +230,13 @@
             flatpickr("#checkinbus", {
                 dateFormat: "d-m-Y", // Formato de fecha
                 minDate: "today", // Fecha mínima: hoy
+                locale: "es", // Idioma español
             });
 
             flatpickr("#checkoutbus", {
                 dateFormat: "d-m-Y", // Formato de fecha
                 minDate: "today", // Fecha mínima: hoy
+                locale: "es", // Idioma español
             });
 
             // Evento para el botón de búsqueda del primer apartado
