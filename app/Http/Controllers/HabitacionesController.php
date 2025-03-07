@@ -144,7 +144,30 @@ public function update(Request $request, string $id)
     // Redirigir al usuario con un mensaje de éxito
     return redirect()->back()->with('success', 'Habitación actualizada correctamente.');
 }
+public function buscarHabitaciones(Request $request)
+{
+    $checkin = $request->query('checkin');
+    $checkout = $request->query('checkout');
 
+    // Validar las fechas
+    if (!$checkin || !$checkout) {
+        return response()->json(['success' => false, 'message' => 'Fechas no válidas.']);
+    }
+
+    // Convertir las fechas a formato de base de datos
+    $checkin = \Carbon\Carbon::createFromFormat('d-m-Y', $checkin)->format('Y-m-d');
+    $checkout = \Carbon\Carbon::createFromFormat('d-m-Y', $checkout)->format('Y-m-d');
+
+    // Lógica para buscar habitaciones disponibles
+    $habitaciones = Habitacion::with('tipoHabitacion') // Cargar la relación tipoHabitacion
+        ->where('estado', 'Disponible') // Filtrar por estado "disponible"
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'habitaciones' => $habitaciones,
+    ]);
+}
     /**
      * Remove the specified resource from storage.
      */

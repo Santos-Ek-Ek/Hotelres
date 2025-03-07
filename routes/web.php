@@ -48,6 +48,8 @@ Route::delete('/habitaciones/imagenes/{id}', [HabitacionesController::class, 'el
 Route::get('/habitaciones/{id}/edit', [HabitacionesController::class, 'edit'])->name('habitaciones.edit');
 Route::delete('/eliminar_habitacion/{id}', [HabitacionesController::class, 'destroy'])->name('habitaciones.destroy');
 
+
+Route::get('/buscar-habitaciones', [HabitacionesController::class, 'buscarHabitaciones']);
 Route::get('/pedidos', function () {
     return view('administrador.pedidos');
 });
