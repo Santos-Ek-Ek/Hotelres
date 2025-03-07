@@ -61,6 +61,23 @@
             border-radius: 50px;
             padding: 0.5rem 1rem;
         }
+
+                /* Estilos para el diseño de dos columnas */
+                .main-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+        .habitaciones-container {
+            flex: 3; /* Ocupa 3 partes del espacio disponible */
+            overflow-y: auto; /* Permite el desplazamiento vertical */
+        }
+        .sidebar {
+            flex: 1; /* Ocupa 1 parte del espacio disponible */
+            position: sticky;
+            top: 20px; /* Distancia desde la parte superior */
+            height: fit-content; /* Ajusta la altura al contenido */
+        }
     </style>
 </head>
 <div id="apartado1" style="    width: 100%;
@@ -109,10 +126,21 @@
             </div>
         </header>
         
-        <div class="row" id="habitacionesContainer" style="background-color: #FFC107; width:100%;">
-        <!-- Aquí se mostrarán las habitaciones disponibles -->
-
+        <!-- Contenedor principal para las dos columnas -->
+        <div class="main-container">
+            <!-- Columna izquierda: Tarjetas de habitaciones -->
+            <div class="habitaciones-container" id="habitacionesContainer">
+                <!-- Aquí se mostrarán las habitaciones disponibles -->
             </div>
+
+            <!-- Columna derecha: Sección fija -->
+            <div class="sidebar">
+                <div class="card text-center p-3">
+                    <i class="bi bi-bed fs-1"></i>
+                    <p>No se han agregado alojamientos</p>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
