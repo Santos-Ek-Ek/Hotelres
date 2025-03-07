@@ -146,21 +146,21 @@
 
             <!-- Columna derecha: Sección fija -->
             <div class="sidebar">
-                <!-- <div class="card text-center p-3">
+                <div id="mensajeSinAlojamientos" class="card text-center p-3">
                     <i class="bi bi-bed fs-1"></i>
                     <p>No se han agregado alojamientos</p>
-                </div> -->
+                </div>
 
-                <div class="card shadow p-4" style="width: 22rem;">
+                <div id="resumenReserva" class="card shadow p-4" style="width: 22rem; display: none;">
     <h5 class="text-center font-weight-bold mb-4">Resumen de la reserva</h5>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <span>7 mar 2025</span>
+        <span id="resumenCheckin"></span>
         <i class="fas fa-arrow-right"></i>
-        <span>10 mar 2025</span>
+        <span id="resumenCheckout"></span>
     </div>
     <div class="d-flex align-items-center justify-content-center mb-4">
         <i class="fas fa-moon"></i>
-        <span class="ml-2">&nbsp;</span>
+        <span class="ml-2" id="resumenNoches">&nbsp;</span>
     </div>
     <hr>
     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -391,7 +391,22 @@
         });
 
         function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas) {
-    // Actualizar la cantidad y el tipo de cuarto
+    
+    const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
+            const resumenReserva = document.getElementById('resumenReserva');
+
+            // Ocultar el mensaje y mostrar el resumen
+            mensajeSinAlojamientos.style.display = 'none';
+            resumenReserva.style.display = 'block';
+
+            // Obtener las fechas seleccionadas
+            const checkin = document.getElementById('checkinbus').value;
+            const checkout = document.getElementById('checkoutbus').value;
+            document.getElementById('resumenCheckin').textContent = checkin;
+            document.getElementById('resumenCheckout').textContent = checkout;
+
+            // Actualizar el número de noches
+            document.getElementById('resumenNoches').textContent = `${noches} noches`;
     document.getElementById('resumenHabitacion').textContent = `${cantidad}x ${tipoHabitacion}`;
     
     // Actualizar el precio total
