@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (habitaciones.length > 0) {
                 const habitacion = habitaciones[0]
-                const precioTotal = habitacion.precio * noches;
+                const precioTotal = habitacion.tipo_habitacion.precio * noches;
                 let options = '';
                 for (let i = 1; i <= habitacion.tipo_habitacion.cantidad_maxima_personas; i++) {
                     options += `<option value="${i}">${i}</option>`;
