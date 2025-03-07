@@ -351,7 +351,7 @@
                                                         <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, 1, ${cantidad_disponible})">+</button>
                                                     </div>
                                                 </div>
-<button class="btn btn-warning ms-3 add-btn" data-tipo="${habitacion.tipo_habitacion.tipo_cuarto}" data-precio="${precioTotal}" data-noches="${noches}">Añadir</button>
+<button class="btn btn-warning ms-3 add-btn" data-tipo="${habitacion.tipo_habitacion.tipo_cuarto}" data-precio="${precioTotal}" data-noches="${noches}" data-cantidad-disponible="${cantidad_disponible}">Añadir</button>
                                             </div>
                                         </div>
                                     </div>
@@ -379,53 +379,74 @@
         }
         
 
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('add-btn')) {
-                const tipoHabitacion = event.target.getAttribute('data-tipo');
-                const precioTotal = event.target.getAttribute('data-precio');
-                const noches = event.target.getAttribute('data-noches');
-                const cantidad = event.target.closest('.card-body').querySelector('input').value;
-                const maxPersonas = event.target.closest('.card-body').querySelector('select').value;
-                agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas);
-            }
-        });
+        document.removeEventListener('click', handleAddButtonClick); // Eliminar el evento si ya existe
+document.addEventListener('click', handleAddButtonClick); // Registrar el evento nuevamente
 
-        function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas) {
-    
+function handleAddButtonClick(event) {
+    if (event.target.classList.contains('add-btn')) {
+        const tipoHabitacion = event.target.getAttribute('data-tipo');
+        const precioTotal = event.target.getAttribute('data-precio');
+        const noches = event.target.getAttribute('data-noches');
+        const cantidad = event.target.closest('.card-body').querySelector('input').value;
+        const maxPersonas = event.target.closest('.card-body').querySelector('select').value;
+        const cantidadDisponible = event.target.getAttribute('data-cantidad-disponible');
+        agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas,cantidadDisponible);
+    }
+}
+
+function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas, cantidadDisponible) {
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
-            const resumenReserva = document.getElementById('resumenReserva');
+    const resumenReserva = document.getElementById('resumenReserva');
 
-            // Ocultar el mensaje y mostrar el resumen
-            mensajeSinAlojamientos.style.display = 'none';
-            resumenReserva.style.display = 'block';
+    // Ocultar el mensaje y mostrar el resumen
+    mensajeSinAlojamientos.style.display = 'none';
+    resumenReserva.style.display = 'block';
 
-            // Obtener las fechas seleccionadas
-            const checkin = document.getElementById('checkinbus').value;
-            const checkout = document.getElementById('checkoutbus').value;
-            document.getElementById('resumenCheckin').textContent = checkin;
-            document.getElementById('resumenCheckout').textContent = checkout;
+    // Obtener las fechas seleccionadas
+    const checkin = document.getElementById('checkinbus').value;
+    const checkout = document.getElementById('checkoutbus').value;
+    document.getElementById('resumenCheckin').textContent = checkin;
+    document.getElementById('resumenCheckout').textContent = checkout;
 
-            // Actualizar el número de noches
-            document.getElementById('resumenNoches').textContent = `${noches} noches`;
-    document.getElementById('resumenHabitacion').textContent = `${cantidad}x ${tipoHabitacion}`;
-    
-    // Actualizar el precio total
-    document.getElementById('resumenPrecio').textContent = `MXN ${precioTotal}`;
-    
-    // Actualizar el número de huéspedes
-    document.getElementById('resumenHuespedes').textContent = ` ${maxPersonas}`;
-    
+    // Actualizar el número de noches
+    document.getElementById('resumenNoches').textContent = `${noches} noches`;
+
+    // Verificar si ya existe una entrada para este tipo de habitación
+    const resumenHabitacion = document.getElementById('resumenHabitacion');
+    const resumenPrecio = document.getElementById('resumenPrecio');
+    const resumenHuespedes = document.getElementById('resumenHuespedes');
+
+    // Verificar si el tipo de habitación ya está en el resumen
+    if (resumenHabitacion.textContent.includes(tipoHabitacion)) {
+        // Si ya existe, incrementar la cantidad y actualizar el precio
+        const cantidadActual = parseInt(resumenHabitacion.textContent.split('x')[0].trim());
+        const nuevaCantidad = cantidadActual + parseInt(cantidad);
+        if (nuevaCantidad > cantidadDisponible) {
+            alert(`No hay suficientes habitaciones disponibles. Solo quedan ${cantidadDisponible} habitaciones.`);
+            return;
+        }
+        resumenHabitacion.textContent = `${nuevaCantidad}x ${tipoHabitacion}`;
+
+        const precioActual = parseFloat(resumenPrecio.textContent.replace('MXN ', '').replace(',', ''));
+        const nuevoPrecio = precioActual + parseFloat(precioTotal.replace('MXN ', '').replace(',', ''));
+        resumenPrecio.textContent = `MXN ${nuevoPrecio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    } else {
+        // Si no existe, crear una nueva entrada
+        resumenHabitacion.textContent = `${cantidad}x ${tipoHabitacion}`;
+        resumenPrecio.textContent = `MXN ${precioTotal}`;
+        resumenHuespedes.textContent = ` ${maxPersonas}`;
+    }
+
     // Calcular y actualizar el total
-    const subtotal = parseFloat(precioTotal.replace('MXN ', '').replace(',', ''));
+    const subtotal = parseFloat(resumenPrecio.textContent.replace('MXN ', '').replace(',', ''));
     const impuestos = subtotal * 0.16; // Suponiendo un 16% de impuestos
     const subtotal2 = subtotal - impuestos;
     const total = subtotal2 + impuestos;
-    
+
     document.getElementById('resumenTotal').textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
     document.getElementById('resumenImpuestos').textContent = `MXN ${impuestos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
     document.getElementById('resumenSubtotal').textContent = `MXN ${subtotal2.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
 
-    
     // Actualizar el depósito (puede ser igual al total o un porcentaje)
     document.getElementById('resumenDeposito').textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
 }
