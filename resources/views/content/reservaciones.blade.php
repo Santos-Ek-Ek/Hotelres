@@ -361,11 +361,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reiniciar el scroll del contenedor de habitaciones
     habitacionesContainer.scrollTop = 0;
-
+  // Actualizar las fechas y el número de noches en el resumen
+  actualizarResumenFechas(checkin, checkout);
     // Realizar la búsqueda con las nuevas fechas
     buscarHabitaciones(checkin, checkout);
 });
         } else {
+              // Actualizar las fechas y el número de noches en el resumen
+              actualizarResumenFechas(checkin, checkout);
             // Si no hay alojamientos, realizar la búsqueda directamente
             buscarHabitaciones(checkin, checkout);
         }
