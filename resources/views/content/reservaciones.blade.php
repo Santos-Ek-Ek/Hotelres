@@ -298,18 +298,18 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Evento para el botón de búsqueda del segundo apartado
+    document.getElementById('btnBuscarHeader').addEventListener('click', function() {
+        const checkin = document.getElementById('checkinbus').value;
+        const checkout = document.getElementById('checkoutbus').value;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Evento para el botón de búsqueda del segundo apartado
-        document.getElementById('btnBuscarHeader').addEventListener('click', function() {
-            const checkin = document.getElementById('checkinbus').value;
-            const checkout = document.getElementById('checkoutbus').value;
+        if (!checkin || !checkout) {
+            alert('Por favor, seleccione ambas fechas.');
+            return;
+        }
 
-            if (!checkin || !checkout) {
-                alert('Por favor, seleccione ambas fechas.');
-                return;
-            }
-            const formularioHuespedes = document.getElementById('apartado3');
+        const formularioHuespedes = document.getElementById('apartado3');
         if (formularioHuespedes.style.display === 'block') {
             // Ocultar el formulario de huéspedes
             formularioHuespedes.style.display = 'none';
@@ -320,41 +320,57 @@
                 tarjeta.style.display = 'block';
             });
         }
-                // Restablecer los botones de reserva
-                document.getElementById('btnReservarAhora').style.display = 'block';
+
+        // Restablecer los botones de reserva
+        document.getElementById('btnReservarAhora').style.display = 'block';
         document.getElementById('btnContinuar').style.display = 'none';
-            // Verificar si hay alojamientos agregados
-            const resumenReserva = document.getElementById('resumenReserva');
-            const hayAlojamientos = resumenReserva.style.display !== 'none';
 
-            if (hayAlojamientos) {
-                // Mostrar el modal de confirmación
-                const confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
-                confirmacionModal.show();
+        // Verificar si hay alojamientos agregados
+        const resumenReserva = document.getElementById('resumenReserva');
+        const hayAlojamientos = resumenReserva.style.display !== 'none';
 
-                // Evento para el botón de confirmar en el modal
-                document.getElementById('confirmarBusqueda').addEventListener('click', function() {
-                    // Ocultar el modal
-                    confirmacionModal.hide();
+        if (hayAlojamientos) {
+            // Mostrar el modal de confirmación
+            const confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
+            confirmacionModal.show();
 
-                    // Limpiar los alojamientos agregados
-                    resumenReserva.style.display = 'none';
-                    document.getElementById('mensajeSinAlojamientos').style.display = 'block';
+            document.getElementById('confirmarBusqueda').addEventListener('click', function() {
+    // Ocultar el modal
+    confirmacionModal.hide();
 
-                    // Limpiar las tarjetas de habitaciones
-                    const habitacionesContainer = document.getElementById('habitacionesContainer');
-                    habitacionesContainer.innerHTML = '';
+    // Limpiar completamente el resumen de la reserva
+    const resumenReserva = document.getElementById('resumenReserva');
+    const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
 
-                    // Realizar la búsqueda con las nuevas fechas
-                    buscarHabitaciones(checkin, checkout);
-                });
-            } else {
-                // Si no hay alojamientos, realizar la búsqueda directamente
-                buscarHabitaciones(checkin, checkout);
-            }
-        });
+    // Seleccionar solo los elementos con la clase 'habitacion-agregada'
+    const elementosAEliminar = resumenReserva.querySelectorAll('.habitacion-agregada');
+
+    // Eliminar todos los elementos seleccionados
+    elementosAEliminar.forEach(elemento => elemento.remove());
+
+    // Ocultar el resumen y mostrar el mensaje de "No se han agregado alojamientos"
+    resumenReserva.style.display = 'none';
+    mensajeSinAlojamientos.style.display = 'block';
+
+    // Restablecer los totales
+    actualizarTotales();
+
+    // Limpiar las tarjetas de habitaciones
+    const habitacionesContainer = document.getElementById('habitacionesContainer');
+    habitacionesContainer.innerHTML = ''; // Limpiar el contenedor
+
+    // Reiniciar el scroll del contenedor de habitaciones
+    habitacionesContainer.scrollTop = 0;
+
+    // Realizar la búsqueda con las nuevas fechas
+    buscarHabitaciones(checkin, checkout);
+});
+        } else {
+            // Si no hay alojamientos, realizar la búsqueda directamente
+            buscarHabitaciones(checkin, checkout);
+        }
     });
-
+});
     </script>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -697,14 +713,14 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
     } else {
         // Si no existe, crear una nueva entrada
         const nuevaEntrada = document.createElement('div');
-        nuevaEntrada.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
+        nuevaEntrada.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2', 'habitacion-agregada');
         nuevaEntrada.innerHTML = `
             <span>${cantidad}x ${tipoHabitacion}</span>
             <span>MXN ${precioTotal}</span>
         `;
 
         const nuevaEntradaHuespedes = document.createElement('div');
-        nuevaEntradaHuespedes.classList.add('d-flex', 'align-items-center', 'justify-content-between', 'mb-4');
+        nuevaEntradaHuespedes.classList.add('d-flex', 'align-items-center', 'justify-content-between', 'mb-4', 'habitacion-agregada');
         nuevaEntradaHuespedes.innerHTML = `
             <div class="d-flex align-items-center">
                 <i class="fas fa-user-friends"></i>
@@ -717,6 +733,7 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
 
         // Crear un hr para separar las entradas
         const hr = document.createElement('hr');
+        hr.classList.add('habitacion-agregada');
 
         // Insertar la nueva entrada y el hr antes del subtotal
         const subtotalElement = resumenReserva.querySelector('.d-flex.justify-content-between.align-items-center.mb-2');
@@ -824,10 +841,16 @@ tarjetasHabitaciones.forEach(tarjeta => {
 }
 function actualizarTotales() {
     const resumenReserva = document.getElementById('resumenReserva');
-    
+
+    // Verificar si el resumen de reserva existe
+    if (!resumenReserva) {
+        console.error("El resumen de reserva no existe en el DOM.");
+        return;
+    }
+
     // Selecciona solo los elementos que contienen los precios de las habitaciones
     const preciosElements = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2 span:nth-child(2):not(#resumenSubtotal):not(#resumenImpuestos):not(#resumenTotal):not(#resumenDeposito)');
-    
+
     console.log("Elementos de precios encontrados:", preciosElements);
 
     // Extrae los valores numéricos de los precios
@@ -848,16 +871,41 @@ function actualizarTotales() {
     // Calcula impuestos (16%)
     const impuestos = subtotal * 0.16;
     console.log("Impuestos:", impuestos);
-    const subtotal2 =subtotal-impuestos;
+    const subtotal2 = subtotal - impuestos;
+
     // Calcula el total
     const total = subtotal;
     console.log("Total:", total);
 
-    // Actualiza los valores en el DOM
-    document.getElementById('resumenSubtotal').textContent = `MXN ${subtotal2.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-    document.getElementById('resumenImpuestos').textContent = `MXN ${impuestos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-    document.getElementById('resumenTotal').textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-    document.getElementById('resumenDeposito').textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    // Actualiza los valores en el DOM solo si los elementos existen
+    const resumenSubtotal = document.getElementById('resumenSubtotal');
+    const resumenImpuestos = document.getElementById('resumenImpuestos');
+    const resumenTotal = document.getElementById('resumenTotal');
+    const resumenDeposito = document.getElementById('resumenDeposito');
+
+    if (resumenSubtotal) {
+        resumenSubtotal.textContent = `MXN ${subtotal2.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    } else {
+        console.error("Elemento 'resumenSubtotal' no encontrado.");
+    }
+
+    if (resumenImpuestos) {
+        resumenImpuestos.textContent = `MXN ${impuestos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    } else {
+        console.error("Elemento 'resumenImpuestos' no encontrado.");
+    }
+
+    if (resumenTotal) {
+        resumenTotal.textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    } else {
+        console.error("Elemento 'resumenTotal' no encontrado.");
+    }
+
+    if (resumenDeposito) {
+        resumenDeposito.textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    } else {
+        console.error("Elemento 'resumenDeposito' no encontrado.");
+    }
 }
 function actualizarResumenFechas(checkin, checkout) {
     // Formatear las fechas en el formato "d-MM-YYYY"
