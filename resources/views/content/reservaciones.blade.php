@@ -313,7 +313,7 @@
 
             const nochesTexto = noches === 1 ? '1 noche' : `${noches} noches`;
 
-            habitacionesPorTipo.forEach(grupo => {
+            habitacionesPorTipo.forEach((grupo,index) => {
                 const { tipo_habitacion, cantidad_disponible, habitaciones } = grupo;
                 if (habitaciones.length > 0) {
                     const habitacion = habitaciones[0];
@@ -324,7 +324,7 @@
                     }
                     const card = `
                         <div class="col-md-8">
-                            <div class="card p-3">
+                            <div class="card p-3" id="card-${index}">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <img src="${habitacion.imagen_habitacion}" class="img-fluid rounded" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" alt="Habitación">
@@ -351,7 +351,7 @@
                                                         <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, 1, ${cantidad_disponible})">+</button>
                                                     </div>
                                                 </div>
-<button class="btn btn-warning ms-3 add-btn" data-tipo="${habitacion.tipo_habitacion.tipo_cuarto}" data-precio="${precioTotal}" data-noches="${noches}" data-cantidad-disponible="${cantidad_disponible}">Añadir</button>
+<button class="btn btn-warning ms-3 add-btn" data-tipo="${habitacion.tipo_habitacion.tipo_cuarto}" data-precio="${precioTotal}" data-noches="${noches}" data-cantidad-disponible="${cantidad_disponible}" data-index="${index}">Añadir</button>
                                             </div>
                                         </div>
                                     </div>
@@ -390,11 +390,12 @@ function handleAddButtonClick(event) {
         const cantidad = event.target.closest('.card-body').querySelector('input').value;
         const maxPersonas = event.target.closest('.card-body').querySelector('select').value;
         const cantidadDisponible = event.target.getAttribute('data-cantidad-disponible');
-        agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas,cantidadDisponible);
+        const index = event.target.getAttribute('data-index');
+        agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas,cantidadDisponible, index);
     }
 }
 
-function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas, cantidadDisponible) {
+function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas, cantidadDisponible, index) {
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
     const resumenReserva = document.getElementById('resumenReserva');
 
@@ -421,7 +422,7 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
         // Si ya existe, incrementar la cantidad y actualizar el precio
         const cantidadActual = parseInt(resumenHabitacion.textContent.split('x')[0].trim());
         const nuevaCantidad = cantidadActual + parseInt(cantidad);
-        if (nuevaCantidad > cantidadDisponible) {
+        if (nuevaCantidad < cantidadDisponible) {
             alert(`No hay suficientes habitaciones disponibles. Solo quedan ${cantidadDisponible} habitaciones.`);
             return;
         }
@@ -436,7 +437,16 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
         resumenPrecio.textContent = `MXN ${precioTotal}`;
         resumenHuespedes.textContent = ` ${maxPersonas}`;
     }
-
+    const card = document.getElementById(`card-${index}`);
+    const addButton = card.querySelector('.add-btn');
+    const nuevaCantidadDisponible = cantidadDisponible - cantidad;
+    addButton.setAttribute('data-cantidad-disponible', nuevaCantidadDisponible);
+    if (nuevaCantidadDisponible <= 0) {
+        addButton.disabled = true;
+        addButton.textContent = 'No disponible';
+        addButton.classList.remove('btn-warning');
+        addButton.classList.add('btn-secondary');
+    }
     // Calcular y actualizar el total
     const subtotal = parseFloat(resumenPrecio.textContent.replace('MXN ', '').replace(',', ''));
     const impuestos = subtotal * 0.16; // Suponiendo un 16% de impuestos
