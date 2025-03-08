@@ -525,15 +525,37 @@ function eliminarHabitacion(boton) {
 }
 function actualizarTotales() {
     const resumenReserva = document.getElementById('resumenReserva');
-    const precios = Array.from(resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2 span:nth-child(2)'))
-        .map(span => parseFloat(span.textContent.replace('MXN ', '').replace(',', '')))
-        .reduce((sum, precio) => sum + precio, 0);
+    
+    // Selecciona solo los elementos que contienen los precios de las habitaciones
+    const preciosElements = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2 span:nth-child(2):not(#resumenSubtotal):not(#resumenImpuestos):not(#resumenTotal):not(#resumenDeposito)');
+    
+    console.log("Elementos de precios encontrados:", preciosElements);
 
-    const impuestos = precios * 0.16; // Suponiendo un 16% de impuestos
-    const subtotal = precios - impuestos;
-    const total = subtotal + impuestos;
+    // Extrae los valores numéricos de los precios
+    const precios = Array.from(preciosElements).map(span => {
+        const precioTexto = span.textContent.replace('MXN ', '').replace(/,/g, '');
+        console.log("Texto del precio:", precioTexto);
+        const precioNumero = parseFloat(precioTexto);
+        console.log("Precio convertido a número:", precioNumero);
+        return precioNumero;
+    });
 
-    document.getElementById('resumenSubtotal').textContent = `MXN ${subtotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+    console.log("Precios extraídos:", precios);
+
+    // Suma todos los precios para obtener el subtotal
+    const subtotal = precios.reduce((sum, precio) => sum + precio, 0);
+    console.log("Subtotal:", subtotal);
+
+    // Calcula impuestos (16%)
+    const impuestos = subtotal * 0.16;
+    console.log("Impuestos:", impuestos);
+    const subtotal2 =subtotal-impuestos;
+    // Calcula el total
+    const total = subtotal;
+    console.log("Total:", total);
+
+    // Actualiza los valores en el DOM
+    document.getElementById('resumenSubtotal').textContent = `MXN ${subtotal2.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
     document.getElementById('resumenImpuestos').textContent = `MXN ${impuestos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
     document.getElementById('resumenTotal').textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
     document.getElementById('resumenDeposito').textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
