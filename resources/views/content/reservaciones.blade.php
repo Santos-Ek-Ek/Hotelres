@@ -295,31 +295,105 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    // Evento para el botón "Reservar ahora"
-    document.getElementById('btnReservarAhora').addEventListener('click', function() {
-        // Ocultar todas las tarjetas de habitaciones
-        const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
-        tarjetasHabitaciones.forEach(tarjeta => {
-            tarjeta.style.display = 'none';
+    document.addEventListener('DOMContentLoaded', function() {
+        // Evento para el botón "Reservar ahora"
+        document.getElementById('btnReservarAhora').addEventListener('click', function() {
+            // Ocultar todas las tarjetas de habitaciones
+            const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+            tarjetasHabitaciones.forEach(tarjeta => {
+                tarjeta.style.display = 'none';
+            });
+
+            // Mostrar el apartado 3 (formulario de huéspedes)
+            document.getElementById('apartado3').style.display = 'block';
         });
 
-        // Mostrar el apartado 3 (formulario de huéspedes)
-        document.getElementById('apartado3').style.display = 'block';
-    });
+        // Evento para el botón "Volver"
+        document.getElementById('btnVolver').addEventListener('click', function() {
+            // Ocultar el apartado 3
+            document.getElementById('apartado3').style.display = 'none';
 
-    // Evento para el botón "Volver"
-    document.getElementById('btnVolver').addEventListener('click', function() {
-        // Ocultar el apartado 3
-        document.getElementById('apartado3').style.display = 'none';
-
-        // Mostrar todas las tarjetas de habitaciones
-        const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
-        tarjetasHabitaciones.forEach(tarjeta => {
-            tarjeta.style.display = 'block';
+            // Mostrar todas las tarjetas de habitaciones
+            const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+            tarjetasHabitaciones.forEach(tarjeta => {
+                tarjeta.style.display = 'block';
+            });
         });
+
+        // Función para verificar si no hay reservas y mostrar las tarjetas de habitaciones
+        function verificarReservas() {
+            const resumenReserva = document.getElementById('resumenReserva');
+            const registros = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2 span:nth-child(2)');
+
+            if (registros.length === 1) {
+                // Si no hay registros, mostrar el mensaje y ocultar el resumen
+                document.getElementById('mensajeSinAlojamientos').style.display = 'block';
+                resumenReserva.style.display = 'none';
+
+                // Ocultar el formulario de huéspedes y mostrar las tarjetas de habitaciones
+                document.getElementById('apartado3').style.display = 'none';
+                const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+                tarjetasHabitaciones.forEach(tarjeta => {
+                    tarjeta.style.display = 'block';
+                });
+            }
+        }
+
+        // Modificar la función eliminarHabitacion para llamar a verificarReservas
+        function eliminarHabitacion(boton) {
+            // Obtener el contenedor de la habitación (el div anterior al contenedor del botón)
+            const contenedorHuespedes = boton.closest('.d-flex.align-items-center.justify-content-between.mb-4');
+            const entradaHabitacion = contenedorHuespedes.previousElementSibling;
+
+            // Verificar que el contenedor de la habitación existe
+            if (!entradaHabitacion || !entradaHabitacion.classList.contains('d-flex')) {
+                console.error("No se encontró el contenedor de la habitación.");
+                return;
+            }
+
+            // Obtener el <hr> (siguiente hermano del contenedor de los huéspedes)
+            const hr = contenedorHuespedes.nextElementSibling;
+
+            // Verificar que el <hr> existe
+            if (!hr || hr.tagName !== 'HR') {
+                console.error("No se encontró el <hr>.");
+                return;
+            }
+
+            // Obtener la cantidad eliminada
+            const cantidadEliminada = parseInt(entradaHabitacion.querySelector('span:nth-child(1)').textContent.split('x')[0].trim());
+            const tipoHabitacion = entradaHabitacion.querySelector('span:nth-child(1)').textContent.split('x')[1].trim();
+            const index = Array.from(document.querySelectorAll('.add-btn')).findIndex(btn => btn.getAttribute('data-tipo') === tipoHabitacion);
+
+            // Eliminar los elementos del DOM
+            entradaHabitacion.remove();
+            contenedorHuespedes.remove();
+            hr.remove();
+
+            // Actualizar la cantidad disponible en la tarjeta de la habitación
+            const card = document.getElementById(`card-${index}`);
+            const addButton = card.querySelector('.add-btn');
+            const cantidadDisponible = parseInt(addButton.getAttribute('data-cantidad-disponible')) + cantidadEliminada;
+
+            // Actualizar el atributo data-cantidad-disponible
+            addButton.setAttribute('data-cantidad-disponible', cantidadDisponible);
+
+            // Actualizar el texto de la cantidad disponible
+            const cantidadDisponibleElement = card.querySelector(`#cantidad-disponible-${index}`);
+            cantidadDisponibleElement.textContent = cantidadDisponible;
+
+            // Habilitar el botón si hay disponibilidad
+            if (cantidadDisponible > 0) {
+                addButton.disabled = false;
+                addButton.textContent = 'Añadir';
+                addButton.classList.remove('btn-secondary');
+                addButton.classList.add('btn-warning');
+            }
+
+            // Verificar si no quedan registros
+            verificarReservas();
+        }
     });
-});
 </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -670,6 +744,15 @@ function eliminarHabitacion(boton) {
         // Si no hay registros, mostrar el mensaje y ocultar el resumen
         document.getElementById('mensajeSinAlojamientos').style.display = 'block';
         resumenReserva.style.display = 'none';
+
+// Ocultar el formulario de huéspedes
+document.getElementById('apartado3').style.display = 'none';
+
+// Mostrar todas las tarjetas de habitaciones
+const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+tarjetasHabitaciones.forEach(tarjeta => {
+    tarjeta.style.display = 'block';
+});
         console.log("No hay registros. Mostrando mensaje."); // Depuración
     } else {
         // Si aún hay registros, actualizar los totales
