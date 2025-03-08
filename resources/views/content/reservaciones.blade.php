@@ -71,10 +71,7 @@
             gap: 20px;
             padding: 20px;
         }
-        .habitaciones-container {
-            flex: 3; /* Ocupa 3 partes del espacio disponible */
-            overflow-y: auto; /* Permite el desplazamiento vertical */
-        }
+
         .sidebar {
             flex: 1; /* Ocupa 1 parte del espacio disponible */
             position: sticky;
@@ -89,6 +86,21 @@
         .mb-4{
             margin-bottom: 0.5rem !important;
         }
+        .habitaciones-container {
+    flex: 3;
+    overflow-y: auto;
+    position: relative; /* Para posicionar el formulario dentro de este contenedor */
+}
+
+.form-container {
+    background-color: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ocupa el mismo ancho que las tarjetas */
+    margin: 0 auto; /* Centrado horizontal */
+
+}
     </style>
 </head>
 <div id="apartado1" style="    width: 100%;
@@ -142,8 +154,70 @@
             <!-- Columna izquierda: Tarjetas de habitaciones -->
             <div class="habitaciones-container" id="habitacionesContainer">
                 <!-- Aquí se mostrarán las habitaciones disponibles -->
-            </div>
 
+            </div>
+            <div id="apartado3" class="form-container w-100" style="max-width: 600px; display: none;margin: 0 auto;">
+        <div class="d-flex align-items-center mb-4">
+            <button id="btnVolver" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="h4 mb-0">Agregar huéspedes</h1>
+        </div>
+        <p class="text-muted mb-4">Agregue los huéspedes principales y adicionales</p>
+        <form>
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label for="nombre" class="form-label">Nombre *</label>
+                    <input type="text" class="form-control" id="nombre" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="apellido" class="form-label">Apellido *</label>
+                    <input type="text" class="form-control" id="apellido" required>
+                </div>
+            </div>
+            <h2 class="h6 mb-4">Más datos de la dirección</h2>
+            <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="direccion">
+            </div>
+            <div class="mb-3">
+                <label for="apartamento" class="form-label">Apartamento, suite, piso, etc.</label>
+                <input type="text" class="form-control" id="apartamento">
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label for="pais" class="form-label">País *</label>
+                    <select class="form-select" id="pais" required>
+                        <option selected>Seleccione un país</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select class="form-select" id="estado">
+                        <option selected>Seleccione un estado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label for="ciudad" class="form-label">Ciudad</label>
+                    <input type="text" class="form-control" id="ciudad">
+                </div>
+                <div class="col-md-6">
+                    <label for="zip" class="form-label">ZIP / Código postal</label>
+                    <input type="text" class="form-control" id="zip">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico *</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono *</label>
+                <input type="tel" class="form-control" id="telefono" required>
+            </div>
+        </form>
+    </div>
             <!-- Columna derecha: Sección fija -->
             <div class="sidebar">
                 <div id="mensajeSinAlojamientos" class="card text-center p-3">
@@ -195,7 +269,7 @@
         <span>Depósito</span>
         <span id="resumenDeposito"></span>
     </div>
-    <button class="btn btn-custom btn-block mb-4">Reservar ahora</button>
+    <button id="btnReservarAhora" class="btn btn-custom btn-block mb-4">Reservar ahora</button>
 </div>
             </div>
         </div>
@@ -217,52 +291,35 @@
         </div>
     </div>
 </div>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Script para manejar la confirmación -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Evento para el botón de búsqueda del segundo apartado
-        document.getElementById('btnBuscarHeader').addEventListener('click', function() {
-            const checkin = document.getElementById('checkinbus').value;
-            const checkout = document.getElementById('checkoutbus').value;
+        document.addEventListener('DOMContentLoaded', function() {
+    // Evento para el botón "Reservar ahora"
+    document.getElementById('btnReservarAhora').addEventListener('click', function() {
+        // Ocultar todas las tarjetas de habitaciones
+        const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+        tarjetasHabitaciones.forEach(tarjeta => {
+            tarjeta.style.display = 'none';
+        });
 
-            if (!checkin || !checkout) {
-                alert('Por favor, seleccione ambas fechas.');
-                return;
-            }
+        // Mostrar el apartado 3 (formulario de huéspedes)
+        document.getElementById('apartado3').style.display = 'block';
+    });
 
-            // Verificar si hay alojamientos agregados
-            const resumenReserva = document.getElementById('resumenReserva');
-            const hayAlojamientos = resumenReserva.style.display !== 'none';
+    // Evento para el botón "Volver"
+    document.getElementById('btnVolver').addEventListener('click', function() {
+        // Ocultar el apartado 3
+        document.getElementById('apartado3').style.display = 'none';
 
-            if (hayAlojamientos) {
-                // Mostrar el modal de confirmación
-                const confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
-                confirmacionModal.show();
-
-                // Evento para el botón de confirmar en el modal
-                document.getElementById('confirmarBusqueda').addEventListener('click', function() {
-                    // Ocultar el modal
-                    confirmacionModal.hide();
-
-                    // Limpiar los alojamientos agregados
-                    resumenReserva.style.display = 'none';
-                    document.getElementById('mensajeSinAlojamientos').style.display = 'block';
-
-                    // Limpiar las tarjetas de habitaciones
-                    const habitacionesContainer = document.getElementById('habitacionesContainer');
-                    habitacionesContainer.innerHTML = '';
-
-                    // Realizar la búsqueda con las nuevas fechas
-                    buscarHabitaciones(checkin, checkout);
-                });
-            } else {
-                // Si no hay alojamientos, realizar la búsqueda directamente
-                buscarHabitaciones(checkin, checkout);
-            }
+        // Mostrar todas las tarjetas de habitaciones
+        const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+        tarjetasHabitaciones.forEach(tarjeta => {
+            tarjeta.style.display = 'block';
         });
     });
+});
 </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
