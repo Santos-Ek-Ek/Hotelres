@@ -199,8 +199,71 @@
 </div>
             </div>
         </div>
+        <!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmacionModal" tabindex="-1" aria-labelledby="confirmacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmacionModalLabel">Confirmar Búsqueda</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas realizar una nueva búsqueda? Esto eliminará los alojamientos agregados.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" id="confirmarBusqueda">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script para manejar la confirmación -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Evento para el botón de búsqueda del segundo apartado
+        document.getElementById('btnBuscarHeader').addEventListener('click', function() {
+            const checkin = document.getElementById('checkinbus').value;
+            const checkout = document.getElementById('checkoutbus').value;
+
+            if (!checkin || !checkout) {
+                alert('Por favor, seleccione ambas fechas.');
+                return;
+            }
+
+            // Verificar si hay alojamientos agregados
+            const resumenReserva = document.getElementById('resumenReserva');
+            const hayAlojamientos = resumenReserva.style.display !== 'none';
+
+            if (hayAlojamientos) {
+                // Mostrar el modal de confirmación
+                const confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
+                confirmacionModal.show();
+
+                // Evento para el botón de confirmar en el modal
+                document.getElementById('confirmarBusqueda').addEventListener('click', function() {
+                    // Ocultar el modal
+                    confirmacionModal.hide();
+
+                    // Limpiar los alojamientos agregados
+                    resumenReserva.style.display = 'none';
+                    document.getElementById('mensajeSinAlojamientos').style.display = 'block';
+
+                    // Limpiar las tarjetas de habitaciones
+                    const habitacionesContainer = document.getElementById('habitacionesContainer');
+                    habitacionesContainer.innerHTML = '';
+
+                    // Realizar la búsqueda con las nuevas fechas
+                    buscarHabitaciones(checkin, checkout);
+                });
+            } else {
+                // Si no hay alojamientos, realizar la búsqueda directamente
+                buscarHabitaciones(checkin, checkout);
+            }
+        });
+    });
+</script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof flatpickr !== "undefined" && flatpickr.l10ns.es) {
