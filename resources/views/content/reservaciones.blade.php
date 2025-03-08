@@ -295,6 +295,52 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Evento para el botón de búsqueda del segundo apartado
+        document.getElementById('btnBuscarHeader').addEventListener('click', function() {
+            const checkin = document.getElementById('checkinbus').value;
+            const checkout = document.getElementById('checkoutbus').value;
+
+            if (!checkin || !checkout) {
+                alert('Por favor, seleccione ambas fechas.');
+                return;
+            }
+
+            // Verificar si hay alojamientos agregados
+            const resumenReserva = document.getElementById('resumenReserva');
+            const hayAlojamientos = resumenReserva.style.display !== 'none';
+
+            if (hayAlojamientos) {
+                // Mostrar el modal de confirmación
+                const confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
+                confirmacionModal.show();
+
+                // Evento para el botón de confirmar en el modal
+                document.getElementById('confirmarBusqueda').addEventListener('click', function() {
+                    // Ocultar el modal
+                    confirmacionModal.hide();
+
+                    // Limpiar los alojamientos agregados
+                    resumenReserva.style.display = 'none';
+                    document.getElementById('mensajeSinAlojamientos').style.display = 'block';
+
+                    // Limpiar las tarjetas de habitaciones
+                    const habitacionesContainer = document.getElementById('habitacionesContainer');
+                    habitacionesContainer.innerHTML = '';
+
+                    // Realizar la búsqueda con las nuevas fechas
+                    buscarHabitaciones(checkin, checkout);
+                });
+            } else {
+                // Si no hay alojamientos, realizar la búsqueda directamente
+                buscarHabitaciones(checkin, checkout);
+            }
+        });
+    });
+
+    </script>
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Evento para el botón "Reservar ahora"
         document.getElementById('btnReservarAhora').addEventListener('click', function() {
@@ -456,19 +502,7 @@
                 buscarHabitaciones(checkin, checkout);
             });
 
-            // Evento para el botón de búsqueda del segundo apartado
-            document.getElementById('btnBuscarHeader').addEventListener('click', function() {
-                const checkin = document.getElementById('checkinbus').value;
-                const checkout = document.getElementById('checkoutbus').value;
-
-                if (!checkin || !checkout) {
-                    alert('Por favor, seleccione ambas fechas.');
-                    return;
-                }
-
-                // Realizar la búsqueda con las nuevas fechas
-                buscarHabitaciones(checkin, checkout);
-            });
+       
         });
 
         // Función para buscar habitaciones
