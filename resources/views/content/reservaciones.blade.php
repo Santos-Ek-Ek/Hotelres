@@ -353,6 +353,9 @@
                                                 </div>
 <button class="btn btn-warning ms-3 add-btn" data-tipo="${habitacion.tipo_habitacion.tipo_cuarto}" data-precio="${precioTotal}" data-noches="${noches}" data-cantidad-disponible="${cantidad_disponible}" data-index="${index}">Añadir</button>
                                             </div>
+                                                                                <div class="mt-2">
+                                        <span class="text-muted">Disponibles: <span id="cantidad-disponible-${index}">${cantidad_disponible}</span></span>
+                                    </div>
                                         </div>
                                     </div>
                                 </div>
@@ -473,7 +476,9 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
 
     // Actualizar el atributo data-cantidad-disponible
     addButton.setAttribute('data-cantidad-disponible', nuevaCantidadDisponible);
-
+ // Actualizar el texto de la cantidad disponible
+ const cantidadDisponibleElement = card.querySelector(`#cantidad-disponible-${index}`);
+    cantidadDisponibleElement.textContent = nuevaCantidadDisponible;
     // Deshabilitar el botón si no hay disponibilidad
     if (nuevaCantidadDisponible <= 0) {
         addButton.disabled = true;
@@ -504,12 +509,31 @@ function eliminarHabitacion(boton) {
         console.error("No se encontró el <hr>.");
         return;
     }
-
+    // Obtener la cantidad eliminada
+    const cantidadEliminada = parseInt(entradaHabitacion.querySelector('span:nth-child(1)').textContent.split('x')[0].trim());
+    const tipoHabitacion = entradaHabitacion.querySelector('span:nth-child(1)').textContent.split('x')[1].trim();
+    const index = Array.from(document.querySelectorAll('.add-btn')).findIndex(btn => btn.getAttribute('data-tipo') === tipoHabitacion);
     // Eliminar los elementos del DOM
     entradaHabitacion.remove();
     contenedorHuespedes.remove();
     hr.remove();
+    // Actualizar la cantidad disponible en la tarjeta de la habitación
+    const card = document.getElementById(`card-${index}`);
+    const addButton = card.querySelector('.add-btn');
+    const cantidadDisponible = parseInt(addButton.getAttribute('data-cantidad-disponible')) + cantidadEliminada;
 
+    // Actualizar el atributo data-cantidad-disponible
+    addButton.setAttribute('data-cantidad-disponible', cantidadDisponible);
+    const cantidadDisponibleElement = card.querySelector(`#cantidad-disponible-${index}`);
+    cantidadDisponibleElement.textContent = cantidadDisponible;
+
+    // Habilitar el botón si hay disponibilidad
+    if (cantidadDisponible > 0) {
+        addButton.disabled = false;
+        addButton.textContent = 'Añadir';
+        addButton.classList.remove('btn-secondary');
+        addButton.classList.add('btn-warning');
+    }
     // Verificar si no quedan registros
     const resumenReserva = document.getElementById('resumenReserva');
     const registros = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2');
