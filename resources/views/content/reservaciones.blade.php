@@ -422,6 +422,12 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
         const cantidadActual = parseInt(entradaExistente.querySelector('span:nth-child(1)').textContent.split('x')[0].trim());
         const nuevaCantidad = cantidadActual + parseInt(cantidad);
 
+        // Verificar que la nueva cantidad no supere la cantidad disponible
+        if (nuevaCantidad < cantidadDisponible) {
+            alert(`No hay suficientes habitaciones disponibles. Solo quedan ${cantidadDisponible}.`);
+            return;
+        }
+
         // Actualizar la cantidad en la entrada existente
         entradaExistente.querySelector('span:nth-child(1)').textContent = `${nuevaCantidad}x ${tipoHabitacion}`;
 
@@ -460,10 +466,25 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
         resumenReserva.insertBefore(hr, subtotalElement);
     }
 
+    // Actualizar la cantidad disponible en la tarjeta de la habitación
+    const card = document.getElementById(`card-${index}`);
+    const addButton = card.querySelector('.add-btn');
+    const nuevaCantidadDisponible = cantidadDisponible - cantidad;
+
+    // Actualizar el atributo data-cantidad-disponible
+    addButton.setAttribute('data-cantidad-disponible', nuevaCantidadDisponible);
+
+    // Deshabilitar el botón si no hay disponibilidad
+    if (nuevaCantidadDisponible <= 0) {
+        addButton.disabled = true;
+        addButton.textContent = 'No disponible';
+        addButton.classList.remove('btn-warning');
+        addButton.classList.add('btn-secondary');
+    }
+
     // Actualizar los totales
     actualizarTotales();
 }
-
 function eliminarHabitacion(boton) {
     // Obtener el contenedor de la habitación (el div anterior al contenedor del botón)
     const contenedorHuespedes = boton.closest('.d-flex.align-items-center.justify-content-between.mb-4');
