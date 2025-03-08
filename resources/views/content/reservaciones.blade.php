@@ -320,6 +320,9 @@
                 tarjeta.style.display = 'block';
             });
         }
+                // Restablecer los botones de reserva
+                document.getElementById('btnReservarAhora').style.display = 'block';
+        document.getElementById('btnContinuar').style.display = 'none';
             // Verificar si hay alojamientos agregados
             const resumenReserva = document.getElementById('resumenReserva');
             const hayAlojamientos = resumenReserva.style.display !== 'none';
