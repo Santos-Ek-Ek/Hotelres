@@ -306,7 +306,17 @@
                 alert('Por favor, seleccione ambas fechas.');
                 return;
             }
+            const formularioHuespedes = document.getElementById('apartado3');
+        if (formularioHuespedes.style.display === 'block') {
+            // Ocultar el formulario de huéspedes
+            formularioHuespedes.style.display = 'none';
 
+            // Mostrar todas las tarjetas de habitaciones
+            const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+            tarjetasHabitaciones.forEach(tarjeta => {
+                tarjeta.style.display = 'block';
+            });
+        }
             // Verificar si hay alojamientos agregados
             const resumenReserva = document.getElementById('resumenReserva');
             const hayAlojamientos = resumenReserva.style.display !== 'none';
