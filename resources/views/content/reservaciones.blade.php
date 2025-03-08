@@ -509,14 +509,17 @@ function eliminarHabitacion(boton) {
         console.error("No se encontró el <hr>.");
         return;
     }
+
     // Obtener la cantidad eliminada
     const cantidadEliminada = parseInt(entradaHabitacion.querySelector('span:nth-child(1)').textContent.split('x')[0].trim());
     const tipoHabitacion = entradaHabitacion.querySelector('span:nth-child(1)').textContent.split('x')[1].trim();
     const index = Array.from(document.querySelectorAll('.add-btn')).findIndex(btn => btn.getAttribute('data-tipo') === tipoHabitacion);
+
     // Eliminar los elementos del DOM
     entradaHabitacion.remove();
     contenedorHuespedes.remove();
     hr.remove();
+
     // Actualizar la cantidad disponible en la tarjeta de la habitación
     const card = document.getElementById(`card-${index}`);
     const addButton = card.querySelector('.add-btn');
@@ -524,6 +527,8 @@ function eliminarHabitacion(boton) {
 
     // Actualizar el atributo data-cantidad-disponible
     addButton.setAttribute('data-cantidad-disponible', cantidadDisponible);
+
+    // Actualizar el texto de la cantidad disponible
     const cantidadDisponibleElement = card.querySelector(`#cantidad-disponible-${index}`);
     cantidadDisponibleElement.textContent = cantidadDisponible;
 
@@ -534,17 +539,22 @@ function eliminarHabitacion(boton) {
         addButton.classList.remove('btn-secondary');
         addButton.classList.add('btn-warning');
     }
+
     // Verificar si no quedan registros
     const resumenReserva = document.getElementById('resumenReserva');
-    const registros = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2');
+    const registros = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2 span:nth-child(2)');
 
-    if (registros.length === 0) {
+    console.log("Registros restantes:", registros.length); // Depuración
+
+    if (registros.length === 1) {
         // Si no hay registros, mostrar el mensaje y ocultar el resumen
         document.getElementById('mensajeSinAlojamientos').style.display = 'block';
         resumenReserva.style.display = 'none';
+        console.log("No hay registros. Mostrando mensaje."); // Depuración
     } else {
         // Si aún hay registros, actualizar los totales
         actualizarTotales();
+        console.log("Aún hay registros. Actualizando totales."); // Depuración
     }
 }
 function actualizarTotales() {
