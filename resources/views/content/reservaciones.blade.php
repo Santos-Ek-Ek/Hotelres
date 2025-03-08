@@ -161,9 +161,9 @@
             <button id="btnVolver" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 class="h4 mb-0">Agregar huéspedes</h1>
+            <h1 class="h4 mb-0">Agregar huésped</h1>
         </div>
-        <p class="text-muted mb-4">Agregue los huéspedes principales y adicionales</p>
+        <p class="text-muted mb-4">Agregue información</p>
         <form>
             <div class="row mb-4">
                 <div class="col-md-6 mb-3 mb-md-0">
@@ -269,7 +269,10 @@
         <span>Depósito</span>
         <span id="resumenDeposito"></span>
     </div>
+    <!-- Botón "Reservar ahora" -->
     <button id="btnReservarAhora" class="btn btn-custom btn-block mb-4">Reservar ahora</button>
+    <!-- Botón "Continuar" (oculto inicialmente) -->
+    <button id="btnContinuar" class="btn btn-custom btn-block mb-4" style="display: none;">Continuar</button>
 </div>
             </div>
         </div>
@@ -351,30 +354,42 @@
 
     </script>
     <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Evento para el botón "Reservar ahora"
+    document.getElementById('btnReservarAhora').addEventListener('click', function() {
+        // Ocultar todas las tarjetas de habitaciones
+        const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+        tarjetasHabitaciones.forEach(tarjeta => {
+            tarjeta.style.display = 'none';
+        });
+
+        // Mostrar el apartado 3 (formulario de huéspedes)
+        document.getElementById('apartado3').style.display = 'block';
+
+        // Ocultar el botón "Reservar ahora" y mostrar el botón "Continuar"
+        document.getElementById('btnReservarAhora').style.display = 'none';
+        document.getElementById('btnContinuar').style.display = 'block';
+    });
+
+    // Evento para el botón "Volver"
+    document.getElementById('btnVolver').addEventListener('click', function() {
+        // Ocultar el apartado 3
+        document.getElementById('apartado3').style.display = 'none';
+
+        // Mostrar todas las tarjetas de habitaciones
+        const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
+        tarjetasHabitaciones.forEach(tarjeta => {
+            tarjeta.style.display = 'block';
+        });
+
+        // Ocultar el botón "Continuar" y mostrar el botón "Reservar ahora"
+        document.getElementById('btnContinuar').style.display = 'none';
+        document.getElementById('btnReservarAhora').style.display = 'block';
+    });
+});
+    </script>
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Evento para el botón "Reservar ahora"
-        document.getElementById('btnReservarAhora').addEventListener('click', function() {
-            // Ocultar todas las tarjetas de habitaciones
-            const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
-            tarjetasHabitaciones.forEach(tarjeta => {
-                tarjeta.style.display = 'none';
-            });
-
-            // Mostrar el apartado 3 (formulario de huéspedes)
-            document.getElementById('apartado3').style.display = 'block';
-        });
-
-        // Evento para el botón "Volver"
-        document.getElementById('btnVolver').addEventListener('click', function() {
-            // Ocultar el apartado 3
-            document.getElementById('apartado3').style.display = 'none';
-
-            // Mostrar todas las tarjetas de habitaciones
-            const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
-            tarjetasHabitaciones.forEach(tarjeta => {
-                tarjeta.style.display = 'block';
-            });
-        });
 
         // Función para verificar si no hay reservas y mostrar las tarjetas de habitaciones
         function verificarReservas() {
