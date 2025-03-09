@@ -3,6 +3,7 @@
 use App\Http\Controllers\tipoHabitacionesController;
 use App\Http\Controllers\HabitacionesController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReservaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,9 @@ Route::delete('/eliminar_habitacion/{id}', [HabitacionesController::class, 'dest
 
 
 Route::get('/buscar-habitaciones', [HabitacionesController::class, 'buscarHabitaciones']);
+
+
+Route::post('/reservas', [ReservaController::class, 'store']);
 Route::get('/pedidos', function () {
     return view('administrador.pedidos');
 });

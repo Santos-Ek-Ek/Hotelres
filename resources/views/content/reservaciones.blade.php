@@ -2,6 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Hotel Truck | Reservaciones</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
@@ -1027,6 +1028,100 @@ function actualizarResumenFechas(checkin, checkout) {
     document.getElementById('resumenCheckin').textContent = checkinFormateado;
     document.getElementById('resumenCheckout').textContent = checkoutFormateado;
     document.getElementById('resumenNoches').textContent = `${noches} ${noches === 1 ? 'noche' : 'noches'}`;
+}
+    </script>
+    <script>
+        document.getElementById('btnContinuar').addEventListener('click', function () {
+    // Recopilar los datos del formulario de huéspedes
+    const datosHuesped = {
+        nombre: document.getElementById('nombre').value,
+        apellido: document.getElementById('apellido').value,
+        direccion: document.getElementById('direccion').value,
+        apartamento: document.getElementById('apartamento').value,
+        pais: document.getElementById('pais').value,
+        estado: document.getElementById('estado').value,
+        ciudad: document.getElementById('ciudad').value,
+        codigo_postal: document.getElementById('zip').value,
+        correo: document.getElementById('email').value,
+        telefono: document.getElementById('telefono').value,
+    };
+
+    // Recopilar los datos de la reserva (del resumen)
+    const datosReserva = obtenerDatosReserva();
+
+    // Combinar los datos del huésped y la reserva
+    const datosCompletos = {
+        ...datosHuesped,
+        ...datosReserva,
+    };
+
+    // Enviar los datos al backend
+    enviarDatosAlBackend(datosCompletos);
+});
+function obtenerDatosReserva() {
+    const datosReserva = {
+        cantidad_cuartos: 0,
+        tipo_cuarto: '', // Cambiar a tipo_cuarto (nombre en lugar de ID)
+        cantidad_huespedes: 0,
+        subtotal: parseFloat(document.getElementById('resumenSubtotal').textContent.replace('MXN ', '').replace(/,/g, '')),
+        fecha_entrada: document.getElementById('checkinbus').value,
+        fecha_salida: document.getElementById('checkoutbus').value,
+        cantidad_noches: parseInt(document.getElementById('resumenNoches').textContent.split(' ')[0]),
+    };
+
+    // Obtener todas las entradas de habitaciones en el resumen
+    const entradasHabitaciones = document.querySelectorAll('#resumenReserva .habitacion-agregada');
+
+    entradasHabitaciones.forEach(entrada => {
+        // Obtener la cantidad de cuartos y el tipo de cuarto
+        const textoHabitacion = entrada.querySelector('span:nth-child(1)')?.textContent;
+        if (textoHabitacion) {
+            const [cantidad, tipo] = textoHabitacion.split('x').map(item => item.trim());
+            datosReserva.cantidad_cuartos += parseInt(cantidad);
+            datosReserva.tipo_cuarto = tipo; // Guardar el nombre del tipo de habitación
+        }
+
+        // Obtener la cantidad de huéspedes
+        const cantidadHuespedes = entrada.nextElementSibling?.querySelector('.ml-2')?.textContent;
+        if (cantidadHuespedes) {
+            datosReserva.cantidad_huespedes += parseInt(cantidadHuespedes);
+        }
+    });
+
+    return datosReserva;
+}
+
+
+function enviarDatosAlBackend(datos) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    fetch('/reservas', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken, // Asegúrate de que el token esté aquí
+        },
+        body: JSON.stringify(datos),
+    })
+    .then(response => {
+        if (response.redirected) {
+            // Si hay una redirección, muestra un mensaje o redirige manualmente
+            window.location.href = response.url;
+        } else {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if (data && data.success) {
+            alert('Reserva creada con éxito. Número de reserva: ' + data.numero_reserva);
+        } else {
+            alert('Error al crear la reserva.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un error al enviar los datos.');
+    });
 }
     </script>
 </body>
