@@ -104,7 +104,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link active" href="/">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link" href="hotel">Hotel</a></li>
-                    <li class="nav-item"><a class="nav-link" href="habitaciones">Habitaciones</a></li>
+                    <li class="nav-item"><a class="nav-link" href="habitacion">Habitaciones</a></li>
                 </ul>
                 <a href="reservaciones" class="btn reserve-btn ms-3">Reservar</a>
             </div>

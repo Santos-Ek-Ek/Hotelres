@@ -4,10 +4,10 @@
 <div class="container py-5">
         <h1 class="text-center font-weight-bold mb-4">Nuestras Habitaciones</h1>
         <p class="text-center mb-4">
-            Disfruta de la serenidad y el encanto colonial en cada una de nuestras cómodas habitaciones. Sumérgete en un ambiente que te invita a relajarte. Cada detalle ha sido cuidadosamente diseñado para ofrecerte la máxima tranquilidad y descanso durante tu estancia en Izamal.
+            Disfruta de la serenidad y el encanto colonial en cada una de nuestras cómodas habitaciones. Sumérgete en un ambiente que te invita a relajarte. Cada detalle ha sido cuidadosamente diseñado para ofrecerte la máxima tranquilidad y descanso durante tu estancia en Temax.
         </p>
         <p class="text-center mb-5">
-            Con una combinación perfecta entre tradición y modernidad, nuestras habitaciones te brindarán el refugio perfecto para recargar energías y continuar disfrutando de todo lo que Izamal tiene para ofrecerte.
+            Con una combinación perfecta entre tradición y modernidad, nuestras habitaciones te brindarán el refugio perfecto para recargar energías y continuar disfrutando de todo lo que Temax tiene para ofrecerte.
         </p>
         <div class="row text-center">
 

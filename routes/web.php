@@ -25,7 +25,7 @@ Route::get('/', function () {
 Route::get('/hotel', function () {
     return view('content.hotel');
 });
-Route::get('/habitaciones', function () {
+Route::get('/habitacion', function () {
     return view('content.habitaciones');
 });
 Route::get('/reservaciones', function () {
