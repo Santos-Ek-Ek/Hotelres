@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
     <style>
@@ -201,7 +201,9 @@
             <div class="row mb-3">
                 <div class="col-md-6 mb-3 mb-md-0">
                     <label for="ciudad" class="form-label">Ciudad</label>
-                    <input type="text" class="form-control" id="ciudad">
+                    <select class="form-select" id="ciudad">
+                        <option selected>Seleccione una ciudad</option>
+                    </select>
                 </div>
                 <div class="col-md-6">
                     <label for="zip" class="form-label">ZIP / Código postal</label>
@@ -297,6 +299,107 @@
 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const GEONAMES_USERNAME = 'ismaelek'; // Reemplaza con tu nombre de usuario de GeoNames
+
+        // Función para obtener países desde GeoNames
+        async function obtenerPaises() {
+            const url = `http://api.geonames.org/countryInfoJSON?username=${GEONAMES_USERNAME}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const selectPais = document.getElementById('pais');
+                data.geonames.forEach(pais => {
+                    const option = document.createElement('option');
+                    option.value = pais.countryName; // Usamos el nombre del país
+                    option.textContent = pais.countryName;
+                    selectPais.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error al obtener países:', error);
+            }
+        }
+
+        // Función para obtener estados/provincias usando GeoNames
+        async function obtenerEstados(pais) {
+            const url = `http://api.geonames.org/searchJSON?q=${pais}&maxRows=1000&username=${GEONAMES_USERNAME}&featureCode=ADM1`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const selectEstado = document.getElementById('estado');
+                selectEstado.innerHTML = '<option selected>Seleccione un estado</option>';
+                const estadosUnicos = new Set(); // Para evitar duplicados
+
+                data.geonames.forEach(resultado => {
+                    const estado = resultado.adminName1; // Nombre del estado
+                    if (estado && !estadosUnicos.has(estado)) {
+                        estadosUnicos.add(estado);
+                        const option = document.createElement('option');
+                        option.value = estado;
+                        option.textContent = estado;
+                        selectEstado.appendChild(option);
+                    }
+                });
+
+                if (estadosUnicos.size === 0) {
+                    console.warn(`No se encontraron estados para el país: ${pais}`);
+                    selectEstado.innerHTML = '<option selected>No se encontraron estados</option>';
+                }
+            } catch (error) {
+                console.error('Error al obtener estados:', error);
+                const selectEstado = document.getElementById('estado');
+                selectEstado.innerHTML = '<option selected>Error al cargar estados</option>';
+            }
+        }
+
+        // Función para obtener ciudades usando GeoNames
+        async function obtenerCiudades(estado) {
+            const url = `http://api.geonames.org/searchJSON?q=${estado}&maxRows=1000&username=${GEONAMES_USERNAME}&featureCode=PPL`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const selectCiudad = document.getElementById('ciudad');
+                selectCiudad.innerHTML = '<option selected>Seleccione una ciudad</option>';
+                const ciudadesUnicas = new Set(); // Para evitar duplicados
+
+                data.geonames.forEach(resultado => {
+                    const ciudad = resultado.name; // Nombre de la ciudad
+                    if (ciudad && !ciudadesUnicas.has(ciudad)) {
+                        ciudadesUnicas.add(ciudad);
+                        const option = document.createElement('option');
+                        option.value = ciudad;
+                        option.textContent = ciudad;
+                        selectCiudad.appendChild(option);
+                    }
+                });
+
+                if (ciudadesUnicas.size === 0) {
+                    console.warn(`No se encontraron ciudades para el estado: ${estado}`);
+                    selectCiudad.innerHTML = '<option selected>No se encontraron ciudades</option>';
+                }
+            } catch (error) {
+                console.error('Error al obtener ciudades:', error);
+                const selectCiudad = document.getElementById('ciudad');
+                selectCiudad.innerHTML = '<option selected>Error al cargar ciudades</option>';
+            }
+        }
+
+        // Evento para cargar países al cargar la página
+        document.addEventListener('DOMContentLoaded', obtenerPaises);
+
+        // Evento para cargar estados cuando se selecciona un país
+        document.getElementById('pais').addEventListener('change', function() {
+            const pais = this.value;
+            obtenerEstados(pais);
+        });
+
+        // Evento para cargar ciudades cuando se selecciona un estado
+        document.getElementById('estado').addEventListener('change', function() {
+            const estado = this.value;
+            obtenerCiudades(estado);
+        });
+    </script>
+
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Evento para el botón de búsqueda del segundo apartado
