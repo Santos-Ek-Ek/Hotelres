@@ -23,7 +23,7 @@ class CreateHuespedesTable extends Migration
             $table->string('estado', 100); // Estado del huésped
             $table->string('ciudad', 100); // Ciudad del huésped
             $table->string('codigo_postal', 20); // Código postal del huésped
-            $table->string('correo', 100)->unique(); // Correo electrónico (único)
+            $table->string('correo', 100); // Correo electrónico (único)
             $table->string('telefono', 20); // Teléfono del huésped
             $table->timestamps(); // Columnas created_at y updated_at
         });

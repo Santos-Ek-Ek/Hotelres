@@ -16,6 +16,7 @@ class CreateReservasTable extends Migration
         Schema::create('reservas', function (Blueprint $table) {
             $table->id(); // Columna de ID autoincremental
             $table->unsignedInteger('cantidad_cuartos'); // Cantidad de cuartos reservados
+            $table->unsignedBigInteger('huesped_id'); // Cantidad de cuartos reservados
             $table->string('tipo_cuarto'); // ID del tipo de cuarto (clave foránea)
             $table->unsignedInteger('cantidad_huespedes'); // Cantidad de huéspedes
             $table->string('numero_reserva', 50)->unique(); // Número de reserva (único)

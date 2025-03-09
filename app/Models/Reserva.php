@@ -59,6 +59,7 @@ class Reserva extends Model
         'fecha_salida',
         'cantidad_noches',
         'estado',
+        'huesped_id',
     ];
 
     /**

@@ -7,6 +7,7 @@ use App\Models\Huesped;
 use App\Models\Reserva;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 class ReservaController extends Controller
 {
     /**
@@ -22,6 +23,8 @@ class ReservaController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('Datos recibidos:', $request->all()); // Registrar los datos recibidos
+    
         try {
             // Validar los datos del formulario
             $validatedData = $request->validate([
@@ -36,13 +39,15 @@ class ReservaController extends Controller
                 'correo' => 'required|email|max:255',
                 'telefono' => 'required|string|max:20',
                 'cantidad_cuartos' => 'required|integer|min:1',
-                'tipo_cuarto' => 'required|string|max:255', // Cambia a tipo_cuarto
+                'tipo_cuarto' => 'required|string|max:255',
                 'cantidad_huespedes' => 'required|integer|min:1',
                 'subtotal' => 'required|numeric|min:0',
                 'fecha_entrada' => 'required|date',
                 'fecha_salida' => 'required|date|after:fecha_entrada',
                 'cantidad_noches' => 'required|integer|min:1',
             ]);
+    
+            Log::info('Datos validados:', $validatedData); // Registrar los datos validados
     
             // Crear el huésped
             $huesped = Huesped::create([
@@ -59,13 +64,17 @@ class ReservaController extends Controller
                 'estado' => 'pendiente',
             ]);
     
+            Log::info('Huésped creado:', $huesped->toArray()); // Registrar el huésped creado
+    
             // Generar un número de reserva único
             $numeroReserva = Str::upper(Str::random(8));
+    
+            Log::info('Número de reserva generado:', ['numero_reserva' => $numeroReserva]);
     
             // Crear la reserva
             $reserva = Reserva::create([
                 'cantidad_cuartos' => $request->cantidad_cuartos,
-                'tipo_cuarto' => $request->tipo_cuarto, // Usa tipo_cuarto
+                'tipo_cuarto' => $request->tipo_cuarto,
                 'cantidad_huespedes' => $request->cantidad_huespedes,
                 'numero_reserva' => $numeroReserva,
                 'subtotal' => $request->subtotal,
@@ -76,22 +85,18 @@ class ReservaController extends Controller
                 'huesped_id' => $huesped->id,
             ]);
     
+            Log::info('Reserva creada:', $reserva->toArray()); // Registrar la reserva creada
+    
             // Retornar una respuesta
             return response()->json([
                 'success' => true,
                 'message' => 'Reserva creada con éxito',
                 'numero_reserva' => $numeroReserva,
+                'huesped_id' => $huesped->id,
             ], 201);
     
-        } catch (ValidationException $e) {
-            // Devolver errores de validación en formato JSON
-            return response()->json([
-                'success' => false,
-                'message' => 'Error de validación',
-                'errors' => $e->errors(),
-            ], 422);
         } catch (\Exception $e) {
-            // Devolver otros errores en formato JSON
+            Log::error('Error al crear la reserva:', ['error' => $e->getMessage()]); // Registrar el error
             return response()->json([
                 'success' => false,
                 'message' => 'Hubo un error al procesar la reserva',
