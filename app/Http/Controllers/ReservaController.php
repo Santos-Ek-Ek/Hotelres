@@ -23,8 +23,6 @@ class ReservaController extends Controller
      */
     public function store(Request $request)
     {
-        Log::info('Datos recibidos:', $request->all()); // Registrar los datos recibidos
-    
         try {
             // Validar los datos del formulario
             $validatedData = $request->validate([
@@ -38,16 +36,13 @@ class ReservaController extends Controller
                 'codigo_postal' => 'nullable|string|max:20',
                 'correo' => 'required|email|max:255',
                 'telefono' => 'required|string|max:20',
-                'cantidad_cuartos' => 'required|integer|min:1',
-                'tipo_cuarto' => 'required|string|max:255',
+                'habitaciones' => 'required|array',
                 'cantidad_huespedes' => 'required|integer|min:1',
                 'subtotal' => 'required|numeric|min:0',
                 'fecha_entrada' => 'required|date',
                 'fecha_salida' => 'required|date|after:fecha_entrada',
                 'cantidad_noches' => 'required|integer|min:1',
             ]);
-    
-            Log::info('Datos validados:', $validatedData); // Registrar los datos validados
     
             // Crear el huésped
             $huesped = Huesped::create([
@@ -64,30 +59,25 @@ class ReservaController extends Controller
                 'estado' => 'pendiente',
             ]);
     
-            Log::info('Huésped creado:', $huesped->toArray()); // Registrar el huésped creado
-    
-            // Generar un número de reserva único
+            // Generar un número de reserva único (una sola vez)
             $numeroReserva = Str::upper(Str::random(8));
     
-            Log::info('Número de reserva generado:', ['numero_reserva' => $numeroReserva]);
+            // Crear una reserva por cada tipo de habitación
+            foreach ($request->habitaciones as $habitacion) {
+                Reserva::create([
+                    'huesped_id' => $huesped->id,
+                    'tipo_cuarto' => $habitacion['tipo'],
+                    'cantidad_cuartos' => $habitacion['cantidad_cuartos'],
+                    'cantidad_huespedes' => $request->cantidad_huespedes,
+                    'numero_reserva' => $numeroReserva, // Usar el mismo número de reserva
+                    'subtotal' => $request->subtotal,
+                    'fecha_entrada' => $request->fecha_entrada,
+                    'fecha_salida' => $request->fecha_salida,
+                    'cantidad_noches' => $request->cantidad_noches,
+                    'estado' => 'pendiente',
+                ]);
+            }
     
-            // Crear la reserva
-            $reserva = Reserva::create([
-                'cantidad_cuartos' => $request->cantidad_cuartos,
-                'tipo_cuarto' => $request->tipo_cuarto,
-                'cantidad_huespedes' => $request->cantidad_huespedes,
-                'numero_reserva' => $numeroReserva,
-                'subtotal' => $request->subtotal,
-                'fecha_entrada' => $request->fecha_entrada,
-                'fecha_salida' => $request->fecha_salida,
-                'cantidad_noches' => $request->cantidad_noches,
-                'estado' => 'pendiente',
-                'huesped_id' => $huesped->id,
-            ]);
-    
-            Log::info('Reserva creada:', $reserva->toArray()); // Registrar la reserva creada
-    
-            // Retornar una respuesta
             return response()->json([
                 'success' => true,
                 'message' => 'Reserva creada con éxito',
@@ -95,8 +85,16 @@ class ReservaController extends Controller
                 'huesped_id' => $huesped->id,
             ], 201);
     
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
-            Log::error('Error al crear la reserva:', ['error' => $e->getMessage()]); // Registrar el error
+            // Log del error
+            Log::error('Error al crear la reserva: ' . $e->getMessage());
+    
             return response()->json([
                 'success' => false,
                 'message' => 'Hubo un error al procesar la reserva',

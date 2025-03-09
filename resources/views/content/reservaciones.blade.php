@@ -1060,8 +1060,7 @@ function actualizarResumenFechas(checkin, checkout) {
 });
 function obtenerDatosReserva() {
     const datosReserva = {
-        cantidad_cuartos: 0,
-        tipo_cuarto: '', // Cambiar a tipo_cuarto (nombre en lugar de ID)
+        habitaciones: [], // Array para almacenar múltiples habitaciones
         cantidad_huespedes: 0,
         subtotal: parseFloat(document.getElementById('resumenSubtotal').textContent.replace('MXN ', '').replace(/,/g, '')),
         fecha_entrada: document.getElementById('checkinbus').value,
@@ -1077,8 +1076,11 @@ function obtenerDatosReserva() {
         const textoHabitacion = entrada.querySelector('span:nth-child(1)')?.textContent;
         if (textoHabitacion) {
             const [cantidad, tipo] = textoHabitacion.split('x').map(item => item.trim());
-            datosReserva.cantidad_cuartos += parseInt(cantidad);
-            datosReserva.tipo_cuarto = tipo; // Guardar el nombre del tipo de habitación
+            datosReserva.habitaciones.push({
+                tipo: tipo, // Nombre del tipo de habitación
+                cantidad: parseInt(cantidad), // Cantidad de habitaciones de este tipo
+                cantidad_cuartos: parseInt(cantidad), // Incluir cantidad_cuartos
+            });
         }
 
         // Obtener la cantidad de huéspedes
@@ -1099,28 +1101,28 @@ function enviarDatosAlBackend(datos) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken, // Asegúrate de que el token esté aquí
+            'X-CSRF-TOKEN': csrfToken,
         },
         body: JSON.stringify(datos),
     })
     .then(response => {
-        if (response.redirected) {
-            // Si hay una redirección, muestra un mensaje o redirige manualmente
-            window.location.href = response.url;
-        } else {
-            return response.json();
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.message || 'Error en la respuesta del servidor');
+            });
         }
+        return response.json();
     })
     .then(data => {
         if (data && data.success) {
             alert('Reserva creada con éxito. Número de reserva: ' + data.numero_reserva);
         } else {
-            alert('Error al crear la reserva.');
+            alert('Error al crear la reserva: ' + (data.message || 'Error desconocido'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Hubo un error al enviar los datos.');
+        alert('Hubo un error al enviar los datos: ' + error.message);
     });
 }
     </script>
