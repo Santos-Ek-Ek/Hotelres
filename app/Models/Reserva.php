@@ -60,6 +60,7 @@ class Reserva extends Model
         'cantidad_noches',
         'estado',
         'huesped_id',
+        'numero_cuarto',
     ];
 
     /**
@@ -92,4 +93,8 @@ class Reserva extends Model
     {
         return $this->belongsTo(Huesped::class);
     }
+    public function habitacion()
+{
+    return $this->belongsTo(Habitacion::class);
+}
 }

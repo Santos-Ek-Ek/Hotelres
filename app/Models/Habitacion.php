@@ -22,4 +22,9 @@ class Habitacion extends Model
     {
         return $this->hasMany(habitacion_imagenes::class);
     }
+    public function reservas()
+{
+    return $this->hasMany(Reserva::class);
+}
+
 }

@@ -25,6 +25,7 @@ class CreateReservasTable extends Migration
             $table->date('fecha_salida'); // Fecha de salida
             $table->unsignedInteger('cantidad_noches'); // Cantidad de noches
             $table->string('estado');
+            $table->string('numero_cuarto');
             $table->timestamps(); // Columnas created_at y updated_at
         });
     }

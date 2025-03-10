@@ -31,9 +31,6 @@ Route::get('/habitacion', function () {
 Route::get('/reservaciones', function () {
     return view('content.reservaciones');
 });
-Route::get('/usuarios', function () {
-    return view('administrador.usuarios');
-});
 // Route::get('/productos', function () {
 //     return view('administrador.productos');
 // });
@@ -54,6 +51,7 @@ Route::get('/buscar-habitaciones', [HabitacionesController::class, 'buscarHabita
 
 
 Route::post('/reservas', [ReservaController::class, 'store']);
-Route::get('/pedidos', function () {
-    return view('administrador.pedidos');
-});
+Route::get('/reservacion', [ReservaController::class, 'index']);
+Route::get('/huespedes', [ReservaController::class, 'huesped']);
+
+

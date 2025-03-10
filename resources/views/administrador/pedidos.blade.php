@@ -1,5 +1,5 @@
 @extends('administrador.layout.app')
-@section('titulo', 'Pedidos')
+@section('titulo', 'Reservaciones')
 @section('content')
 <style>
     .envio-status {
@@ -18,8 +18,8 @@
 <script src="{{ asset('js/pedido.js') }}"></script>
 <div class="container-fluid">
 <div class="form-group">
-    <label for="searchInput">Buscar por ID de transacción:</label>
-    <input type="text" class="form-control" id="searchInput" placeholder="Ingrese el ID de transacción">
+    <label for="searchInput">Buscar por Número de Reserva:</label>
+    <input type="text" class="form-control" id="searchInput" placeholder="Ingrese el No. Reserva">
 </div>
 <div class="form-check form-check-inline">
     <input class="form-check-input" type="checkbox" id="checkEnviados" value="ENVIADO">
@@ -36,32 +36,29 @@
             <div class="card-body">
               <table class="table" id="tbl2">
                 <thead>
-                    <th scope="col" hidden>ID_TR</th>
-                    <th scope="col">FOTO</th>
-                    <th scope="col">NOMBRE</th>
-                    <th scope="col">DETALLES</th>
+                    <th scope="col">No. RESERVA</th>
+                    <th scope="col">No. CUARTO</th>
+                    <th scope="col">TIPO DE CUARTO</th>
                     <th scope="col">CANTIDAD</th>
-                    <th scope="col">DIRECCIÓN</th>
-                    <th scope="col">USUARIO</th>
-                    <th scope="col">ENVÍO</th>
+                    <th scope="col">FECHA DE ENTRADA</th>
+                    <th scope="col">FECHA DE SALIDA</th>
+                    <th scope="col">CANTIDAD DE NOCHES</th>
+                    <th scope="col">HUÉSPED</th>
+                    <th scope="col">ESTADO</th>
                     <th scope="col">ACCIONES</th>
                 </thead>
                 <tbody>
-
+                @foreach ( $reservas as $reserva )
                     <tr>
-                      <td hidden></td>
-                      <td><img width="100" height="100" src="" alt=""></td>
-                      <td></td>
-                      <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;"></p></td>
-                      <td></td>
-                      <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;"></p></td>
-                      <td></td>
-                      <td>
-    <span id="envioValue" class="envio-status">
-
-    </span>
-</td>
-
+                      <td>{{ $reserva->numero_reserva }}</td>
+                      <td>{{$reserva->numero_cuarto}}</td>
+                      <td>{{ $reserva->tipo_cuarto }}</td>
+                      <td>{{ $reserva->cantidad_cuartos }}</td>
+                      <td>{{ $reserva->fecha_entrada->format('Y-m-d') }}</td>
+                      <td>{{ $reserva->fecha_salida->format('Y-m-d') }}</td>
+                      <td>{{ $reserva->cantidad_noches }}</td>
+                      <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;">{{ $reserva->huesped->nombre.' ' . $reserva->huesped->apellido }}</p></td>
+                      <td>{{ $reserva->estado }}<p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;"></p></td>
                       <td>
                 
                       <button class="btn btn-outline-success change-status" data-id="" data-status="" style="align-items: center; margin-left:10px;">
@@ -70,6 +67,7 @@
 
                 </td>
                     </tr>
+                    @endforeach
                 </tbody>
                 <!-- Agrega esta fila al final de tu tabla -->
 <tr id="noPendientesMessage" style="display: none;">

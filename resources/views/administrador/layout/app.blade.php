@@ -96,9 +96,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </ul>
           </li>-->
           <li class="nav-item">
-                <a href="usuarios" class="nav-link">
+                <a href="huespedes" class="nav-link">
                   <i class="nav-icon fas fa-user"></i>
-                  <p>Usuarios</p>
+                  <p>Huespedes</p>
                 </a>
               </li>
               <!--<li class="nav-item">
@@ -127,7 +127,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
 
           <li class="nav-item">
-            <a href="pedidos" class="nav-link">
+            <a href="reservacion" class="nav-link">
             <i class="nav-icon fas fa-bookmark"></i>
               <p>Reservaciones</p>
             </a>
