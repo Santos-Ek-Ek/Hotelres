@@ -103,7 +103,11 @@
 
 }
     </style>
+    
 </head>
+<body style="background-color: #FFC107;">
+    
+
 <div id="apartado1" style="    width: 100%;
     height: 100%;
     background-color: #FFC107;">
@@ -1130,5 +1134,5 @@ function enviarDatosAlBackend(datos) {
     });
 }
     </script>
-</body>
+</bodym>
 </html>
