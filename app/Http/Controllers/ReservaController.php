@@ -85,49 +85,53 @@ class ReservaController extends Controller
                  if (!$tipoHabitacion) {
                      throw new \Exception("Tipo de habitación no encontrado: " . $habitacion['tipo']);
                  }
-            // Buscar una habitación disponible del tipo seleccionado
-            $habitacionDisponible = Habitacion::where('tipo_habitacion_id', $tipoHabitacion->id)
-                ->whereDoesntHave('reservasbusqueda', function ($query) use ($request) {
-                    // Excluir habitaciones con reservas que solapen con el rango solicitado
-                    $query->where(function ($query) use ($request) {
-                        $query->whereBetween('fecha_entrada', [$request->fecha_entrada, $request->fecha_salida])
-                              ->orWhereBetween('fecha_salida', [$request->fecha_entrada, $request->fecha_salida])
-                              ->orWhere(function ($query) use ($request) {
-                                  $query->where('fecha_entrada', '<=', $request->fecha_entrada)
-                                        ->where('fecha_salida', '>=', $request->fecha_salida);
-                              });
-                    });
-                })
-                ->first();
-        
-        // Depuración
-        if (!$habitacionDisponible) {
-            Log::info('No se encontraron habitaciones disponibles para el tipo: ' . $habitacion['tipo']);
-            Log::info('Fechas solicitadas: ' . $request->fecha_entrada . ' - ' . $request->fecha_salida);
-            throw new \Exception("No hay habitaciones disponibles para el tipo: " . $habitacion['tipo']);
-        }
      
-                 if (!$habitacionDisponible) {
-                     throw new \Exception("No hay habitaciones disponibles para el tipo: " . $habitacion['tipo']);
+                 // Array para almacenar los IDs de las habitaciones ya asignadas
+                 $habitacionesAsignadas = [];
+     
+                 // Buscar y asignar múltiples habitaciones disponibles del tipo seleccionado
+                 for ($i = 0; $i < $habitacion['cantidad_cuartos']; $i++) {
+                     // Buscar una habitación disponible del tipo seleccionado, excluyendo las ya asignadas
+                     $habitacionDisponible = Habitacion::where('tipo_habitacion_id', $tipoHabitacion->id)
+                         ->whereDoesntHave('reservasbusqueda', function ($query) use ($request) {
+                             // Excluir habitaciones con reservas que solapen con el rango solicitado
+                             $query->where(function ($query) use ($request) {
+                                 $query->whereBetween('fecha_entrada', [$request->fecha_entrada, $request->fecha_salida])
+                                       ->orWhereBetween('fecha_salida', [$request->fecha_entrada, $request->fecha_salida])
+                                       ->orWhere(function ($query) use ($request) {
+                                           $query->where('fecha_entrada', '<=', $request->fecha_entrada)
+                                                 ->where('fecha_salida', '>=', $request->fecha_salida);
+                                       });
+                             });
+                         })
+                         ->whereNotIn('id', $habitacionesAsignadas) // Excluir habitaciones ya asignadas
+                         ->first();
+     
+                     if (!$habitacionDisponible) {
+                         throw new \Exception("No hay suficientes habitaciones disponibles para el tipo: " . $habitacion['tipo']);
+                     }
+     
+                     // Crear la reserva
+                     Reserva::create([
+                         'huesped_id' => $huesped->id,
+                         'tipo_cuarto' => $tipoHabitacion->tipo_cuarto, // Guardar el tipo de cuarto
+                         'cantidad_cuartos' => 1, // Cada reserva es para 1 cuarto
+                         'cantidad_huespedes' => $habitacion['cantidad_huespedes'],
+                         'numero_reserva' => $numeroReserva,
+                         'subtotal' => $request->subtotal / $habitacion['cantidad_cuartos'], // Dividir el subtotal entre los cuartos
+                         'fecha_entrada' => $request->fecha_entrada,
+                         'fecha_salida' => $request->fecha_salida,
+                         'cantidad_noches' => $request->cantidad_noches,
+                         'estado' => 'pendiente',
+                         'numero_cuarto' => $habitacionDisponible->numero_habitacion, // Asignar el número de cuarto
+                     ]);
+     
+                     // Marcar la habitación como "Reservado"
+                     $habitacionDisponible->update(['estado' => 'Reservado']);
+     
+                     // Agregar la habitación asignada al array de habitacionesAsignadas
+                     $habitacionesAsignadas[] = $habitacionDisponible->id;
                  }
-     
-                 // Crear la reserva
-                 Reserva::create([
-                     'huesped_id' => $huesped->id,
-                     'tipo_cuarto' => $tipoHabitacion->tipo_cuarto, // Guardar el tipo de cuarto
-                     'cantidad_cuartos' => $habitacion['cantidad_cuartos'],
-                     'cantidad_huespedes' => $habitacion['cantidad_huespedes'],
-                     'numero_reserva' => $numeroReserva,
-                     'subtotal' => $request->subtotal,
-                     'fecha_entrada' => $request->fecha_entrada,
-                     'fecha_salida' => $request->fecha_salida,
-                     'cantidad_noches' => $request->cantidad_noches,
-                     'estado' => 'pendiente',
-                     'numero_cuarto' => $habitacionDisponible->numero_habitacion, // Asignar el número de cuarto
-                 ]);
-     
-                 // Marcar la habitación como "Reservado"
-                 $habitacionDisponible->update(['estado' => 'Reservado']);
              }
      
              return response()->json([
