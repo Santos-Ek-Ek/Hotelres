@@ -49,7 +49,10 @@ class ReservaController extends Controller
                  'correo' => 'required|email|max:255',
                  'telefono' => 'required|string|max:20',
                  'habitaciones' => 'required|array',
-                 'cantidad_huespedes' => 'required|integer|min:1',
+                 'habitaciones.*.tipo' => 'required|string|max:255', // Validar cada campo dentro del array
+                 'habitaciones.*.cantidad' => 'required|integer|min:1',
+                 'habitaciones.*.cantidad_cuartos' => 'required|integer|min:1',
+                 'habitaciones.*.cantidad_huespedes' => 'required|integer|min:1',
                  'subtotal' => 'required|numeric|min:0',
                  'fecha_entrada' => 'required|date',
                  'fecha_salida' => 'required|date|after:fecha_entrada',
@@ -82,11 +85,27 @@ class ReservaController extends Controller
                  if (!$tipoHabitacion) {
                      throw new \Exception("Tipo de habitación no encontrado: " . $habitacion['tipo']);
                  }
-     
-                 // Buscar una habitación disponible del tipo seleccionado
-                 $habitacionDisponible = Habitacion::where('tipo_habitacion_id', $tipoHabitacion->id)
-                     ->where('estado', 'Disponible') // Filtrar por estado "Disponible"
-                     ->first();
+            // Buscar una habitación disponible del tipo seleccionado
+            $habitacionDisponible = Habitacion::where('tipo_habitacion_id', $tipoHabitacion->id)
+                ->whereDoesntHave('reservasbusqueda', function ($query) use ($request) {
+                    // Excluir habitaciones con reservas que solapen con el rango solicitado
+                    $query->where(function ($query) use ($request) {
+                        $query->whereBetween('fecha_entrada', [$request->fecha_entrada, $request->fecha_salida])
+                              ->orWhereBetween('fecha_salida', [$request->fecha_entrada, $request->fecha_salida])
+                              ->orWhere(function ($query) use ($request) {
+                                  $query->where('fecha_entrada', '<=', $request->fecha_entrada)
+                                        ->where('fecha_salida', '>=', $request->fecha_salida);
+                              });
+                    });
+                })
+                ->first();
+        
+        // Depuración
+        if (!$habitacionDisponible) {
+            Log::info('No se encontraron habitaciones disponibles para el tipo: ' . $habitacion['tipo']);
+            Log::info('Fechas solicitadas: ' . $request->fecha_entrada . ' - ' . $request->fecha_salida);
+            throw new \Exception("No hay habitaciones disponibles para el tipo: " . $habitacion['tipo']);
+        }
      
                  if (!$habitacionDisponible) {
                      throw new \Exception("No hay habitaciones disponibles para el tipo: " . $habitacion['tipo']);
@@ -97,7 +116,7 @@ class ReservaController extends Controller
                      'huesped_id' => $huesped->id,
                      'tipo_cuarto' => $tipoHabitacion->tipo_cuarto, // Guardar el tipo de cuarto
                      'cantidad_cuartos' => $habitacion['cantidad_cuartos'],
-                     'cantidad_huespedes' => $request->cantidad_huespedes,
+                     'cantidad_huespedes' => $habitacion['cantidad_huespedes'],
                      'numero_reserva' => $numeroReserva,
                      'subtotal' => $request->subtotal,
                      'fecha_entrada' => $request->fecha_entrada,

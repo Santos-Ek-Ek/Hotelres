@@ -157,13 +157,23 @@ public function buscarHabitaciones(Request $request)
     $checkout = \Carbon\Carbon::createFromFormat('d-m-Y', $checkout)->format('Y-m-d');
 
     // Obtener las habitaciones disponibles
-    $habitaciones = Habitacion::with('tipoHabitacion')
-        ->where('estado', 'Disponible')
+    $habitacionesDisponibles = Habitacion::with('tipoHabitacion')
+        ->whereDoesntHave('reservasbusqueda', function ($query) use ($checkin, $checkout) {
+            // Excluir habitaciones con reservas que solapen con el rango solicitado
+            $query->where(function ($query) use ($checkin, $checkout) {
+                $query->whereBetween('fecha_entrada', [$checkin, $checkout])
+                      ->orWhereBetween('fecha_salida', [$checkin, $checkout])
+                      ->orWhere(function ($query) use ($checkin, $checkout) {
+                          $query->where('fecha_entrada', '<=', $checkin)
+                                ->where('fecha_salida', '>=', $checkout);
+                      });
+            });
+        })
         ->get();
 
     // Agrupar habitaciones por tipo_habitacion_id y contar cuántas hay disponibles
     $habitacionesPorTipo = [];
-    foreach ($habitaciones as $habitacion) {
+    foreach ($habitacionesDisponibles as $habitacion) {
         $tipoId = $habitacion->tipo_habitacion_id;
         if (!isset($habitacionesPorTipo[$tipoId])) {
             $habitacionesPorTipo[$tipoId] = [

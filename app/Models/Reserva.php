@@ -97,4 +97,9 @@ class Reserva extends Model
 {
     return $this->belongsTo(Habitacion::class);
 }
+
+public function habitacionbusqueda()
+{
+    return $this->belongsTo(Habitacion::class, 'numero_cuarto', 'numero_habitacion');
+}
 }

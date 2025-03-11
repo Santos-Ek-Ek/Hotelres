@@ -27,4 +27,8 @@ class Habitacion extends Model
     return $this->hasMany(Reserva::class);
 }
 
+public function reservasbusqueda()
+{
+    return $this->hasMany(Reserva::class, 'numero_cuarto', 'numero_habitacion');
+}
 }

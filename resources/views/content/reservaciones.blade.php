@@ -831,7 +831,7 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
         nuevaEntradaHuespedes.innerHTML = `
             <div class="d-flex align-items-center">
                 <i class="fas fa-user-friends"></i>
-                <span class="ml-2">${maxPersonas}</span>
+                <span class="ml-2 cantidad-huespedes" >${maxPersonas}</span>
             </div>
             <button class="btn btn-link text-danger p-0" onclick="eliminarHabitacion(this)">
                 <i class="fas fa-trash-alt"></i>
@@ -1058,14 +1058,15 @@ function actualizarResumenFechas(checkin, checkout) {
     // Enviar los datos al backend
     enviarDatosAlBackend(datosCompletos);
 });
+
 function obtenerDatosReserva() {
     const datosReserva = {
         habitaciones: [], // Array para almacenar múltiples habitaciones
-        cantidad_huespedes: 0,
         subtotal: parseFloat(document.getElementById('resumenSubtotal').textContent.replace('MXN ', '').replace(/,/g, '')),
         fecha_entrada: document.getElementById('checkinbus').value,
         fecha_salida: document.getElementById('checkoutbus').value,
         cantidad_noches: parseInt(document.getElementById('resumenNoches').textContent.split(' ')[0]),
+        cantidad_huespedes: 0, // Inicializar en 0
     };
 
     // Obtener todas las entradas de habitaciones en el resumen
@@ -1076,20 +1077,23 @@ function obtenerDatosReserva() {
         const textoHabitacion = entrada.querySelector('span:nth-child(1)')?.textContent;
         if (textoHabitacion) {
             const [cantidad, tipo] = textoHabitacion.split('x').map(item => item.trim());
+
+            // Obtener la cantidad de huéspedes para esta habitación
+            const cantidadHuespedes = entrada.nextElementSibling?.querySelector('.cantidad-huespedes')?.textContent;
+
             datosReserva.habitaciones.push({
                 tipo: tipo, // Nombre del tipo de habitación
                 cantidad: parseInt(cantidad), // Cantidad de habitaciones de este tipo
                 cantidad_cuartos: parseInt(cantidad), // Incluir cantidad_cuartos
+                cantidad_huespedes: parseInt(cantidadHuespedes || 1), // Asociar huéspedes a la habitación
             });
-        }
 
-        // Obtener la cantidad de huéspedes
-        const cantidadHuespedes = entrada.nextElementSibling?.querySelector('.ml-2')?.textContent;
-        if (cantidadHuespedes) {
-            datosReserva.cantidad_huespedes += parseInt(cantidadHuespedes);
+            // Sumar la cantidad de huéspedes al total
+            datosReserva.cantidad_huespedes += parseInt(cantidadHuespedes || 1);
         }
     });
 
+    console.log("Datos de la reserva:", datosReserva);
     return datosReserva;
 }
 
