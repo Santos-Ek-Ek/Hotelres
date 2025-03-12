@@ -158,7 +158,7 @@ public function buscarHabitaciones(Request $request)
 
     // Obtener las habitaciones disponibles
     $habitacionesDisponibles = Habitacion::with('tipoHabitacion')
-        ->whereDoesntHave('reservasbusqueda', function ($query) use ($checkin, $checkout) {
+        ->whereDoesntHave('reservas', function ($query) use ($checkin, $checkout) {
             // Excluir habitaciones con reservas que solapen con el rango solicitado
             $query->where(function ($query) use ($checkin, $checkout) {
                 $query->whereBetween('fecha_entrada', [$checkin, $checkout])

@@ -61,6 +61,7 @@ class Reserva extends Model
         'estado',
         'huesped_id',
         'numero_cuarto',
+        'habitacion_id'
     ];
 
     /**

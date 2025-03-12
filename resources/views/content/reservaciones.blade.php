@@ -1071,6 +1071,8 @@ function obtenerDatosReserva() {
         fecha_salida: document.getElementById('checkoutbus').value,
         cantidad_noches: parseInt(document.getElementById('resumenNoches').textContent.split(' ')[0]),
         cantidad_huespedes: 0, // Inicializar en 0
+        total: parseFloat(document.getElementById('resumenTotal').textContent.replace('MXN ', '').replace(/,/g, '')),
+        impuesto: parseFloat(document.getElementById('resumenImpuestos').textContent.replace('MXN ', '').replace(/,/g, '')),
     };
 
     // Obtener todas las entradas de habitaciones en el resumen

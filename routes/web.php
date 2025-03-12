@@ -31,9 +31,9 @@ Route::get('/habitacion', function () {
 Route::get('/reservaciones', function () {
     return view('content.reservaciones');
 });
-// Route::get('/productos', function () {
-//     return view('administrador.productos');
-// });
+Route::get('/pagos', function () {
+    return view('administrador.pagos');
+});
 Route::get('/categorias', [tipoHabitacionesController::class, 'index'])->name('categorias.index');
 Route::post('/tipo-habitacion', [tipoHabitacionesController::class, 'store'])->name('tipo-habitacion.store');
 Route::put('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'update'])->name('tipo-habitacion.update');

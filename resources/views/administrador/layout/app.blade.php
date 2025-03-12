@@ -133,6 +133,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
           </li>
           
+          <li class="nav-item">
+            <a href="pagos" class="nav-link">
+            <i class="nav-icon fas fa-money-bill-wave"></i>
+              <p>Pagos</p>
+            </a>
+          </li>
+          
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

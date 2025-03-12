@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Habitacion extends Model
 {
     use HasFactory;
+
     protected $table = 'habitaciones';
-    protected $fillable = ['numero_habitacion', 'tipo_habitacion_id','estado', 'descripcion','imagen_habitacion'];
+    protected $fillable = ['numero_habitacion', 'tipo_habitacion_id', 'estado', 'descripcion', 'imagen_habitacion'];
 
     // Relación con la tabla tipos_habitaciones
     public function tipoHabitacion()
     {
-        return $this->belongsTo(tipoHabitacion::class, 'tipo_habitacion_id');
+        return $this->belongsTo(TipoHabitacion::class, 'tipo_habitacion_id');
     }
 
     // Relación con las imágenes adicionales de la habitación
@@ -22,13 +23,10 @@ class Habitacion extends Model
     {
         return $this->hasMany(habitacion_imagenes::class);
     }
-    public function reservas()
-{
-    return $this->hasMany(Reserva::class);
-}
 
-public function reservasbusqueda()
-{
-    return $this->hasMany(Reserva::class, 'numero_cuarto', 'numero_habitacion');
-}
+    // Relación con las reservas (usando habitacion_id)
+    public function reservas()
+    {
+        return $this->hasMany(Reserva::class, 'habitacion_id');
+    }
 }

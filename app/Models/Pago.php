@@ -51,6 +51,9 @@ class Pago extends Model
      */
     protected $fillable = [
         'numero_reserva',
+        'huesped_id',
+        'subtotal',
+        'impuesto',
         'total',
         'fecha',
         'estado'
@@ -80,5 +83,9 @@ class Pago extends Model
     public function reserva()
     {
         return $this->belongsTo(Reserva::class, 'numero_reserva', 'numero_reserva');
+    }
+    public function huesped()
+    {
+        return $this->belongsTo(Huesped::class, 'huesped_id');
     }
 }
