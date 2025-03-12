@@ -53,7 +53,7 @@ class ReservaController extends Controller
                  'habitaciones.*.cantidad' => 'required|integer|min:1',
                  'habitaciones.*.cantidad_cuartos' => 'required|integer|min:1',
                  'habitaciones.*.cantidad_huespedes' => 'required|integer|min:1',
-                 'subtotal' => 'required|numeric|min:0',
+                 'habitaciones.*.subtotal' => 'required|numeric|min:0',
                  'fecha_entrada' => 'required|date',
                  'fecha_salida' => 'required|date|after:fecha_entrada',
                  'cantidad_noches' => 'required|integer|min:1',
@@ -85,7 +85,7 @@ class ReservaController extends Controller
                  if (!$tipoHabitacion) {
                      throw new \Exception("Tipo de habitación no encontrado: " . $habitacion['tipo']);
                  }
-     
+                 $subtotalPorHabitacion = $habitacion['subtotal'] / $habitacion['cantidad_cuartos'];
                  // Array para almacenar los IDs de las habitaciones ya asignadas
                  $habitacionesAsignadas = [];
      
@@ -118,7 +118,7 @@ class ReservaController extends Controller
                          'cantidad_cuartos' => 1, // Cada reserva es para 1 cuarto
                          'cantidad_huespedes' => $habitacion['cantidad_huespedes'],
                          'numero_reserva' => $numeroReserva,
-                         'subtotal' => $request->subtotal / $habitacion['cantidad_cuartos'], // Dividir el subtotal entre los cuartos
+                         'subtotal' => $subtotalPorHabitacion, // Dividir el subtotal entre los cuartos
                          'fecha_entrada' => $request->fecha_entrada,
                          'fecha_salida' => $request->fecha_salida,
                          'cantidad_noches' => $request->cantidad_noches,

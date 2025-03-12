@@ -1084,12 +1084,13 @@ function obtenerDatosReserva() {
 
             // Obtener la cantidad de huéspedes para esta habitación
             const cantidadHuespedes = entrada.nextElementSibling?.querySelector('.cantidad-huespedes')?.textContent;
-
+            const subtotalHabitacion = parseFloat(entrada.querySelector('span:nth-child(2)')?.textContent.replace('MXN ', '').replace(/,/g, ''));
             datosReserva.habitaciones.push({
                 tipo: tipo, // Nombre del tipo de habitación
                 cantidad: parseInt(cantidad), // Cantidad de habitaciones de este tipo
                 cantidad_cuartos: parseInt(cantidad), // Incluir cantidad_cuartos
                 cantidad_huespedes: parseInt(cantidadHuespedes || 1), // Asociar huéspedes a la habitación
+                subtotal: subtotalHabitacion,
             });
 
             // Sumar la cantidad de huéspedes al total
