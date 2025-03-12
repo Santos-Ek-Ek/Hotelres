@@ -43,9 +43,9 @@
                     <th scope="col">FECHA DE ENTRADA</th>
                     <th scope="col">FECHA DE SALIDA</th>
                     <th scope="col">CANTIDAD DE NOCHES</th>
-                    <th scope="col">HUÉSPED</th>
+                    <th scope="col">CANTIDAD HUESPEDES</th>
+                    <th scope="col">HUÉSPED PRINCIPAL</th>
                     <th scope="col">ESTADO</th>
-                    <th scope="col">ACCIONES</th>
                 </thead>
                 <tbody>
                 @foreach ( $reservas as $reserva )
@@ -57,15 +57,16 @@
                       <td>{{ $reserva->fecha_entrada->format('Y-m-d') }}</td>
                       <td>{{ $reserva->fecha_salida->format('Y-m-d') }}</td>
                       <td>{{ $reserva->cantidad_noches }}</td>
+                      <td>{{ $reserva->cantidad_huespedes }}</td>
                       <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;">{{ $reserva->huesped->nombre.' ' . $reserva->huesped->apellido }}</p></td>
-                      <td>{{ $reserva->estado }}<p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;"></p></td>
-                      <td>
-                
-                      <button class="btn btn-outline-success change-status" data-id="" data-status="" style="align-items: center; margin-left:10px;">
-        <i class='fas fa-paper-plane d-flex'> Enviado</i>
-    </button>
-
-                </td>
+                      <td><p style="display: inline-block; max-width: 20rem; max-height: 7.8rem; overflow: auto; white-space: normal; word-wrap: break-word;">
+                      <select name="estado" id="" class="form-select">
+                      <option value="{{ $reserva->estado }}" selected>{{ $reserva->estado }}</option>
+                      <option value="Ocupado">Ocupado</option>
+                      <option value="Cancelado">Cancelado</option>
+                      </select>
+                            </p>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
