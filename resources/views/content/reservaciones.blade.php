@@ -750,19 +750,39 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Función para cambiar la cantidad de habitaciones seleccionadas
-        function cambiarCantidad(boton, delta, cantidadDisponible) {
-            const input = boton.parentElement.querySelector('input');
-            let cantidad = parseInt(input.value);
+        function cambiarCantidad(button, cambio, cantidadDisponible) {
+    // Obtener el contenedor de la tarjeta
+    const card = button.closest('.card');
+    
+    // Obtener el input de cantidad
+    const cantidadInput = card.querySelector('input[type="text"]');
+    let cantidad = parseInt(cantidadInput.value);
 
-            cantidad += delta;
+    // Calcular la nueva cantidad
+    const nuevaCantidad = cantidad + cambio;
 
-            // Validar que la cantidad no sea menor que 1 ni mayor que la cantidad disponible
-            if (cantidad < 1) cantidad = 1;
-            if (cantidad > cantidadDisponible) cantidad = cantidadDisponible;
+    // Validar que la cantidad no sea menor que 1 ni mayor que la cantidad disponible
+    if (nuevaCantidad < 1 || nuevaCantidad > cantidadDisponible) {
+        return; // No hacer nada si la cantidad no es válida
+    }
 
-            input.value = cantidad;
-        }
+    // Actualizar el valor del input
+    cantidadInput.value = nuevaCantidad;
+
+    // Obtener el precio por noche
+    const precioPorNoche = parseFloat(card.querySelector('.add-btn').getAttribute('data-precio'));
+
+    // Calcular el nuevo precio total
+    const precioTotal = nuevaCantidad * precioPorNoche;
+
+    // Actualizar el precio total en la tarjeta
+    const precioTotalElement = card.querySelector('h5.fw-bold');
+    precioTotalElement.textContent = `MXN ${precioTotal.toFixed(2)}`;
+
+    // Actualizar el botón "Añadir" con la nueva cantidad
+    const addButton = card.querySelector('.add-btn');
+    addButton.setAttribute('data-cantidad', nuevaCantidad);
+}
         
 
         document.removeEventListener('click', handleAddButtonClick); // Eliminar el evento si ya existe
@@ -777,6 +797,8 @@ function handleAddButtonClick(event) {
         const maxPersonas = event.target.closest('.card-body').querySelector('select').value;
         const cantidadDisponible = event.target.getAttribute('data-cantidad-disponible');
         const index = event.target.getAttribute('data-index');
+        const subtotal = precioTotal * cantidad;
+
         agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPersonas,cantidadDisponible, index);
     }
 }
@@ -788,7 +810,7 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
     // Ocultar el mensaje y mostrar el resumen
     mensajeSinAlojamientos.style.display = 'none';
     resumenReserva.style.display = 'block';
-
+    const precioTotalReserva = precioTotal * cantidad;
     // Buscar si ya existe una entrada con el mismo tipo de habitación y número de huéspedes
     const entradasHabitaciones = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2');
     let entradaExistente = null;
@@ -827,7 +849,7 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
         nuevaEntrada.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2', 'habitacion-agregada');
         nuevaEntrada.innerHTML = `
             <span>${cantidad}x ${tipoHabitacion}</span>
-            <span>MXN ${precioTotal}</span>
+            <span>MXN ${precioTotalReserva.toFixed(2)}</span>
         `;
 
         const nuevaEntradaHuespedes = document.createElement('div');
@@ -953,42 +975,25 @@ tarjetasHabitaciones.forEach(tarjeta => {
 function actualizarTotales() {
     const resumenReserva = document.getElementById('resumenReserva');
 
-    // Verificar si el resumen de reserva existe
     if (!resumenReserva) {
         console.error("El resumen de reserva no existe en el DOM.");
         return;
     }
 
-    // Selecciona solo los elementos que contienen los precios de las habitaciones
-    const preciosElements = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2 span:nth-child(2):not(#resumenSubtotal):not(#resumenImpuestos):not(#resumenTotal):not(#resumenDeposito)');
+    // Seleccionar solo los precios de las habitaciones
+    const preciosElements = resumenReserva.querySelectorAll('.d-flex.justify-content-between.align-items-center.mb-2.habitacion-agregada span:nth-child(2)');
 
-    console.log("Elementos de precios encontrados:", preciosElements);
-
-    // Extrae los valores numéricos de los precios
     const precios = Array.from(preciosElements).map(span => {
         const precioTexto = span.textContent.replace('MXN ', '').replace(/,/g, '');
-        console.log("Texto del precio:", precioTexto);
-        const precioNumero = parseFloat(precioTexto);
-        console.log("Precio convertido a número:", precioNumero);
-        return precioNumero;
+        return parseFloat(precioTexto);
     });
 
-    console.log("Precios extraídos:", precios);
-
-    // Suma todos los precios para obtener el subtotal
     const subtotal = precios.reduce((sum, precio) => sum + precio, 0);
-    console.log("Subtotal:", subtotal);
-
-    // Calcula impuestos (16%)
     const impuestos = subtotal * 0.16;
-    console.log("Impuestos:", impuestos);
-    const subtotal2 = subtotal - impuestos;
-
-    // Calcula el total
     const total = subtotal;
-    console.log("Total:", total);
+    const subtotal2 = subtotal- impuestos;
 
-    // Actualiza los valores en el DOM solo si los elementos existen
+    // Actualizar los valores en el DOM
     const resumenSubtotal = document.getElementById('resumenSubtotal');
     const resumenImpuestos = document.getElementById('resumenImpuestos');
     const resumenTotal = document.getElementById('resumenTotal');
@@ -996,26 +1001,15 @@ function actualizarTotales() {
 
     if (resumenSubtotal) {
         resumenSubtotal.textContent = `MXN ${subtotal2.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-    } else {
-        console.error("Elemento 'resumenSubtotal' no encontrado.");
     }
-
     if (resumenImpuestos) {
         resumenImpuestos.textContent = `MXN ${impuestos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-    } else {
-        console.error("Elemento 'resumenImpuestos' no encontrado.");
     }
-
     if (resumenTotal) {
         resumenTotal.textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-    } else {
-        console.error("Elemento 'resumenTotal' no encontrado.");
     }
-
     if (resumenDeposito) {
         resumenDeposito.textContent = `MXN ${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-    } else {
-        console.error("Elemento 'resumenDeposito' no encontrado.");
     }
 }
 function actualizarResumenFechas(checkin, checkout) {
