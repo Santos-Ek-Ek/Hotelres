@@ -88,7 +88,8 @@
 </tr>
 <tr id="noEnviadosMessage" style="display: none;">
     <td colspan="9">Ningún pago ha sido completado.</td>
-</tr><tr id="noCanceladoMessage" style="display: none;">
+</tr>
+<tr id="noCanceladoMessage" style="display: none;">
     <td colspan="9">Ningún pago ha sido cancelado.</td>
 </tr>
               </table>

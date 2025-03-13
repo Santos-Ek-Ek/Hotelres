@@ -71,7 +71,7 @@ class ReservaController extends Controller
             'codigo_postal' => $request->codigo_postal,
             'correo' => $request->correo,
             'telefono' => $request->telefono,
-            'estado' => 'pendiente',
+            'estado' => 'Pendiente',
         ]);
 
         // Generar un número de reserva único (una sola vez)
@@ -122,7 +122,7 @@ class ReservaController extends Controller
                     'fecha_entrada' => $fechaEntrada,
                     'fecha_salida' => $fechaSalida,
                     'cantidad_noches' => $request->cantidad_noches,
-                    'estado' => 'pendiente',
+                    'estado' => 'Pendiente',
                     'numero_cuarto' => $habitacionDisponible->numero_habitacion,
                     'habitacion_id' => $habitacionDisponible->id, // Asignar el ID de la habitación
                 ]);
@@ -140,7 +140,7 @@ class ReservaController extends Controller
             'impuesto' => $request->impuesto,
             'total' => $request->total,
             'fecha' => now(),
-            'estado' => 'pendiente',
+            'estado' => 'Pendiente',
         ]);
 
         DB::commit();
@@ -183,7 +183,35 @@ class ReservaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+                 // Validar que el estado esté presente en la solicitud
+                 $request->validate([
+                    'estado' => 'required|in:Pendiente,Ocupado,Cancelado', // Asegúrate de que el estado sea válido
+                ]);
+        
+                try {
+                    // Buscar el pago por su ID
+                    $reserva = Reserva::findOrFail($id);
+        
+                    // Actualizar el estado del pago
+                    $reserva->estado = $request->estado;
+                    $reserva->save();
+        
+                    // Devolver una respuesta JSON de éxito
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Estado actualizado correctamente.',
+                    ]);
+                } catch (\Exception $e) {
+                    // Log del error (opcional)
+                    Log::error('Error al actualizar el estado del pago: ' . $e->getMessage());
+        
+                    // Devolver una respuesta JSON de error
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Error al actualizar el estado.',
+                    ], 500);
+                }
+        
     }
 
     /**

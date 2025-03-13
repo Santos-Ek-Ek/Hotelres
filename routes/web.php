@@ -55,5 +55,6 @@ Route::get('/buscar-habitaciones', [HabitacionesController::class, 'buscarHabita
 Route::post('/reservas', [ReservaController::class, 'store']);
 Route::get('/reservacion', [ReservaController::class, 'index']);
 Route::get('/huespedes', [ReservaController::class, 'huesped']);
+Route::post('/actualizar-estado-reserva/{id}', [ReservaController::class, 'update'])->name('actualizar.reserva.estado');
 
 
