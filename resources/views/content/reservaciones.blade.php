@@ -730,7 +730,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                     <label class="fw-bold">Cantidad</label>
                                                     <div class="d-flex">
                                                         <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, -1, ${cantidad_disponible})">-</button>
-                                                        <input type="text" class="form-control text-center w-25" value="1" readonly>
+    <input type="text" class="form-control text-center w-25" value="1" readonly max="${cantidad_disponible}">
                                                         <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, 1, ${cantidad_disponible})">+</button>
                                                     </div>
                                                 </div>
@@ -751,19 +751,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function cambiarCantidad(button, cambio, cantidadDisponible) {
-    // Obtener el contenedor de la tarjeta
     const card = button.closest('.card');
-    
-    // Obtener el input de cantidad
     const cantidadInput = card.querySelector('input[type="text"]');
     let cantidad = parseInt(cantidadInput.value);
-
-    // Calcular la nueva cantidad
     const nuevaCantidad = cantidad + cambio;
-
+    const maxCantidad = parseInt(cantidadInput.getAttribute('max'));
     // Validar que la cantidad no sea menor que 1 ni mayor que la cantidad disponible
-    if (nuevaCantidad < 1 || nuevaCantidad > cantidadDisponible) {
-        return; // No hacer nada si la cantidad no es válida
+    if (nuevaCantidad < 1) {
+        alert('La cantidad mínima es 1.');
+        return;
+    }
+    if (nuevaCantidad > maxCantidad) {
+        alert(`No hay suficientes habitaciones disponibles. Solo quedan ${maxCantidad}.`);
+        return;
     }
 
     // Actualizar el valor del input
@@ -885,6 +885,8 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
  // Actualizar el texto de la cantidad disponible
  const cantidadDisponibleElement = card.querySelector(`#cantidad-disponible-${index}`);
     cantidadDisponibleElement.textContent = nuevaCantidadDisponible;
+    const cantidadInput = card.querySelector('input[type="text"]');
+    cantidadInput.setAttribute('max', nuevaCantidadDisponible);
     // Deshabilitar el botón si no hay disponibilidad
     if (nuevaCantidadDisponible <= 0) {
         addButton.disabled = true;
@@ -892,6 +894,7 @@ function agregarAlResumen(tipoHabitacion, precioTotal, noches, cantidad, maxPers
         addButton.classList.remove('btn-warning');
         addButton.classList.add('btn-secondary');
     }
+
 
     // Actualizar los totales
     actualizarTotales();
@@ -937,7 +940,8 @@ function eliminarHabitacion(boton) {
     // Actualizar el texto de la cantidad disponible
     const cantidadDisponibleElement = card.querySelector(`#cantidad-disponible-${index}`);
     cantidadDisponibleElement.textContent = cantidadDisponible;
-
+    const cantidadInput = card.querySelector('input[type="text"]');
+    cantidadInput.setAttribute('max', cantidadDisponible);
     // Habilitar el botón si hay disponibilidad
     if (cantidadDisponible > 0) {
         addButton.disabled = false;
