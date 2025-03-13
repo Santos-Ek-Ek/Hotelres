@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\tipoHabitacionesController;
 use App\Http\Controllers\HabitacionesController;
+use App\Http\Controllers\PagoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservaController;
 
@@ -31,9 +32,10 @@ Route::get('/habitacion', function () {
 Route::get('/reservaciones', function () {
     return view('content.reservaciones');
 });
-Route::get('/pagos', function () {
-    return view('administrador.pagos');
-});
+Route::get('/pagos',[PagoController::class,'index']);
+Route::post('/actualizar-estado/{id}', [PagoController::class, 'update'])->name('actualizar.estado');
+
+
 Route::get('/categorias', [tipoHabitacionesController::class, 'index'])->name('categorias.index');
 Route::post('/tipo-habitacion', [tipoHabitacionesController::class, 'store'])->name('tipo-habitacion.store');
 Route::put('/tipo-habitacion/{id}', [tipoHabitacionesController::class, 'update'])->name('tipo-habitacion.update');

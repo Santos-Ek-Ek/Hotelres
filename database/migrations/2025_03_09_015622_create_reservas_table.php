@@ -17,6 +17,7 @@ class CreateReservasTable extends Migration
             $table->id(); // Columna de ID autoincremental
             $table->unsignedInteger('cantidad_cuartos'); // Cantidad de cuartos reservados
             $table->unsignedBigInteger('huesped_id'); // Cantidad de cuartos reservados
+            $table->unsignedBigInteger('habitacion_id'); // Cantidad de cuartos reservados
             $table->string('tipo_cuarto'); // ID del tipo de cuarto (clave foránea)
             $table->unsignedInteger('cantidad_huespedes'); // Cantidad de huéspedes
             $table->string('numero_reserva', 50); // Número de reserva (único)
@@ -27,6 +28,8 @@ class CreateReservasTable extends Migration
             $table->string('estado');
             $table->string('numero_cuarto');
             $table->timestamps(); // Columnas created_at y updated_at
+             // Clave foránea que hace referencia a la tabla tipos_habitaciones
+             $table->foreign('habitacion_id')->references('id')->on('habitaciones')->onDelete('cascade');
         });
     }
 
