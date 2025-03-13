@@ -27,6 +27,10 @@
     <input class="form-check-input" type="checkbox" id="checkPendientes" value="PENDIENTE">
     <label class="form-check-label" for="checkPendientes">Pendientes</label>
 </div>
+<div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" id="checkCancelados" value="PENDIENTE">
+    <label class="form-check-label" for="checkCancelado">Cancelados</label>
+</div>
 
       <div class="row">
         <div class="col-12">
@@ -80,10 +84,12 @@
                 </tbody>
                 <!-- Agrega esta fila al final de tu tabla -->
 <tr id="noPendientesMessage" style="display: none;">
-    <td colspan="9">No hay pedidos pendientes.</td>
+    <td colspan="9">No hay pagos pendientes.</td>
 </tr>
 <tr id="noEnviadosMessage" style="display: none;">
-    <td colspan="9">Ningún pedido ha sido enviado.</td>
+    <td colspan="9">Ningún pago ha sido completado.</td>
+</tr><tr id="noCanceladoMessage" style="display: none;">
+    <td colspan="9">Ningún pago ha sido cancelado.</td>
 </tr>
               </table>
             </div>
@@ -163,16 +169,19 @@ function actualizarEstado(select) {
         const tableRows = document.querySelectorAll('#tbl2 tbody tr');
         const noPendientesMessage = document.getElementById('noPendientesMessage');
         const noEnviadosMessage = document.getElementById('noEnviadosMessage');
+        const noCanceladosMessage = document.getElementById('noCanceladoMessage');
 
         // Función para filtrar la tabla
         function filtrarTabla() {
             const searchText = searchInput.value.toLowerCase(); // Texto de búsqueda en minúsculas
             const mostrarEnviados = checkEnviados.checked; // Estado del checkbox "Enviados"
             const mostrarPendientes = checkPendientes.checked; // Estado del checkbox "Pendientes"
+            const mostrarCancelados = checkCancelados.checked; // Estado del checkbox "Cancelados"
 
             let filasVisibles = 0;
             let pendientesVisibles = 0;
             let enviadosVisibles = 0;
+            let canceladosVisibles = 0;
 
             tableRows.forEach(row => {
                 // Verificar que la fila tenga al menos 7 celdas
@@ -192,7 +201,8 @@ function actualizarEstado(select) {
                         const coincideEstado =
                             (mostrarEnviados && estado === 'Completado') ||
                             (mostrarPendientes && estado === 'Pendiente') ||
-                            (!mostrarEnviados && !mostrarPendientes); // Mostrar todos si no hay filtros
+                            (mostrarCancelados && estado === 'Cancelado') ||
+                            (!mostrarEnviados && !mostrarPendientes && !mostrarCancelados); // Mostrar todos si no hay filtros
 
                         // Mostrar u ocultar la fila según los filtros
                         if (coincideBusqueda && coincideEstado) {
@@ -200,6 +210,7 @@ function actualizarEstado(select) {
                             filasVisibles++;
                             if (estado === 'Pendiente') pendientesVisibles++;
                             if (estado === 'Completado') enviadosVisibles++;
+                            if (estado === 'Cancelado') canceladosVisibles++;
                         } else {
                             row.style.display = 'none';
                         }
@@ -210,12 +221,14 @@ function actualizarEstado(select) {
             // Mostrar mensajes si no hay filas visibles
             noPendientesMessage.style.display = (pendientesVisibles === 0 && mostrarPendientes) ? '' : 'none';
             noEnviadosMessage.style.display = (enviadosVisibles === 0 && mostrarEnviados) ? '' : 'none';
+            noCanceladosMessage.style.display = (canceladosVisibles === 0 && mostrarCancelados) ? '' : 'none';
         }
 
         // Eventos para activar el filtrado
         searchInput.addEventListener('input', filtrarTabla);
         checkEnviados.addEventListener('change', filtrarTabla);
         checkPendientes.addEventListener('change', filtrarTabla);
+        checkCancelados.addEventListener('change', filtrarTabla);
     });
 </script>
 @endsection
