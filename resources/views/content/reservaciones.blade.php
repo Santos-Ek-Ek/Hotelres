@@ -32,7 +32,7 @@
         }
         .main-image {
             width: 100%;
-            height: 400px;
+            height: 100%;
             object-fit: cover;
         }
         .booking-form {
@@ -113,7 +113,7 @@
     background-color: #FFC107;">
 <div class="bg-light">
     <header class="header d-flex justify-content-between align-items-center">
-        <h1>Hotel Truck</h1>
+        <h1><a href="/" style="text-decoration: none; color:black;">Hotel Truck</a></h1>
         <button disabled class="btn btn-light d-flex align-items-center">
 
             MXN

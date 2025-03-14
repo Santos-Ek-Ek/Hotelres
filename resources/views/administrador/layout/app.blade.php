@@ -54,9 +54,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
     <li class="nav-item">
-        <a class="nav-link active" href="">
-        <i class="fas fa-sign-out-alt mr-2"></i>
-        </a>
+    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+            @csrf <!-- Token CSRF para protección -->
+            <button type="submit" class="nav-link btn btn-link" style="cursor: pointer;">
+                <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+            </button>
+        </form>
     </li>
     </ul>
   </nav>
