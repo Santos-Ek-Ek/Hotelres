@@ -307,7 +307,12 @@
         </div>
     </div>
 </div>
-
+<!-- Spinner de carga -->
+<div id="loadingSpinner" class="d-none">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</div>
     </div>
     <!-- Modal de reserva exitosa -->
 <div class="modal fade" id="reservaExitosaModal" tabindex="-1" aria-labelledby="reservaExitosaModalLabel" aria-hidden="true">
@@ -322,7 +327,7 @@
                 <p>Se ha enviado un PDF con los detalles de la reserva al correo proporcionado.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary" id="aceptarReserva">Cerrar</button>
             </div>
         </div>
     </div>
@@ -1182,40 +1187,70 @@ function obtenerDatosReserva() {
     return datosReserva;
 }
 
-
 function enviarDatosAlBackend(datos) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    fetch('/reservas', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
+    // Mostrar el spinner de carga de SweetAlert
+    Swal.fire({
+        title: 'Procesando reserva...',
+        text: 'Por favor, espera un momento.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading(); // Mostrar el spinner
         },
-        body: JSON.stringify(datos),
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(err => {
-                throw new Error(err.message || 'Error en la respuesta del servidor');
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data && data.success) {
-            // Mostrar el modal de éxito
-            const modal = new bootstrap.Modal(document.getElementById('reservaExitosaModal'));
-            modal.show();
-        } else {
-            alert('Error al crear la reserva: ' + (data.message || 'Error desconocido'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Hubo un error al enviar los datos: ' + error.message);
     });
+
+    // Usar setTimeout para permitir que el navegador actualice la UI
+    setTimeout(() => {
+        fetch('/reservas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify(datos),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Error en la respuesta del servidor');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                // Cerrar el spinner de carga
+                Swal.close();
+
+                const modal = new bootstrap.Modal(document.getElementById('reservaExitosaModal'));
+                modal.show();
+            } else {
+                throw new Error(data.message || 'Error desconocido');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Cerrar el spinner de carga
+            Swal.close();
+            // Mostrar un mensaje de error
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un error al enviar los datos: ' + error.message,
+            });
+        });
+    }, 100); // Retraso de 100ms para permitir que el navegador actualice la UI
 }
+document.addEventListener('DOMContentLoaded', function () {
+    // Evento para el botón "Aceptar" en el modal de confirmación
+    document.getElementById('aceptarReserva').addEventListener('click', function () {
+        location.reload(); // Recargar la página
+    });
+});
     </script>
 </bodym>
 </html>
