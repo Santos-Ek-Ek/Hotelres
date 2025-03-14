@@ -396,28 +396,37 @@ contenedorReservas.innerHTML = '';
     // Crear la card con los datos de la reserva
     const card = `
         <div class="col-md-8">
-            <div class="card p-3">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">Reserva #${reserva.numero_reserva}</h5>
-                            <p><strong>Tipo de cuarto:</strong> ${reserva.tipo_cuarto}</p>
-                            <p><strong>Cantidad de cuartos:</strong> ${reserva.cantidad_cuartos}</p>
-                            <p><strong>Cantidad de huéspedes:</strong> ${reserva.cantidad_huespedes}</p>
-                            <p><strong>Fecha de entrada:</strong> ${reserva.fecha_entrada}</p>
-                            <p><strong>Fecha de salida:</strong> ${reserva.fecha_salida}</p>
-                            <p><strong>Cantidad de noches:</strong> ${reserva.cantidad_noches}</p>
-                            <p><strong>Subtotal:</strong> MXN ${reserva.subtotal}</p>
-                            <p><strong>Estado:</strong> ${reserva.estado}</p>
-                            <p><strong>Número de cuarto:</strong> ${reserva.numero_cuarto}</p>
+        <div class="card p-3">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-body">
+                        <h5 class="card-title">Reserva #${reserva.numero_reserva}</h5>
+                        <div class="row">
+                            <!-- Columna 1: Tipo de cuarto, cantidad de cuartos, cantidad de huéspedes -->
+                            <div class="col-md-6">
+                                <p><strong>Tipo de cuarto:</strong> ${reserva.tipo_cuarto}</p>
+                                <p><strong>Cantidad de cuartos:</strong> ${reserva.cantidad_cuartos}</p>
+                                <p><strong>Cantidad de huéspedes:</strong> ${reserva.cantidad_huespedes}</p>
+                            </div>
+                            <!-- Columna 2: Fecha de entrada, fecha de salida, cantidad de noches -->
+                            <div class="col-md-6">
+                                <p><strong>Fecha de entrada:</strong> ${reserva.fecha_entrada}</p>
+                                <p><strong>Fecha de salida:</strong> ${reserva.fecha_salida}</p>
+                                <p><strong>Cantidad de noches:</strong> ${reserva.cantidad_noches}</p>
+                            </div>
                         </div>
+                        <!-- Información adicional -->
+                        <p><strong>Subtotal:</strong> MXN ${reserva.subtotal}</p>
+                        <p><strong>Estado:</strong> ${reserva.estado}</p>
+                        <p><strong>Número de cuarto:</strong> ${reserva.numero_cuarto}</p>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <button class="btn btn-danger" onclick="cancelarReserva('${reserva.numero_reserva}', ${reserva.id})">Cancelar Reserva</button>
-                </div>
-            </div><br>
-        </div>
+            </div>
+            <div class="mt-3">
+                <button class="btn btn-danger" onclick="cancelarReserva('${reserva.numero_reserva}', ${reserva.id})">Cancelar Reserva</button>
+            </div>
+        </div><br>
+    </div>
     `;
     contenedorReservas.innerHTML += card;
 });
@@ -429,6 +438,8 @@ document.getElementById('btnVolver2').addEventListener('click', function () {
     document.getElementById('habitacionesContainer').style.display = 'block';
     
     document.getElementById('mensajeSinAlojamientos').style.display = 'block';
+    
+    document.getElementById('inputBuscarReserva').value = '';
 
 });
     
