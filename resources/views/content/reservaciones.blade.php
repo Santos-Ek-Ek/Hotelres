@@ -98,7 +98,11 @@
     overflow-y: auto;
     position: relative; /* Para posicionar el formulario dentro de este contenedor */
 }
-
+.reservas-container {
+    flex: 3;
+    overflow-y: auto;
+    position: relative; /* Para posicionar el formulario dentro de este contenedor */
+}
 .form-container {
     background-color: white;
     padding: 24px;
@@ -146,8 +150,12 @@
 </div>
     <div id="apartado2" style="display: none; background-color: #FFC107; width:100%;">
         <header class="header d-flex justify-content-between align-items-center">
-            <h1 class="text-black">Hotel Truck</h1>
+        <h1><a href="/" style="text-decoration: none; color:black;">Hotel Truck</a></h1>
             <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center bg-white header-input mr-2 me-2">
+                    <input type="text" class="form-control border-0" id="inputBuscarReserva" placeholder="Buscar reserva (Número de reserva)">
+                    <button id="btnBuscarReserva" class="btn text-warning ml-2"><i class="fas fa-search"></i></button>
+                </div>
                 <div class="d-flex align-items-center bg-white header-input mr-2">
                     <input type="text" class="form-control border-0" id="checkinbus" placeholder="14 mar 2025">
                     <span class="mx-2">→</span>
@@ -167,6 +175,13 @@
                 <!-- Aquí se mostrarán las habitaciones disponibles -->
 
             </div>
+            <div id="contenedorReservas" class="reservas-container" style="display: none;">
+    <!-- Botón de Volver -->
+    <button id="btnVolver2" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+    <!-- Aquí se mostrarán las reservas -->
+</div>
             <div id="apartado3" class="form-container w-100" style="max-width: 600px; display: none;margin: 0 auto;">
         <div class="d-flex align-items-center mb-4">
             <button id="btnVolver" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
@@ -333,6 +348,117 @@
     </div>
 </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('btnBuscarReserva').addEventListener('click', function() {
+    const numeroReserva = document.getElementById('inputBuscarReserva').value;
+    buscarReserva(numeroReserva);
+});
+
+function buscarReserva(numeroReserva) {
+    // Simulación de una solicitud AJAX para obtener los datos de la reserva
+    fetch(`/api/reservas/${numeroReserva}`)
+        .then(response => response.json())
+        .then(data => {
+            mostrarReserva(data);
+        })
+        .catch(error => {
+            console.error('Error al buscar la reserva:', error);
+        });
+}
+
+function mostrarReserva(reservas) {
+    const contenedorReservas = document.getElementById('contenedorReservas');
+    const habitacionesContainer = document.getElementById('habitacionesContainer');
+    const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
+
+        // Ocultar el contenedor de habitaciones
+        habitacionesContainer.style.display = 'none';
+        mensajeSinAlojamientos.style.display = 'none';
+
+// Mostrar el contenedor de reservas
+contenedorReservas.style.display = 'block';
+contenedorReservas.innerHTML = '';
+
+    // Verificar si la reserva existe
+    if (!reservas) {
+        contenedorReservas.innerHTML = '<p class="text-danger">Reserva no encontrada.</p>';
+        return;
+    }
+    // Agregar el botón de "Volver" al contenedor de reservas
+    const botonVolver = `
+        <button id="btnVolver2" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+    `;
+    contenedorReservas.innerHTML += botonVolver;
+    reservas.forEach(reserva => {
+        
+    // Crear la card con los datos de la reserva
+    const card = `
+        <div class="col-md-8">
+            <div class="card p-3">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Reserva #${reserva.numero_reserva}</h5>
+                            <p><strong>Tipo de cuarto:</strong> ${reserva.tipo_cuarto}</p>
+                            <p><strong>Cantidad de cuartos:</strong> ${reserva.cantidad_cuartos}</p>
+                            <p><strong>Cantidad de huéspedes:</strong> ${reserva.cantidad_huespedes}</p>
+                            <p><strong>Fecha de entrada:</strong> ${reserva.fecha_entrada}</p>
+                            <p><strong>Fecha de salida:</strong> ${reserva.fecha_salida}</p>
+                            <p><strong>Cantidad de noches:</strong> ${reserva.cantidad_noches}</p>
+                            <p><strong>Subtotal:</strong> MXN ${reserva.subtotal}</p>
+                            <p><strong>Estado:</strong> ${reserva.estado}</p>
+                            <p><strong>Número de cuarto:</strong> ${reserva.numero_cuarto}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-danger" onclick="cancelarReserva('${reserva.numero_reserva}', ${reserva.id})">Cancelar Reserva</button>
+                </div>
+            </div><br>
+        </div>
+    `;
+    contenedorReservas.innerHTML += card;
+});
+document.getElementById('btnVolver2').addEventListener('click', function () {
+    // Ocultar el contenedor de reservas
+    document.getElementById('contenedorReservas').style.display = 'none';
+
+    // Mostrar el contenedor de habitaciones
+    document.getElementById('habitacionesContainer').style.display = 'block';
+});
+    
+}
+function cancelarReserva(numeroReserva, reservaId) {
+    // Obtener el token CSRF
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // Hacer la solicitud POST para cancelar la reserva
+    fetch(`/api/reservas/${reservaId}/cancelar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token, // Incluir el token CSRF
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al cancelar la reserva');
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.mensaje); // Mostrar mensaje de éxito
+        // Recargar las reservas después de cancelar
+        buscarReserva(numeroReserva);
+    })
+    .catch(error => {
+        console.error('Error al cancelar la reserva:', error);
+        alert('Hubo un error al cancelar la reserva.');
+    });
+}
+</script>
     <script>
         const GEONAMES_USERNAME = 'ismaelek'; // Reemplaza con tu nombre de usuario de GeoNames
 
@@ -772,7 +898,17 @@ function buscarHabitaciones(checkin, checkout) {
         // Función para mostrar las habitaciones
         function mostrarHabitaciones(habitacionesPorTipo, noches) {
             const habitacionesContainer = document.getElementById('habitacionesContainer');
-            habitacionesContainer.innerHTML = ''; // Limpiar el contenedor
+            const contenedorReservas = document.getElementById('contenedorReservas');
+    const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
+
+
+// Ocultar el contenedor de reservas
+contenedorReservas.style.display = 'none';
+
+// Mostrar el contenedor de habitaciones
+habitacionesContainer.style.display = 'block';
+mensajeSinAlojamientos.style.display = 'block';
+habitacionesContainer.innerHTML = ''; // Limpiar el contenedor
 
             if (!Array.isArray(habitacionesPorTipo) || habitacionesPorTipo.length === 0) {
                 habitacionesContainer.innerHTML = '<p>No hay habitaciones disponibles para las fechas seleccionadas.</p>';

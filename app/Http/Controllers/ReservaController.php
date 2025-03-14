@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservaConfirmada;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class ReservaController extends Controller
 {
@@ -206,6 +207,51 @@ class ReservaController extends Controller
         //
     }
 
+
+    public function buscarReserva($numeroReserva)
+    {
+        // Buscar todas las reservas con el número de reserva
+        $reservas = Reserva::where('numero_reserva', $numeroReserva)->get();
+    
+        if ($reservas->isEmpty()) {
+            return response()->json(['mensaje' => 'Reservas no encontradas'], 404);
+        }
+    
+        // Formatear las fechas de cada reserva
+        $reservasFormateadas = $reservas->map(function ($reserva) {
+            return [
+                'id' => $reserva->id,
+                'numero_reserva' => $reserva->numero_reserva,
+                'tipo_cuarto' => $reserva->tipo_cuarto,
+                'cantidad_cuartos' => $reserva->cantidad_cuartos,
+                'cantidad_huespedes' => $reserva->cantidad_huespedes,
+                'fecha_entrada' => Carbon::parse($reserva->fecha_entrada)->format('d-m-Y'), // Formato día/mes/año
+                'fecha_salida' => Carbon::parse($reserva->fecha_salida)->format('d-m-Y'),   // Formato día/mes/año
+                'cantidad_noches' => $reserva->cantidad_noches,
+                'subtotal' => $reserva->subtotal,
+                'estado' => $reserva->estado,
+                'numero_cuarto' => $reserva->numero_cuarto,
+            ];
+        });
+    
+        // Devolver las reservas con las fechas formateadas
+        return response()->json($reservasFormateadas);
+    }
+    public function cancelarReserva($reservaId)
+    {
+        // Buscar la reserva por su ID
+        $reserva = Reserva::find($reservaId);
+    
+        if (!$reserva) {
+            return response()->json(['mensaje' => 'Reserva no encontrada'], 404);
+        }
+    
+        // Cambiar el estado de la reserva a "cancelada"
+        $reserva->estado = 'Cancelada';
+        $reserva->save();
+    
+        return response()->json(['mensaje' => 'Reserva cancelada correctamente']);
+    }
     /**
      * Update the specified resource in storage.
      */

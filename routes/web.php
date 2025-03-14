@@ -73,7 +73,8 @@ Route::get('/reset-password/{token}', [PasswordResetController::class, 'showRese
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 Route::post('/reservas', [ReservaController::class, 'store']);
-
+Route::get('/api/reservas/{numeroReserva}', [ReservaController::class, 'buscarReserva']);
+Route::post('api/reservas/{reservaId}/cancelar', [ReservaController::class, 'cancelarReserva']);
 Route::get('/buscar-habitaciones', [HabitacionesController::class, 'buscarHabitaciones']);
 
 
