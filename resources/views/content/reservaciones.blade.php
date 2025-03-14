@@ -253,8 +253,8 @@
                     <p>No se han agregado alojamientos</p>
                 </div>
                 <div id="btnCancelarTodos" class="card text-center p-3" style="display:none;">
-                    <button class="btn btn-danger"> Cancelar todas las reservas</button>
-                </div>
+        <button class="btn btn-danger" onclick="enviarCodigoCancelacion('${reservas[0].numero_reserva}')">Cancelar todas las reservas</button>
+    </div>
 
                 <div id="resumenReserva" class="card shadow p-4" style="width: 22rem; display: none;">
     <h5 class="text-center font-weight-bold mb-4">Resumen de la reserva</h5>
@@ -389,6 +389,8 @@ contenedorReservas.innerHTML = '';
         contenedorReservas.innerHTML = '<p class="text-danger">Reserva no encontrada.</p>';
         return;
     }
+        // Actualizar el evento del botón con el número de reserva
+        btnCancelarTodos.querySelector('button').onclick = () => enviarCodigoCancelacion(reservas[0].numero_reserva);
     // Agregar el botón de "Volver" al contenedor de reservas
     const botonVolver = `
         <button id="btnVolver2" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
@@ -396,6 +398,8 @@ contenedorReservas.innerHTML = '';
         </button>
     `;
     contenedorReservas.innerHTML += botonVolver;
+
+
     reservas.forEach(reserva => {
         
     // Crear la card con los datos de la reserva
@@ -449,6 +453,49 @@ document.getElementById('btnVolver2').addEventListener('click', function () {
 
 });
     
+}
+function enviarCodigoCancelacion(numeroReserva) {
+    fetch('/reservas/cancelar-todas', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+        body: JSON.stringify({ numero_reserva: numeroReserva }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.mensaje);
+        // Mostrar un campo para ingresar el código de cancelación
+        const codigoCancelacion = prompt('Ingresa el código de cancelación que recibiste en tu correo:');
+        if (codigoCancelacion) {
+            validarCodigoYCancelar(numeroReserva, codigoCancelacion);
+        }
+    })
+    .catch(error => {
+        console.error('Error al enviar el código de cancelación:', error);
+    });
+}
+function validarCodigoYCancelar(numeroReserva, codigo) {
+    fetch('/reservas/validar-codigo', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+        body: JSON.stringify({ numero_reserva: numeroReserva, codigo: codigo }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.mensaje);
+        if (data.mensaje === 'Todas las reservas han sido canceladas correctamente.') {
+            // Recargar la página o actualizar la vista
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error al validar el código:', error);
+    });
 }
 function cancelarReserva(numeroReserva, reservaId) {
     // Obtener el token CSRF

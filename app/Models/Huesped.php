@@ -61,4 +61,10 @@ class Huesped extends Model
         'correo',
         'telefono',
     ];
+
+    // app/Models/Huesped.php
+public function reservasCancela()
+{
+    return $this->hasMany(Reserva::class, 'huesped_id');
+}
 }

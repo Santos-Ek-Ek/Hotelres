@@ -103,4 +103,10 @@ public function habitacionbusqueda()
 {
     return $this->belongsTo(Habitacion::class, 'numero_cuarto', 'numero_habitacion');
 }
+
+// app/Models/Reserva.php
+public function huespedCancela()
+{
+    return $this->belongsTo(Huesped::class, 'huesped_id');
+}
 }

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservaConfirmada;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-
+use App\Mail\CodigoCancelacionMail;
 class ReservaController extends Controller
 {
     /**
@@ -251,6 +251,83 @@ class ReservaController extends Controller
         $reserva->save();
     
         return response()->json(['mensaje' => 'Reserva cancelada correctamente']);
+    }
+
+    public function enviarCodigoCancelacion(Request $request)
+    {
+        // Validar el número de reserva
+        $request->validate([
+            'numero_reserva' => 'required|string|exists:reservas,numero_reserva',
+        ]);
+    
+        // Obtener todas las reservas asociadas al número de reserva
+        $reservas = Reserva::where('numero_reserva', $request->numero_reserva)->get();
+    
+        if ($reservas->isEmpty()) {
+            return response()->json(['mensaje' => 'Reserva no encontrada.'], 404);
+        }
+    
+        // Obtener el huésped asociado a la primera reserva
+        $huesped = $reservas->first()->huespedCancela;
+    
+        if (!$huesped) {
+            return response()->json(['mensaje' => 'Huésped no encontrado.'], 404);
+        }
+    
+        // Generar un código de cancelación único
+        $codigoCancelacion = Str::random(6); // Código de 6 caracteres
+    
+        // Guardar el código en la sesión (o en la base de datos si lo prefieres)
+        session(['codigo_cancelacion' => $codigoCancelacion]);
+    
+        // Enviar el correo con el código de cancelación
+        try {
+            Mail::to($huesped->correo)->send(new CodigoCancelacionMail($codigoCancelacion));
+        } catch (\Exception $e) {
+            return response()->json([
+                'mensaje' => 'Error al enviar el correo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    
+        return response()->json([
+            'mensaje' => 'Se ha enviado un código de cancelación a tu correo.',
+        ]);
+    }
+    
+    public function validarCodigoYCancelar(Request $request)
+    {
+        // Validar el código de cancelación y el número de reserva
+        $request->validate([
+            'codigo' => 'required|string|size:6',
+            'numero_reserva' => 'required|string|exists:reservas,numero_reserva',
+        ]);
+    
+        // Obtener el código de la sesión
+        $codigoSession = session('codigo_cancelacion');
+    
+        // Verificar si el código coincide
+        if ($request->codigo === $codigoSession) {
+            // Obtener todas las reservas asociadas al número de reserva
+            $reservas = Reserva::where('numero_reserva', $request->numero_reserva)->get();
+    
+            // Cambiar el estado de las reservas a "cancelada"
+            foreach ($reservas as $reserva) {
+                $reserva->estado = 'Cancelada';
+                $reserva->save();
+            }
+    
+            // Limpiar el código de la sesión
+            session()->forget('codigo_cancelacion');
+    
+            return response()->json([
+                'mensaje' => 'Todas las reservas han sido canceladas correctamente.',
+            ]);
+        } else {
+            return response()->json([
+                'mensaje' => 'El código de cancelación es incorrecto.',
+            ], 400);
+        }
     }
     /**
      * Update the specified resource in storage.
