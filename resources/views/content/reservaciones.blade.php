@@ -303,6 +303,24 @@
 </div>
 
     </div>
+    <!-- Modal de reserva exitosa -->
+<div class="modal fade" id="reservaExitosaModal" tabindex="-1" aria-labelledby="reservaExitosaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservaExitosaModalLabel">Reserva Exitosa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>La reserva se ha creado correctamente.</p>
+                <p>Se ha enviado un PDF con los detalles de la reserva al correo proporcionado.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const GEONAMES_USERNAME = 'ismaelek'; // Reemplaza con tu nombre de usuario de GeoNames
@@ -1124,7 +1142,9 @@ function enviarDatosAlBackend(datos) {
     })
     .then(data => {
         if (data && data.success) {
-            alert('Reserva creada con éxito. Número de reserva: ' + data.numero_reserva);
+            // Mostrar el modal de éxito
+            const modal = new bootstrap.Modal(document.getElementById('reservaExitosaModal'));
+            modal.show();
         } else {
             alert('Error al crear la reserva: ' + (data.message || 'Error desconocido'));
         }

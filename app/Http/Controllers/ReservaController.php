@@ -12,6 +12,9 @@ use App\Models\Habitacion;
 use App\Models\tipoHabitacion;
 use App\Models\Pago;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservaConfirmada;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReservaController extends Controller
 {
@@ -31,7 +34,8 @@ class ReservaController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     */public function store(Request $request)
+     */
+    public function store(Request $request)
 {
     DB::beginTransaction();
 
@@ -80,7 +84,7 @@ class ReservaController extends Controller
         // Formatear las fechas en el formato correcto (YYYY-MM-DD)
         $fechaEntrada = \Carbon\Carbon::parse($request->fecha_entrada)->toDateString();
         $fechaSalida = \Carbon\Carbon::parse($request->fecha_salida)->toDateString();
-
+        $habitacionesAsignadas = [];
         // Crear una reserva por cada tipo de habitación
         foreach ($request->habitaciones as $habitacion) {
             // Obtener el tipo de habitación
@@ -127,6 +131,12 @@ class ReservaController extends Controller
                     'habitacion_id' => $habitacionDisponible->id, // Asignar el ID de la habitación
                 ]);
 
+                $habitacionesAsignadas[] = [
+                    'numero_cuarto' => $habitacionDisponible->numero_habitacion,
+                    'tipo' => $tipoHabitacion->tipo_cuarto,
+                    'cantidad_huespedes' => $habitacion['cantidad_huespedes'],
+                    'subtotal' => $subtotalPorHabitacion,
+                ];
                 // Log para depuración
                 Log::info('Habitación asignada: ' . $habitacionDisponible->id . ' para la reserva: ' . $numeroReserva);
             }
@@ -144,6 +154,24 @@ class ReservaController extends Controller
         ]);
 
         DB::commit();
+        
+                // Generar el PDF
+                $pdf = PDF::loadView('emails.reserva_pdf', [
+                    'huesped' => $huesped,
+                    'reserva' => $numeroReserva,
+                    'fecha_entrada' => $fechaEntrada,
+                    'fecha_salida' => $fechaSalida,
+                    'cantidad_noches' => $request->cantidad_noches, // Pasar la cantidad de noches
+                    'habitaciones' => $habitacionesAsignadas, // Pasar las habitaciones con números
+                    'subtotal' => $request->subtotal,
+                    'impuesto' => $request->impuesto,
+                    'total' => $request->total,
+                    'correo' => $huesped->correo, // Pasar el correo del huésped
+                    'fecha' => now()->format('Y-m-d'), // Pasar la fecha de la reserva
+                ]);
+        
+                // Enviar el correo con el PDF adjunto
+                Mail::to($huesped->correo)->send(new ReservaConfirmada($pdf));
 
         return response()->json([
             'success' => true,
