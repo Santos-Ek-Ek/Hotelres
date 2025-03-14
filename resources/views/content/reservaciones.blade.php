@@ -427,6 +427,9 @@ document.getElementById('btnVolver2').addEventListener('click', function () {
 
     // Mostrar el contenedor de habitaciones
     document.getElementById('habitacionesContainer').style.display = 'block';
+    
+    document.getElementById('mensajeSinAlojamientos').style.display = 'block';
+
 });
     
 }
