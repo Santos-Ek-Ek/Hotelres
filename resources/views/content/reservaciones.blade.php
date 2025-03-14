@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="shortcut icon" type="image/png" href="img/logo.jpeg" />
     <title>Hotel Truck | Reservaciones</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
@@ -11,6 +12,11 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         .row{
@@ -615,93 +621,149 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof flatpickr !== "undefined" && flatpickr.l10ns.es) {
-                console.log("Flatpickr y la localización en español cargados correctamente.");
-            } else {
-                console.error("Error: Flatpickr o la localización en español no se han cargado correctamente.");
-            }
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof flatpickr !== "undefined" && flatpickr.l10ns.es) {
+        console.log("Flatpickr y la localización en español cargados correctamente.");
+    } else {
+        console.error("Error: Flatpickr o la localización en español no se han cargado correctamente.");
+    }
 
-            // Configurar Flatpickr para los inputs de fecha
-            flatpickr("#checkin", {
-                dateFormat: "d-m-Y", // Formato de fecha
-                minDate: "today", // Fecha mínima: hoy
-                locale: "es", // Idioma español
-                onChange: function(selectedDates, dateStr) {
-                    document.getElementById('checkinbus').value = dateStr; // Actualizar el input de fecha en el header
-                }
-            });
+    // Configurar Flatpickr para los inputs de fecha
+    flatpickr("#checkin", {
+        dateFormat: "d-m-Y", // Formato de fecha
+        minDate: "today", // Fecha mínima: hoy
+        locale: "es", // Idioma español
+        onChange: function (selectedDates, dateStr) {
+            document.getElementById('checkinbus').value = dateStr; // Actualizar el input de fecha en el header
+        },
+    });
 
-            flatpickr("#checkout", {
-                dateFormat: "d-m-Y", // Formato de fecha
-                minDate: "today", // Fecha mínima: hoy
-                locale: "es", // Idioma español
-                onChange: function(selectedDates, dateStr) {
-                    document.getElementById('checkoutbus').value = dateStr; // Actualizar el input de fecha en el header
-                }
-            });
+    flatpickr("#checkout", {
+        dateFormat: "d-m-Y", // Formato de fecha
+        minDate: "today", // Fecha mínima: hoy
+        locale: "es", // Idioma español
+        onChange: function (selectedDates, dateStr) {
+            document.getElementById('checkoutbus').value = dateStr; // Actualizar el input de fecha en el header
+        },
+    });
 
-            flatpickr("#checkinbus", {
-                dateFormat: "d-m-Y", // Formato de fecha
-                minDate: "today", // Fecha mínima: hoy
-                locale: "es", // Idioma español
-            });
+    flatpickr("#checkinbus", {
+        dateFormat: "d-m-Y", // Formato de fecha
+        minDate: "today", // Fecha mínima: hoy
+        locale: "es", // Idioma español
+    });
 
-            flatpickr("#checkoutbus", {
-                dateFormat: "d-m-Y", // Formato de fecha
-                minDate: "today", // Fecha mínima: hoy
-                locale: "es", // Idioma español
-            });
+    flatpickr("#checkoutbus", {
+        dateFormat: "d-m-Y", // Formato de fecha
+        minDate: "today", // Fecha mínima: hoy
+        locale: "es", // Idioma español
+    });
 
-            // Evento para el botón de búsqueda del primer apartado
-            document.getElementById('btnBuscar').addEventListener('click', function() {
-                const checkin = document.getElementById('checkin').value;
-                const checkout = document.getElementById('checkout').value;
+    // Evento para el botón de búsqueda del primer apartado
+    document.getElementById('btnBuscar').addEventListener('click', function () {
+        const checkin = document.getElementById('checkin').value;
+        const checkout = document.getElementById('checkout').value;
 
-                if (!checkin || !checkout) {
-                    alert('Por favor, seleccione ambas fechas.');
-                    return;
-                }
-
-                // Copiar las fechas al segundo apartado
-                document.getElementById('checkinbus').value = checkin;
-                document.getElementById('checkoutbus').value = checkout;
-                actualizarResumenFechas(checkin, checkout);
-                // Ocultar el primer apartado y mostrar el segundo
-                document.getElementById('apartado1').style.display = 'none';
-                document.getElementById('apartado2').style.display = 'block';
-
-                // Realizar la búsqueda inicial
-                buscarHabitaciones(checkin, checkout);
-            });
-
-       
+        if (!checkin || !checkout) {
+            Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, seleccione ambas fechas.',
+            toast: true, // Mostrar como toast
+            position: 'top-end', // Esquina superior derecha
+            showConfirmButton: false,
+            timer: 3000, // Duración del popup en milisegundos
+            timerProgressBar: true,
         });
-
-        // Función para buscar habitaciones
-        function buscarHabitaciones(checkin, checkout) {
-            const checkinDate = moment(checkin, 'D-M-YYYY');
-            const checkoutDate = moment(checkout, 'D-M-YYYY');
-            const noches = checkoutDate.diff(checkinDate, 'days');
-
-            if (noches <= 0) {
-                alert('La fecha de salida debe ser posterior a la fecha de llegada.');
-                return;
-            }
-
-            // Simulación de una solicitud al servidor
-            fetch(`/buscar-habitaciones?checkin=${checkin}&checkout=${checkout}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        mostrarHabitaciones(data.habitacionesPorTipo, noches);
-                    } else {
-                        alert('Error al buscar habitaciones.');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+        return; // Detener la ejecución si las fechas no son válidas
         }
 
+        // Copiar las fechas al segundo apartado
+        document.getElementById('checkinbus').value = checkin;
+        document.getElementById('checkoutbus').value = checkout;
+        actualizarResumenFechas(checkin, checkout);
+
+        // Realizar la búsqueda inicial
+        buscarHabitaciones(checkin, checkout);
+    });
+});
+
+// Función para buscar habitaciones
+// Función para buscar habitaciones
+function buscarHabitaciones(checkin, checkout) {
+    const checkinDate = moment(checkin, 'D-M-YYYY');
+    const checkoutDate = moment(checkout, 'D-M-YYYY');
+
+    // Validar que las fechas sean válidas
+    if (!checkinDate.isValid() || !checkoutDate.isValid()) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Las fechas ingresadas no son válidas.',
+            toast: true, // Mostrar como toast
+            position: 'top-end', // Esquina superior derecha
+            showConfirmButton: false,
+            timer: 3000, // Duración del popup en milisegundos
+            timerProgressBar: true,
+        });
+        return; // Detener la ejecución si las fechas no son válidas
+    }
+
+    // Calcular la diferencia en días
+    const noches = checkoutDate.diff(checkinDate, 'days');
+
+    // Validar que la fecha de salida sea posterior a la fecha de llegada
+    if (noches <= 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'La fecha de salida debe ser posterior a la fecha de llegada.',
+            toast: true, // Mostrar como toast
+            position: 'top-end', // Esquina superior derecha
+            showConfirmButton: false,
+            timer: 3000, // Duración del popup en milisegundos
+            timerProgressBar: true,
+        });
+        return; // Detener la ejecución si las fechas no son válidas
+    }
+
+    // Si las fechas son válidas, mostrar el apartado2
+    document.getElementById('apartado1').style.display = 'none';
+    document.getElementById('apartado2').style.display = 'block';
+
+    // Simulación de una solicitud al servidor
+    fetch(`/buscar-habitaciones?checkin=${checkin}&checkout=${checkout}`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                mostrarHabitaciones(data.habitacionesPorTipo, noches);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al buscar habitaciones.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error al procesar la solicitud.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+            });
+        });
+}
         // Función para mostrar las habitaciones
         function mostrarHabitaciones(habitacionesPorTipo, noches) {
             const habitacionesContainer = document.getElementById('habitacionesContainer');
