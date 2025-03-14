@@ -6,6 +6,7 @@ use App\Http\Controllers\PagoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\RegisterController;
 
 
@@ -63,6 +64,13 @@ Route::delete('/habitaciones/imagenes/{id}', [HabitacionesController::class, 'el
 Route::get('/habitaciones/{id}/edit', [HabitacionesController::class, 'edit'])->name('habitaciones.edit');
 Route::delete('/eliminar_habitacion/{id}', [HabitacionesController::class, 'destroy'])->name('habitaciones.destroy');
 });
+
+
+// Rutas para restablecer contraseña
+Route::get('/olvideMiContrasena', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 Route::post('/reservas', [ReservaController::class, 'store']);
 
