@@ -1240,7 +1240,7 @@ function enviarDatosAlBackend(datos) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Hubo un error al enviar los datos: ' + error.message,
+                text: 'Por favor, complete el formulario: ' + error.message,
             });
         });
     }, 100); // Retraso de 100ms para permitir que el navegador actualice la UI
