@@ -252,6 +252,9 @@
                     <i class="bi bi-bed fs-1"></i>
                     <p>No se han agregado alojamientos</p>
                 </div>
+                <div id="btnCancelarTodos" class="card text-center p-3" style="display:none;">
+                    <button class="btn btn-danger"> Cancelar todas las reservas</button>
+                </div>
 
                 <div id="resumenReserva" class="card shadow p-4" style="width: 22rem; display: none;">
     <h5 class="text-center font-weight-bold mb-4">Resumen de la reserva</h5>
@@ -370,6 +373,7 @@ function mostrarReserva(reservas) {
     const contenedorReservas = document.getElementById('contenedorReservas');
     const habitacionesContainer = document.getElementById('habitacionesContainer');
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
+    const btnCancelarTodos = document.getElementById('btnCancelarTodos');
 
         // Ocultar el contenedor de habitaciones
         habitacionesContainer.style.display = 'none';
@@ -377,6 +381,7 @@ function mostrarReserva(reservas) {
 
 // Mostrar el contenedor de reservas
 contenedorReservas.style.display = 'block';
+btnCancelarTodos.style.display = 'block';
 contenedorReservas.innerHTML = '';
 
     // Verificar si la reserva existe
@@ -438,6 +443,7 @@ document.getElementById('btnVolver2').addEventListener('click', function () {
     document.getElementById('habitacionesContainer').style.display = 'block';
     
     document.getElementById('mensajeSinAlojamientos').style.display = 'block';
+    document.getElementById('btnCancelarTodos').style.display = 'none';
     
     document.getElementById('inputBuscarReserva').value = '';
 
