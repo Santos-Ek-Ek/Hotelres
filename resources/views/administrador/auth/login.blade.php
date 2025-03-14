@@ -3,7 +3,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Log in (v2)</title>
+  <title>Hotel Truck | Adiministración </title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -26,7 +26,7 @@
   <!-- /.login-logo -->
   <div class="card card-outline card-primary">
     <div class="card-header text-center">
-      <a href="https://adminlte.io/themes/v3/index2.html" class="h1"><b>Admin</b>LTE</a>
+      <a href="https://adminlte.io/themes/v3/index2.html" class="h1"><b>Hotel</b>Truck</a>
     </div>
     <div class="card-body">
       <p class="login-box-msg">Iniciar Sesión</p>
