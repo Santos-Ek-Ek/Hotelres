@@ -7,6 +7,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="shortcut icon" type="image/png" href="img/logo.jpeg" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@yield('titulo')</title>
   <!-- Google Font: Source Sans Pro -->
@@ -41,12 +43,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="../index" class="nav-link">INICIO</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="../contacto" class="nav-link">CONTACTO</a>
       </li>
       
     </ul>
