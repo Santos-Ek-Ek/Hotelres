@@ -58,31 +58,36 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 0;
         }
         th, td {
-            padding: 8px;
+            padding: 4px; /* Reducimos el padding de las celdas */
             border: 1px solid #e5e7eb;
+            line-height: 1.2; /* Ajustamos el line-height para reducir espacio */
         }
         .align-top {
             vertical-align: top;
         }
         .total-section {
-            margin-top: 24px;
+            margin-top: -10px;
             text-align: right;
             font-size: 1.25rem;
             font-weight: bold;
+        }
+        .table-container {
+            margin-bottom: 0; /* Eliminamos el margen inferior del contenedor de la tabla */
         }
     </style>
 </head>
 <body>
 <div class="container">
     <!-- Logo y nombre del hotel -->
-    <div class="text-center mb-4">
-        <img src="img/logo.jpeg" alt="Logo del Hotel" style="max-width: 100px; height: auto; margin-bottom: 16px;">
+    <div class="text-center mb-4" style="margin-bottom: 8px;">
+        <img src="img/logo.jpeg" alt="Logo del Hotel" style="max-width: 100px; height: auto;">
     </div>
 
     <!-- Información de contacto -->
-    <div class="text-center mb-4">
+    <div class="text-center mb-4" style="margin-top: -10; margin-bottom: 16px;">
         <p class="text-gray-600"><i class="fas fa-map-marker-alt"></i> Calle 31 81,97510 Temax, Yucatán, México</p>
         <p class="text-gray-600"><i class="fas fa-phone"></i> +52 9999 932 551</p>
         <p class="text-gray-600"><i class="fas fa-envelope"></i> Ismaeltinalmoguel@gmail.com</p>
@@ -137,7 +142,7 @@
     </div>
 
     <!-- Tabla de habitaciones -->
-    <div class="mb-4">
+    <div class="table-container">
         <table>
             <thead>
                 <tr class="bg-blue-900 text-white">
