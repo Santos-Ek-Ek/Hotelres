@@ -178,7 +178,7 @@
             <div id="contenedorReservas" class="reservas-container" style="display: none;">
     <!-- Botón de Volver -->
     <button id="btnVolver2" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
-        <i class="fas fa-arrow-left"></i>
+        <i class="fas fa-arrow-left"> <p>Volver</p></i>
     </button>
     <!-- Aquí se mostrarán las reservas -->
 </div>
@@ -254,6 +254,7 @@
                 </div>
                 <div id="btnCancelarTodos" class="card text-center p-3" style="display:none;">
         <button class="btn btn-danger" onclick="enviarCodigoCancelacion('${reservas[0].numero_reserva}')">Cancelar todas las reservas</button>
+        <p>Nota: Solo puede cancelar un cuarto con la opción "Cancelar Reserva"</p>
     </div>
 
                 <div id="resumenReserva" class="card shadow p-4" style="width: 22rem; display: none;">
@@ -387,10 +388,25 @@ contenedorReservas.innerHTML = '';
     // Verificar si la reserva existe
     if (!reservas) {
         contenedorReservas.innerHTML = '<p class="text-danger">Reserva no encontrada.</p>';
+        btnCancelarTodos.style.display = 'none'; // Ocultar el botón si no hay reservas
         return;
     }
-        // Actualizar el evento del botón con el número de reserva
+    const todasCanceladas = reservas.every(reserva => reserva.estado === 'Cancelado');
+
+    // Mostrar el botón "Cancelar todas las reservas"
+    btnCancelarTodos.style.display = 'block';
+
+    // Deshabilitar el botón si todas las reservas están canceladas
+    if (todasCanceladas) {
+        btnCancelarTodos.querySelector('button').disabled = true;
+        btnCancelarTodos.querySelector('button').classList.add('disabled');
+        btnCancelarTodos.querySelector('button').textContent = 'Todas las reservas canceladas';
+    } else {
+        btnCancelarTodos.querySelector('button').disabled = false;
+        btnCancelarTodos.querySelector('button').classList.remove('disabled');
+        btnCancelarTodos.querySelector('button').textContent = 'Cancelar todas las reservas';
         btnCancelarTodos.querySelector('button').onclick = () => enviarCodigoCancelacion(reservas[0].numero_reserva);
+    }
     // Agregar el botón de "Volver" al contenedor de reservas
     const botonVolver = `
         <button id="btnVolver2" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
@@ -401,7 +417,7 @@ contenedorReservas.innerHTML = '';
 
 
     reservas.forEach(reserva => {
-        
+        const reservaCancelada = reserva.estado === 'Cancelado';
     // Crear la card con los datos de la reserva
     const card = `
         <div class="col-md-8">
@@ -432,7 +448,11 @@ contenedorReservas.innerHTML = '';
                 </div>
             </div>
             <div class="mt-3">
-                <button class="btn btn-danger" onclick="cancelarReserva('${reserva.numero_reserva}', ${reserva.id})">Cancelar Reserva</button>
+                                     <button class="btn btn-danger ${reservaCancelada ? 'disabled' : ''}" 
+                                onclick="${reservaCancelada ? '' : `cancelarReserva('${reserva.numero_reserva}', ${reserva.id})`}" 
+                                ${reservaCancelada ? 'disabled' : ''}>
+                            ${reservaCancelada ? 'Reserva Cancelada' : 'Cancelar Reserva'}
+                        </button>
             </div>
         </div><br>
     </div>
@@ -489,14 +509,26 @@ function validarCodigoYCancelar(numeroReserva, codigo) {
     .then(data => {
         alert(data.mensaje);
         if (data.mensaje === 'Todas las reservas han sido canceladas correctamente.') {
-            // Recargar la página o actualizar la vista
-            location.reload();
+            // Deshabilitar los botones de cancelación
+            deshabilitarBotonesCancelacion(numeroReserva);
         }
     })
     .catch(error => {
         console.error('Error al validar el código:', error);
     });
 }
+function deshabilitarBotonesCancelacion(numeroReserva) {
+    // Seleccionar todos los botones de cancelación dentro de las cards de reserva
+    const botonesCancelacion = document.querySelectorAll(`button[onclick*="cancelarReserva('${numeroReserva}'"]`);
+
+    // Deshabilitar cada botón
+    botonesCancelacion.forEach(boton => {
+        boton.disabled = true;
+        boton.classList.add('disabled'); // Opcional: agregar una clase CSS para estilo
+        boton.textContent = 'Reserva Cancelada'; // Cambiar el texto del botón
+    });
+}
+
 function cancelarReserva(numeroReserva, reservaId) {
     // Obtener el token CSRF
     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');

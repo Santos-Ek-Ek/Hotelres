@@ -247,7 +247,7 @@ class ReservaController extends Controller
         }
     
         // Cambiar el estado de la reserva a "cancelada"
-        $reserva->estado = 'Cancelada';
+        $reserva->estado = 'Cancelado';
         $reserva->save();
     
         return response()->json(['mensaje' => 'Reserva cancelada correctamente']);
@@ -313,7 +313,7 @@ class ReservaController extends Controller
     
             // Cambiar el estado de las reservas a "cancelada"
             foreach ($reservas as $reserva) {
-                $reserva->estado = 'Cancelada';
+                $reserva->estado = 'Cancelado';
                 $reserva->save();
             }
     
