@@ -376,21 +376,24 @@ function mostrarReserva(reservas) {
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
     const btnCancelarTodos = document.getElementById('btnCancelarTodos');
 
-        // Ocultar el contenedor de habitaciones
-        habitacionesContainer.style.display = 'none';
-        mensajeSinAlojamientos.style.display = 'none';
+    // Ocultar el contenedor de habitaciones y el mensaje de "Sin alojamientos"
+    habitacionesContainer.style.display = 'none';
+    mensajeSinAlojamientos.style.display = 'none';
 
-// Mostrar el contenedor de reservas
-contenedorReservas.style.display = 'block';
-btnCancelarTodos.style.display = 'block';
-contenedorReservas.innerHTML = '';
+    // Mostrar el contenedor de reservas
+    contenedorReservas.style.display = 'block';
 
-    // Verificar si la reserva existe
-    if (!reservas) {
+    // Limpiar el contenedor de reservas antes de agregar nuevas cards
+    contenedorReservas.innerHTML = '';
+
+    // Verificar si hay reservas
+    if (!reservas || reservas.length === 0) {
         contenedorReservas.innerHTML = '<p class="text-danger">Reserva no encontrada.</p>';
         btnCancelarTodos.style.display = 'none'; // Ocultar el botón si no hay reservas
         return;
     }
+
+    // Verificar si todas las reservas están canceladas
     const todasCanceladas = reservas.every(reserva => reserva.estado === 'Cancelado');
 
     // Mostrar el botón "Cancelar todas las reservas"
@@ -407,6 +410,7 @@ contenedorReservas.innerHTML = '';
         btnCancelarTodos.querySelector('button').textContent = 'Cancelar todas las reservas';
         btnCancelarTodos.querySelector('button').onclick = () => enviarCodigoCancelacion(reservas[0].numero_reserva);
     }
+
     // Agregar el botón de "Volver" al contenedor de reservas
     const botonVolver = `
         <button id="btnVolver2" class="btn btn-link text-decoration-none text-dark fs-4 me-2">
@@ -415,64 +419,67 @@ contenedorReservas.innerHTML = '';
     `;
     contenedorReservas.innerHTML += botonVolver;
 
-
+    // Iterar sobre cada reserva y crear una card
     reservas.forEach(reserva => {
         const reservaCancelada = reserva.estado === 'Cancelado';
-    // Crear la card con los datos de la reserva
-    const card = `
-        <div class="col-md-8">
-        <div class="card p-3">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card-body">
-                        <h5 class="card-title">Reserva #${reserva.numero_reserva}</h5>
-                        <div class="row">
-                            <!-- Columna 1: Tipo de cuarto, cantidad de cuartos, cantidad de huéspedes -->
-                            <div class="col-md-6">
-                                <p><strong>Tipo de cuarto:</strong> ${reserva.tipo_cuarto}</p>
-                                <p><strong>Cantidad de cuartos:</strong> ${reserva.cantidad_cuartos}</p>
-                                <p><strong>Cantidad de huéspedes:</strong> ${reserva.cantidad_huespedes}</p>
-                            </div>
-                            <!-- Columna 2: Fecha de entrada, fecha de salida, cantidad de noches -->
-                            <div class="col-md-6">
-                                <p><strong>Fecha de entrada:</strong> ${reserva.fecha_entrada}</p>
-                                <p><strong>Fecha de salida:</strong> ${reserva.fecha_salida}</p>
-                                <p><strong>Cantidad de noches:</strong> ${reserva.cantidad_noches}</p>
+
+        // Crear la card con los datos de la reserva
+        const card = `
+            <div class="col-md-8">
+                <div class="card p-3">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <h5 class="card-title">Reserva #${reserva.numero_reserva}</h5>
+                                <div class="row">
+                                    <!-- Columna 1: Tipo de cuarto, cantidad de cuartos, cantidad de huéspedes -->
+                                    <div class="col-md-6">
+                                        <p><strong>Tipo de cuarto:</strong> ${reserva.tipo_cuarto}</p>
+                                        <p><strong>Cantidad de cuartos:</strong> ${reserva.cantidad_cuartos}</p>
+                                        <p><strong>Cantidad de huéspedes:</strong> ${reserva.cantidad_huespedes}</p>
+                                    </div>
+                                    <!-- Columna 2: Fecha de entrada, fecha de salida, cantidad de noches -->
+                                    <div class="col-md-6">
+                                        <p><strong>Fecha de entrada:</strong> ${reserva.fecha_entrada}</p>
+                                        <p><strong>Fecha de salida:</strong> ${reserva.fecha_salida}</p>
+                                        <p><strong>Cantidad de noches:</strong> ${reserva.cantidad_noches}</p>
+                                    </div>
+                                </div>
+                                <!-- Información adicional -->
+                                <p><strong>Subtotal:</strong> MXN ${reserva.subtotal}</p>
+                                <p><strong>Estado:</strong> ${reserva.estado}</p>
+                                <p><strong>Número de cuarto:</strong> ${reserva.numero_cuarto}</p>
                             </div>
                         </div>
-                        <!-- Información adicional -->
-                        <p><strong>Subtotal:</strong> MXN ${reserva.subtotal}</p>
-                        <p><strong>Estado:</strong> ${reserva.estado}</p>
-                        <p><strong>Número de cuarto:</strong> ${reserva.numero_cuarto}</p>
                     </div>
-                </div>
-            </div>
-            <div class="mt-3">
-                                     <button class="btn btn-danger ${reservaCancelada ? 'disabled' : ''}" 
+                    <div class="mt-3">
+                        <button class="btn btn-danger ${reservaCancelada ? 'disabled' : ''}" 
                                 onclick="${reservaCancelada ? '' : `cancelarReserva('${reserva.numero_reserva}', ${reserva.id})`}" 
                                 ${reservaCancelada ? 'disabled' : ''}>
                             ${reservaCancelada ? 'Reserva Cancelada' : 'Cancelar Reserva'}
                         </button>
+                    </div>
+                </div><br>
             </div>
-        </div><br>
-    </div>
-    `;
-    contenedorReservas.innerHTML += card;
-});
-document.getElementById('btnVolver2').addEventListener('click', function () {
-    // Ocultar el contenedor de reservas
-    document.getElementById('contenedorReservas').style.display = 'none';
+        `;
+        contenedorReservas.innerHTML += card;
+    });
 
-    // Mostrar el contenedor de habitaciones
-    document.getElementById('habitacionesContainer').style.display = 'block';
-    
-    document.getElementById('mensajeSinAlojamientos').style.display = 'block';
-    document.getElementById('btnCancelarTodos').style.display = 'none';
-    
-    document.getElementById('inputBuscarReserva').value = '';
+    // Agregar el evento de clic al botón de "Volver"
+    document.getElementById('btnVolver2').addEventListener('click', function () {
+        // Ocultar el contenedor de reservas
+        contenedorReservas.style.display = 'none';
 
-});
-    
+        // Mostrar el contenedor de habitaciones y el mensaje de "Sin alojamientos"
+        habitacionesContainer.style.display = 'block';
+        mensajeSinAlojamientos.style.display = 'block';
+
+        // Ocultar el botón "Cancelar todas las reservas"
+        btnCancelarTodos.style.display = 'none';
+
+        // Limpiar el campo de búsqueda
+        document.getElementById('inputBuscarReserva').value = '';
+    });
 }
 function enviarCodigoCancelacion(numeroReserva) {
     fetch('/reservas/cancelar-todas', {
@@ -550,6 +557,8 @@ function cancelarReserva(numeroReserva, reservaId) {
     .then(data => {
         alert(data.mensaje); // Mostrar mensaje de éxito
         // Recargar las reservas después de cancelar
+            // Deshabilitar todos los botones de "Cancelar Reserva"
+            deshabilitarBotonesCancelacion(numeroReserva);
         buscarReserva(numeroReserva);
     })
     .catch(error => {
