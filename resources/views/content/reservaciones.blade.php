@@ -376,6 +376,17 @@ function mostrarReserva(reservas) {
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
     const btnCancelarTodos = document.getElementById('btnCancelarTodos');
 
+
+        // Verificar si los elementos existen antes de manipularlos
+        if (!contenedorReservas || !habitacionesContainer || !mensajeSinAlojamientos || !btnCancelarTodos) {
+        console.error('Uno o más elementos no se encontraron en el DOM.');
+        console.log('btnCancelarTodos', btnCancelarTodos);
+ 
+        console.log('contenerdorReservas', contenedorReservas);
+        console.log('habitacionesContainer', habitacionesContainer);
+        console.log('mensajeSinAlojamientos', mensajeSinAlojamientos);
+        return;
+    }
     // Ocultar el contenedor de habitaciones y el mensaje de "Sin alojamientos"
     habitacionesContainer.style.display = 'none';
     mensajeSinAlojamientos.style.display = 'none';
@@ -395,9 +406,12 @@ function mostrarReserva(reservas) {
 
     // Verificar si todas las reservas están canceladas
     const todasCanceladas = reservas.every(reserva => reserva.estado === 'Cancelado');
+    const UnoCancelado = reservas.some(reserva => reserva.estado === 'Cancelado');
 
     // Mostrar el botón "Cancelar todas las reservas"
     btnCancelarTodos.style.display = 'block';
+
+
 
     // Deshabilitar el botón si todas las reservas están canceladas
     if (todasCanceladas) {
@@ -408,7 +422,7 @@ function mostrarReserva(reservas) {
         btnCancelarTodos.querySelector('button').disabled = false;
         btnCancelarTodos.querySelector('button').classList.remove('disabled');
         btnCancelarTodos.querySelector('button').textContent = 'Cancelar todas las reservas';
-        btnCancelarTodos.querySelector('button').onclick = () => enviarCodigoCancelacion(reservas[0].numero_reserva);
+        btnCancelarTodos.querySelector('button').onclick = () => cancelarReserva(reserva.numero_reserva, reserva.id);
     }
 
     // Agregar el botón de "Volver" al contenedor de reservas
@@ -453,8 +467,8 @@ function mostrarReserva(reservas) {
                         </div>
                     </div>
                     <div class="mt-3">
-                        <button class="btn btn-danger ${reservaCancelada ? 'disabled' : ''}" 
-                                onclick="${reservaCancelada ? '' : `cancelarReserva('${reserva.numero_reserva}', ${reserva.id})`}" 
+                        <button class="CancelarUno btn btn-danger ${reservaCancelada ? 'disabled' : ''}" 
+                                onclick="${reservaCancelada ? '' : `cancelarReserva('${reserva.numero_reserva}', ${reserva.id}, this)`}" 
                                 ${reservaCancelada ? 'disabled' : ''}>
                             ${reservaCancelada ? 'Reserva Cancelada' : 'Cancelar Reserva'}
                         </button>
@@ -464,6 +478,23 @@ function mostrarReserva(reservas) {
         `;
         contenedorReservas.innerHTML += card;
     });
+    const btnCancelarUno = document.querySelectorAll('.CancelarUno');
+
+
+    if (UnoCancelado) {
+        btnCancelarUno.forEach(boton => {
+            boton.disabled = true;
+            boton.classList.add('disabled');
+            boton.textContent = 'Cancelar Reserva';
+        });
+    } else {
+        btnCancelarUno.forEach(boton => {
+            boton.disabled = false;
+            boton.classList.remove('disabled');
+            boton.textContent = 'Cancelar Reserva';
+        });
+    }
+
 
     // Agregar el evento de clic al botón de "Volver"
     document.getElementById('btnVolver2').addEventListener('click', function () {
@@ -536,7 +567,7 @@ function deshabilitarBotonesCancelacion(numeroReserva) {
     });
 }
 
-function cancelarReserva(numeroReserva, reservaId) {
+function cancelarReserva(numeroReserva, reservaId, boton) {
     // Obtener el token CSRF
     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -556,9 +587,20 @@ function cancelarReserva(numeroReserva, reservaId) {
     })
     .then(data => {
         alert(data.mensaje); // Mostrar mensaje de éxito
-        // Recargar las reservas después de cancelar
-            // Deshabilitar todos los botones de "Cancelar Reserva"
-            deshabilitarBotonesCancelacion(numeroReserva);
+        // Deshabilitar el botón que se hizo clic y cambiar su texto
+        boton.disabled = true;
+        boton.classList.add('disabled');
+        boton.textContent = 'Reserva Cancelada';
+
+        // Deshabilitar todos los demás botones
+        const btnCancelarUno = document.querySelectorAll('.CancelarUno');
+        btnCancelarUno.forEach(btn => {
+            if (btn !== boton) { // Solo deshabilitar los botones que no son el que se hizo clic
+                btn.disabled = true;
+                btn.classList.add('disabled');
+                btn.textContent = 'Cancelar Reserva';
+            }
+        });
         buscarReserva(numeroReserva);
     })
     .catch(error => {
