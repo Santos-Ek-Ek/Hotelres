@@ -66,7 +66,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Brand Logo -->
     <a href="" class="brand-link">
     <img src="{{ asset('img/logo.jpeg') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: 1">
-      <span class="brand-text font-weight-light">Zamna-Express</span>
+      <span class="brand-text font-weight-light">Hotel Truck</span>
     </a>
 
     <!-- Sidebar -->
