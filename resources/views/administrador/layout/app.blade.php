@@ -186,7 +186,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <footer class="main-footer">
     <div class="container-fluid px-4">
       <div class="d-flex align-items-center justify-content-between small">
-        <div class="text-muted">Copyright &copy; Realizado por <a href="../contacto">Zamna Express </a> <?php echo date("Y")?></div>
+        <div class="text-muted">Copyright &copy; Realizado por <a href="../contacto">Hotel Truck </a> <?php echo date("Y")?></div>
       </div>
     </div>
   </footer>
