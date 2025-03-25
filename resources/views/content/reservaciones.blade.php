@@ -23,6 +23,37 @@
         --primary-color: #FFC107;
         --secondary-color: #FFD700;
     }
+    /* Estilos para el control de cantidad */
+.cantidad-input-flex {
+    width: 50px;
+    min-width: 50px;
+    padding: 0.25rem;
+}
+
+/* Estilos responsivos para el botón añadir */
+.add-btn {
+    white-space: nowrap;
+    padding: 0.5rem;
+}
+
+@media (max-width: 767.98px) {
+    .add-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    
+    .cantidad-input-flex {
+        width: 40px;
+        min-width: 40px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .add-btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.5rem;
+    }
+}
     .row {
         --bs-gutter-x: 0;
     }
@@ -1314,11 +1345,11 @@ habitacionesContainer.innerHTML = ''; // Limpiar el contenedor
                                                 </div>
                                                 <div>
                                                     <label class="fw-bold">Cantidad</label>
-                                                    <div class="d-flex">
-                                                        <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, -1, ${cantidad_disponible})">-</button>
-    <input type="text" class="form-control text-center w-25" value="1" readonly max="${cantidad_disponible}">
-                                                        <button class="btn btn-outline-secondary" onclick="cambiarCantidad(this, 1, ${cantidad_disponible})">+</button>
-                                                    </div>
+<div class="d-flex align-items-center justify-content-between w-100">
+    <button class="btn btn-outline-secondary flex-shrink-0" onclick="cambiarCantidad(this, -1, ${cantidad_disponible})">-</button>
+    <input type="text" class="form-control text-center flex-grow-1 cantidad-input-flex" value="1" readonly max="${cantidad_disponible}">
+    <button class="btn btn-outline-secondary flex-shrink-0" onclick="cambiarCantidad(this, 1, ${cantidad_disponible})">+</button>
+</div>
                                                 </div>
 <button class="btn btn-warning ms-3 add-btn" data-tipo="${habitacion.tipo_habitacion.tipo_cuarto}" data-precio="${precioTotal}" data-noches="${noches}" data-cantidad-disponible="${cantidad_disponible}" data-index="${index}">Añadir</button>
                                             </div>
