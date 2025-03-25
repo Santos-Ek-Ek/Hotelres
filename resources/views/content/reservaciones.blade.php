@@ -19,19 +19,35 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        .row{
-            --bs-gutter-x: 0;
-        }
-                .card { border-radius: 15px; }
-                .add-btn { background-color: #FFD700; border: none; }
-        .header {
-            background-color: #FFC107;
-            padding: 1rem;
-        }
-        .header h1 {
-            color: black;
-            font-weight: bold;
-        }
+            :root {
+        --primary-color: #FFC107;
+        --secondary-color: #FFD700;
+    }
+    .row {
+        --bs-gutter-x: 0;
+    }
+    
+    .card {
+        border-radius: 15px;
+        margin-bottom: 1rem;
+    }
+    
+    .header {
+        background-color: var(--primary-color);
+        padding: 1rem;
+    }
+    
+    .header h1 {
+        color: black;
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+    
+    .header-input {
+        border-radius: 50px;
+        padding: 0.3rem 0.8rem;
+        border: 1px solid #ddd;
+    }
         .header .btn {
             background-color: white;
             color: black;
@@ -56,39 +72,32 @@
             font-weight: bold;
         }
         
-        .header-input {
-            border-radius: 50px;
-            padding: 0.5rem 1rem;
-        }
+
         .header-button {
             border-radius: 50px;
             padding: 0.5rem 1rem;
         }
-        .room-card {
-            border-radius: 15px;
-        }
+        .room-card, .reserva-card {
+        width: 100%;
+    }
         .compare-button {
             border-radius: 50px;
             padding: 0.5rem 1rem;
         }
 
-                /* Estilos para el diseño de dos columnas */
-                .main-container {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-        }
+    /* Contenedores principales */
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 15px;
+    }
 
         .sidebar {
             flex: 1; /* Ocupa 1 parte del espacio disponible */
             position: sticky;
             top: 20px; /* Distancia desde la parte superior */
             height: fit-content; /* Ajusta la altura al contenido */
-        }
-
-        .btn-custom {
-            background-color: #FFD700;
-            color: white;
         }
         .mb-4{
             margin-bottom: 0.5rem !important;
@@ -104,14 +113,93 @@
     position: relative; /* Para posicionar el formulario dentro de este contenedor */
 }
 .form-container {
-    background-color: white;
-    padding: 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%; /* Ocupa el mismo ancho que las tarjetas */
-    margin: 0 auto; /* Centrado horizontal */
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    /* Botones */
+    .btn-custom {
+        background-color: var(--secondary-color);
+        color: white;
+        white-space: nowrap;
+    }
+    
+        /* Mejoras para móviles */
+        @media (max-width: 575.98px) {
+        .card-body .row > div {
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-body .row > div:last-child {
+            margin-bottom: 0;
+        }
+        
+        .btn-responsive {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+    }
 
-}
+@media (min-width: 576px) {
+        .room-card, .reserva-card {
+            max-width: 100%;
+        }
+    }
+    /* Estilos responsive */
+    @media (max-width: 767.98px) {
+        .header {
+            padding: 0.8rem;
+        }
+        
+        .header-input {
+            width: 100% !important;
+            margin-right: 0 !important;
+        }
+        
+        .header-input input {
+            font-size: 0.9rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .header-input .btn {
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .date-range-input span {
+            display: none;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .header h1 {
+            font-size: 2rem;
+        }
+        
+        .header-input {
+            min-width: 250px;
+        }
+    }
+    @media (min-width: 992px) {
+        .main-container {
+            flex-direction: row;
+        }
+        
+        .sidebar {
+            flex: 1;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+        
+        .habitaciones-container,
+        .reservas-container {
+            flex: 3;
+        }
+    }
     </style>
     
 </head>
@@ -153,24 +241,22 @@
     </main>
 </div>
     <div id="apartado2" style="display: none; background-color: #FFC107; width:100%;">
-        <header class="header d-flex justify-content-between align-items-center">
-        <h1><a href="/" style="text-decoration: none; color:black;">Hotel Truck</a></h1>
-            <div class="d-flex align-items-center">
-            <div class="d-flex align-items-center bg-white header-input mr-2 me-2">
-                    <input type="text" class="form-control border-0" id="inputBuscarReserva" placeholder="Buscar reserva (Número de reserva)">
-                    <button id="btnBuscarReserva" class="btn text-warning ml-2"><i class="fas fa-search"></i></button>
-                </div>
-                <div class="d-flex align-items-center bg-white header-input mr-2">
-                    <input type="text" class="form-control border-0" id="checkinbus" placeholder="DD-MM-YYYY">
-                    <span class="mx-2">→</span>
-                    <input type="text" class="form-control border-0" id="checkoutbus" placeholder="DD-MM-YYYY">
-                    <button id="btnBuscarHeader" class="btn text-warning ml-2"><i class="fas fa-search"></i></button>
-                </div>
-
-                <button disabled class="btn btn-light d-flex align-items-center">MXN</button>
-
-            </div>
-        </header>
+    <header class="header d-flex flex-column flex-md-row justify-content-between align-items-center p-2 p-md-3">
+    <h1 class="mb-2 mb-md-0"><a href="/" style="text-decoration: none; color:black;">Hotel Truck</a></h1>
+    <div class="d-flex flex-column flex-md-row align-items-center w-100 w-md-auto">
+        <div class="d-flex align-items-center bg-white header-input mb-2 mb-md-0 me-md-2 w-100">
+            <input type="text" class="form-control border-0" id="inputBuscarReserva" placeholder="Buscar reserva">
+            <button id="btnBuscarReserva" class="btn text-warning"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="d-flex align-items-center bg-white header-input mb-2 mb-md-0 me-md-2 w-100">
+            <input type="text" class="form-control border-0" id="checkinbus" placeholder="DD-MM-YYYY">
+            <span class="mx-md-2">→</span>
+            <input type="text" class="form-control border-0" id="checkoutbus" placeholder="DD-MM-YYYY">
+            <button id="btnBuscarHeader" class="btn text-warning"><i class="fas fa-search"></i></button>
+        </div>
+        <button disabled class="btn btn-light d-flex align-items-center ms-md-2">MXN</button>
+    </div>
+</header>
         
         <!-- Contenedor principal para las dos columnas -->
         <div class="main-container">
@@ -261,7 +347,7 @@
         <p>Nota: Solo puede cancelar una habitación con la opción "Cancelar Reserva"</p>
     </div>
 
-                <div id="resumenReserva" class="card shadow p-4" style="width: 22rem; display: none;">
+                <div id="resumenReserva" class="card shadow p-4" style="display: none;">
     <h5 class="text-center font-weight-bold mb-4">Resumen de la reserva</h5>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <span id="resumenCheckin"></span>
