@@ -513,6 +513,7 @@ function buscarReserva(numeroReserva) {
 function mostrarReserva(reservas) {
     document.getElementById('apartado1').style.display = 'none';
     document.getElementById('apartado2').style.display = 'block';
+    document.getElementById('resumenReserva').style.display = 'none';
 
     const contenedorReservas = document.getElementById('contenedorReservas');
     const habitacionesContainer = document.getElementById('habitacionesContainer');
@@ -640,11 +641,19 @@ function mostrarReserva(reservas) {
 
         // Mostrar el contenedor de habitaciones y el mensaje de "Sin alojamientos"
         habitacionesContainer.style.display = 'block';
-        mensajeSinAlojamientos.style.display = 'block';
+        if (reservas && reservas.length > 0) {
+                // Mostrar las reservas en el resumen
+                    document.getElementById('resumenReserva').style.display = 'block';
+
+
+            } else {
+                // Mostrar mensaje de "Sin reservas"
+                resumenContainer.innerHTML = '<p class="text-muted">No tienes reservas activas</p>';
+                mensajeSinAlojamientos.style.display = 'block';
+            }
 
         // Ocultar el botón "Cancelar todas las reservas"
         btnCancelarTodos.style.display = 'none';
-
         // Limpiar el campo de búsqueda
         document.getElementById('inputBuscarReserva').value = '';
     });
