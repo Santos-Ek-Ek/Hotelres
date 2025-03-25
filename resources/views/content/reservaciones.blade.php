@@ -1132,6 +1132,7 @@ function buscarHabitaciones(checkin, checkout) {
             const contenedorReservas = document.getElementById('contenedorReservas');
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
 
+    document.getElementById('btnCancelarTodos').style.display = 'none';
 
 // Ocultar el contenedor de reservas
 contenedorReservas.style.display = 'none';
