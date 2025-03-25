@@ -124,6 +124,10 @@
 <div class="bg-light">
     <header class="header d-flex justify-content-between align-items-center">
         <h1><a href="/" style="text-decoration: none; color:black;">Hotel Truck</a></h1>
+        <div class="d-flex align-items-center bg-white header-input mr-2 me-2">
+                    <input type="text" class="form-control border-0" id="inputBuscarReserva2" placeholder="Buscar reserva (Número de reserva)">
+                    <button id="btnBuscarReserva2" class="btn text-warning ml-2"><i class="fas fa-search"></i></button>
+                </div>
         <button disabled class="btn btn-light d-flex align-items-center">
 
             MXN
@@ -157,9 +161,9 @@
                     <button id="btnBuscarReserva" class="btn text-warning ml-2"><i class="fas fa-search"></i></button>
                 </div>
                 <div class="d-flex align-items-center bg-white header-input mr-2">
-                    <input type="text" class="form-control border-0" id="checkinbus" placeholder="14 mar 2025">
+                    <input type="text" class="form-control border-0" id="checkinbus" placeholder="DD-MM-YYYY">
                     <span class="mx-2">→</span>
-                    <input type="text" class="form-control border-0" id="checkoutbus" placeholder="21 mar 2025">
+                    <input type="text" class="form-control border-0" id="checkoutbus" placeholder="DD-MM-YYYY">
                     <button id="btnBuscarHeader" class="btn text-warning ml-2"><i class="fas fa-search"></i></button>
                 </div>
 
@@ -353,22 +357,48 @@
 </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('btnBuscarReserva').addEventListener('click', function() {
-    const numeroReserva = document.getElementById('inputBuscarReserva').value;
-    buscarReserva(numeroReserva);
+// Configuración de event listeners mejorada
+document.getElementById('btnBuscarReserva').addEventListener('click', function() {
+    buscarPorCampo('inputBuscarReserva');
 });
 
+document.getElementById('btnBuscarReserva2').addEventListener('click', function() {
+    buscarPorCampo('inputBuscarReserva2');
+});
+
+// Función genérica para buscar por cualquier campo
+function buscarPorCampo(inputId) {
+    const input = document.getElementById(inputId);
+    const numeroReserva = input.value.trim();
+    
+    if (!numeroReserva) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Campo vacío',
+            text: `Por favor ingresa un número de reserva en el campo ${inputId === 'inputBuscarReserva' ? 'primero' : 'segundo'}`
+        });
+        input.focus();
+        return;
+    }
+    
+    buscarReserva(numeroReserva).then(() => {
+        input.value = ''; // Limpiar el campo después de buscar
+    });
+}
+
+// Función mejorada de búsqueda con diagnóstico
 function buscarReserva(numeroReserva) {
+    console.log(`Buscando reserva: ${numeroReserva}`); // Debug
+    
     return fetch(`/api/reservas/${numeroReserva}`)
         .then(response => {
-            // Verificar si la respuesta es OK (status 200-299)
+            console.log('Respuesta recibida:', response); // Debug
             if (!response.ok) {
-                // Si la respuesta no es OK, intentar leer el mensaje de error
                 return response.text().then(text => {
+                    console.error('Error en respuesta:', text); // Debug
                     throw new Error(`Error ${response.status}: ${text}`);
                 });
             }
-            // Verificar el content-type para asegurarnos que es JSON
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new TypeError("La respuesta no es JSON");
@@ -376,21 +406,28 @@ function buscarReserva(numeroReserva) {
             return response.json();
         })
         .then(data => {
+            console.log('Datos recibidos:', data); // Debug
+            if (!data || (Array.isArray(data) && data.length === 0)) {
+                throw new Error('No se encontraron reservas con ese número');
+            }
             mostrarReserva(data);
-            return data; // Retornamos los datos para poder encadenar
+            return data;
         })
         .catch(error => {
-            console.error('Error al buscar la reserva:', error);
+            console.error('Error completo:', error); // Debug
             Swal.fire({
                 icon: 'error',
-                title: 'Error',
-                text: 'No se pudieron cargar las reservas. Por favor intenta nuevamente.'
+                title: 'Error en búsqueda',
+                text: error.message || 'No se pudo completar la búsqueda'
             });
-            throw error; // Relanzamos el error para manejarlo en la cadena de promesas
+            throw error;
         });
 }
 
 function mostrarReserva(reservas) {
+    document.getElementById('apartado1').style.display = 'none';
+    document.getElementById('apartado2').style.display = 'block';
+
     const contenedorReservas = document.getElementById('contenedorReservas');
     const habitacionesContainer = document.getElementById('habitacionesContainer');
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
@@ -1169,6 +1206,7 @@ habitacionesContainer.innerHTML = ''; // Limpiar el contenedor
                                         <div class="card-body">
                                             <h5 class="card-title">${habitacion.tipo_habitacion.tipo_cuarto}</h5>
                                             <p><i class="fas fa-users"></i> ${habitacion.tipo_habitacion.cantidad_maxima_personas}</p>
+                                            <p><i class="fas fa-bed"></i> ${habitacion.tipo_habitacion.numero_camas}</p>
                                             <p>${habitacion.descripcion}</p>
                                             <h5 class="fw-bold">MXN ${precioTotal}</h5>
                                             <div class="me-3">
