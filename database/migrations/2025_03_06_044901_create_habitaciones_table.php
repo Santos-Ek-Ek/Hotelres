@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('habitaciones', function (Blueprint $table) {
             $table->id(); // ID de la habitación
             $table->string('numero_habitacion'); // Número de la habitación
-            $table->string('descripcion'); // Número de la habitación
+            $table->longText('descripcion')->nullable(); // Número de la habitación
             $table->unsignedBigInteger('tipo_habitacion_id'); // ID del tipo de habitación (relación con tipos_habitaciones)
-            $table->string('imagen_habitacion'); // Imagen principal de la habitación (puede ser la primera imagen)
+            $table->string('imagen_habitacion')->nullable(); // Imagen principal de la habitación (puede ser la primera imagen)
             $table->string('estado')->default('Disponible'); // Imagen principal de la habitación (puede ser la primera imagen)
             $table->timestamps(); // Fechas de creación y actualización
 
