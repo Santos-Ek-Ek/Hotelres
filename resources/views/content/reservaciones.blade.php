@@ -359,14 +359,34 @@
 });
 
 function buscarReserva(numeroReserva) {
-    // Simulación de una solicitud AJAX para obtener los datos de la reserva
-    fetch(`/api/reservas/${numeroReserva}`)
-        .then(response => response.json())
+    return fetch(`/api/reservas/${numeroReserva}`)
+        .then(response => {
+            // Verificar si la respuesta es OK (status 200-299)
+            if (!response.ok) {
+                // Si la respuesta no es OK, intentar leer el mensaje de error
+                return response.text().then(text => {
+                    throw new Error(`Error ${response.status}: ${text}`);
+                });
+            }
+            // Verificar el content-type para asegurarnos que es JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new TypeError("La respuesta no es JSON");
+            }
+            return response.json();
+        })
         .then(data => {
             mostrarReserva(data);
+            return data; // Retornamos los datos para poder encadenar
         })
         .catch(error => {
             console.error('Error al buscar la reserva:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudieron cargar las reservas. Por favor intenta nuevamente.'
+            });
+            throw error; // Relanzamos el error para manejarlo en la cadena de promesas
         });
 }
 
@@ -422,7 +442,7 @@ function mostrarReserva(reservas) {
         btnCancelarTodos.querySelector('button').disabled = false;
         btnCancelarTodos.querySelector('button').classList.remove('disabled');
         btnCancelarTodos.querySelector('button').textContent = 'Cancelar todas las reservas';
-        btnCancelarTodos.querySelector('button').onclick = () => cancelarReserva(reserva.numero_reserva, reserva.id);
+        btnCancelarTodos.querySelector('button').onclick = () => enviarCodigoCancelacion(reservas[0].numero_reserva);
     }
 
     // Agregar el botón de "Volver" al contenedor de reservas
@@ -517,13 +537,32 @@ function enviarCodigoCancelacion(numeroReserva) {
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.mensaje);
-        // Mostrar un campo para ingresar el código de cancelación
-        const codigoCancelacion = prompt('Ingresa el código de cancelación que recibiste en tu correo:');
-        if (codigoCancelacion) {
-            validarCodigoYCancelar(numeroReserva, codigoCancelacion);
+    // Mostrar SweetAlert para ingresar el código
+    Swal.fire({
+        title: 'Código de cancelación',
+        text: data.mensaje,
+        input: 'text',
+        inputPlaceholder: 'Ingresa el código que recibiste en tu correo',
+        inputAttributes: {
+            autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Validar código',
+        cancelButtonText: 'Cancelar',
+        showLoaderOnConfirm: true,
+        preConfirm: (codigo) => {
+            if (!codigo) {
+                Swal.showValidationMessage('El código es requerido');
+            }
+            return codigo;
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            validarCodigoYCancelar(numeroReserva, result.value);
         }
-    })
+    });
+})
     .catch(error => {
         console.error('Error al enviar el código de cancelación:', error);
     });
@@ -537,16 +576,64 @@ function validarCodigoYCancelar(numeroReserva, codigo) {
         },
         body: JSON.stringify({ numero_reserva: numeroReserva, codigo: codigo }),
     })
-    .then(response => response.json())
+    .then(response => {
+        // Verificar primero si la respuesta es OK
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`Error ${response.status}: ${text}`);
+            });
+        }
+        
+        // Verificar que la respuesta sea JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new TypeError("La respuesta no es JSON");
+        }
+        
+        return response.json();
+    })
     .then(data => {
-        alert(data.mensaje);
-        if (data.mensaje === 'Todas las reservas han sido canceladas correctamente.') {
-            // Deshabilitar los botones de cancelación
-            deshabilitarBotonesCancelacion(numeroReserva);
+        if (data.success || data.mensaje === 'Todas las reservas han sido canceladas correctamente.') {
+            // Actualizar la vista primero
+            return buscarReserva(numeroReserva).then(() => {
+                // Mostrar mensaje de éxito
+                return Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: data.mensaje,
+                });
+            }).then(() => {
+                // Actualizar botones
+                const btnCancelarTodos = document.getElementById('btnCancelarTodos');
+                if (btnCancelarTodos) {
+                    btnCancelarTodos.querySelector('button').disabled = true;
+                    btnCancelarTodos.querySelector('button').classList.add('disabled');
+                    btnCancelarTodos.querySelector('button').textContent = 'Todas las reservas canceladas';
+                }
+                
+                // Deshabilitar todos los botones individuales
+                document.querySelectorAll('.CancelarUno').forEach(boton => {
+                    boton.disabled = true;
+                    boton.textContent = 'Reserva Cancelada';
+                });
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.mensaje || 'Error desconocido al cancelar las reservas',
+            });
         }
     })
     .catch(error => {
         console.error('Error al validar el código:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message.includes('JSON') 
+                ? 'Error en el formato de la respuesta del servidor' 
+                : error.message,
+        });
     });
 }
 function deshabilitarBotonesCancelacion(numeroReserva) {
