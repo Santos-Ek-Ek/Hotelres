@@ -254,7 +254,7 @@
                 </div>
                 <div id="btnCancelarTodos" class="card text-center p-3" style="display:none;">
         <button class="btn btn-danger" onclick="enviarCodigoCancelacion('${reservas[0].numero_reserva}')">Cancelar todas las reservas</button>
-        <p>Nota: Solo puede cancelar un cuarto con la opción "Cancelar Reserva"</p>
+        <p>Nota: Solo puede cancelar una habitación con la opción "Cancelar Reserva"</p>
     </div>
 
                 <div id="resumenReserva" class="card shadow p-4" style="width: 22rem; display: none;">
@@ -485,13 +485,7 @@ function mostrarReserva(reservas) {
         btnCancelarUno.forEach(boton => {
             boton.disabled = true;
             boton.classList.add('disabled');
-            boton.textContent = 'Cancelar Reserva';
-        });
-    } else {
-        btnCancelarUno.forEach(boton => {
-            boton.disabled = false;
-            boton.classList.remove('disabled');
-            boton.textContent = 'Cancelar Reserva';
+            // boton.textContent = 'Cancelar Reserva';
         });
     }
 
@@ -595,7 +589,7 @@ function cancelarReserva(numeroReserva, reservaId, boton) {
         // Deshabilitar todos los demás botones
         const btnCancelarUno = document.querySelectorAll('.CancelarUno');
         btnCancelarUno.forEach(btn => {
-            if (btn !== boton) { // Solo deshabilitar los botones que no son el que se hizo clic
+            if (btn !== boton && !btn.disabled) { // Solo deshabilitar los botones que no son el que se hizo clic
                 btn.disabled = true;
                 btn.classList.add('disabled');
                 btn.textContent = 'Cancelar Reserva';
