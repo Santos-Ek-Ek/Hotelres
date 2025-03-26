@@ -52,6 +52,7 @@ Route::get('/pagos',[PagoController::class,'index']);
 Route::post('/actualizar-estado/{id}', [PagoController::class, 'update'])->name('actualizar.estado');
 Route::get('/reservacion', [ReservaController::class, 'index']);
 Route::get('/huespedes', [ReservaController::class, 'huesped']);
+Route::delete('/huespedes/{id}', [ReservaController::class, 'destroy'])->name('huespedes.destroy');
 Route::post('/actualizar-estado-reserva/{id}', [ReservaController::class, 'update'])->name('actualizar.reserva.estado');
 Route::get('/categorias', [tipoHabitacionesController::class, 'index'])->name('categorias.index');
 Route::post('/tipo-habitacion', [tipoHabitacionesController::class, 'store'])->name('tipo-habitacion.store');

@@ -25,6 +25,7 @@ class CreateHuespedesTable extends Migration
             $table->string('codigo_postal', 20); // Código postal del huésped
             $table->string('correo', 100); // Correo electrónico (único)
             $table->string('telefono', 20); // Teléfono del huésped
+            $table->boolean('activo');
             $table->timestamps(); // Columnas created_at y updated_at
         });
     }

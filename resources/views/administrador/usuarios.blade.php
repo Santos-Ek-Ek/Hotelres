@@ -35,14 +35,13 @@
                                 <td>{{ $huesped->telefono }}</td>
                                 <td>{{ $huesped->correo }}</td>
                                 <td>
-                                    <a class="btn btn-outline-danger">
-                                        <i class="bx bxs-trash"></i>
-                                    </a>
-                                    </a>
-                                    <form method="POST" style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
+                                <form method="POST" action="{{ route('huespedes.destroy', $huesped->id) }}" style="display: inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este huésped?')">
+                    <i class="bx bxs-trash"></i>
+                </button>
+            </form>
                                 </td>
                             </tr>
                             @endforeach

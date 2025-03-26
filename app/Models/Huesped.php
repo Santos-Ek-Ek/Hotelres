@@ -60,6 +60,7 @@ class Huesped extends Model
         'codigo_postal',
         'correo',
         'telefono',
+        'activo'
     ];
 
     // app/Models/Huesped.php

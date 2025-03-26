@@ -29,7 +29,7 @@ class ReservaController extends Controller
     }
     
     public function huesped(){
-        $huespedes = Huesped::all();
+        $huespedes = Huesped::where('activo', 1)->get();
         return view('administrador.usuarios',compact('huespedes'));
     }
 
@@ -77,6 +77,7 @@ class ReservaController extends Controller
             'correo' => $request->correo,
             'telefono' => $request->telefono,
             'estado' => 'Pendiente',
+            'activo' =>'1',
         ]);
 
         // Generar un número de reserva único (una sola vez)
@@ -370,6 +371,9 @@ class ReservaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $huesped = Huesped::findOrFail($id);
+        $huesped->activo = 0;
+        $huesped->save();
+        return redirect()->back()->with('success', 'Huésped eliminado correctamente');
     }
 }
