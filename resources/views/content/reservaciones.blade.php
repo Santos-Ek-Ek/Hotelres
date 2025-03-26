@@ -1037,10 +1037,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evento para el botón "Reservar ahora"
     document.getElementById('btnReservarAhora').addEventListener('click', function() {
         // Ocultar todas las tarjetas de habitaciones
-        const tarjetasHabitaciones = document.querySelectorAll('#habitacionesContainer .card');
-        tarjetasHabitaciones.forEach(tarjeta => {
-            tarjeta.style.display = 'none';
-        });
+        const tarjetasHabitaciones = document.getElementById('habitacionesContainer');
+
+            tarjetasHabitaciones.style.display = 'none';
+
 
         // Mostrar el apartado 3 (formulario de huéspedes)
         document.getElementById('apartado3').style.display = 'block';

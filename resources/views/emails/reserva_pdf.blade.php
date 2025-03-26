@@ -177,8 +177,19 @@
     <!-- Información adicional -->
     <div class="mt-4">
         <h2 class="text-lg font-bold mb-2">Información adicional</h2>
-        <p>Check-in desde la 1 PM, check-out hasta las 12 AM.</p>
-        <p>Estacionamiento gratuito en el lugar.</p>
+        <p>Acceso: 02:00 P.M., Salida: 12:00 P.M.</p>
+        <p>        (La reserva se realizaría por medio de un pago “garantía” de $200 y el faltante al ingresar al hotel).
+* Al cancelar la reserva 5 días antes del dia de la ocupación, el usuario pierde el anticipo del precio antes pactado. 
+</p>
+<p>Horarios de recepción: de lunes a domingo de 07:30 a.m. A 21:00 p.m.</p>
+ 
+<p>Cuenta Bancaria: 7014686830</p>
+<p>Transferencia - Clabe: 00291070140686830</p>
+<p>Depósito - Tienda de Conveniencia: 5204167427606496</p>
+<p>Dirección: Calle 31X 24 y 26 #81, Temax, Yucatán</p>
+<p>Banco: Banamex</p>
+<p>Nombre: José Ismael Tinal Moguel</p>
+
     </div>
 </div>
 </body>
