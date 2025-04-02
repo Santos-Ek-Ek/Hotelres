@@ -22,6 +22,8 @@ class CreatePagosTable extends Migration
             $table->decimal('total', 10, 2); // Total del pago (10 dígitos, 2 decimales)
             $table->date('fecha'); // Fecha del pago
             $table->string('estado'); // Estado del pago
+            $table->string('anticipo')->nullable();
+            $table->string('anticipo_estado')->nullable();
             $table->timestamps(); // Columnas created_at y updated_at
     
             // Definir la clave foránea para numero_reserva

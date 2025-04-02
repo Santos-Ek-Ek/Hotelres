@@ -56,7 +56,9 @@ class Pago extends Model
         'impuesto',
         'total',
         'fecha',
-        'estado'
+        'estado',
+        'anticipo',
+        'anticipo_estado',
     ];
 
     /**

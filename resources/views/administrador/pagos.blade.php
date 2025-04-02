@@ -42,6 +42,7 @@
                     <th scope="col">HUESPED PRINCIPAL</th>
                     <th scope="col">SUBTOTAL</th>
                     <th scope="col">IMPUESTO</th>
+                    <th scope="col">ANTICIPO (200 MXN)</th>
                     <th scope="col">TOTAL</th>
                     <th scope="col">FECHA</th>
                     <th scope="col">ESTADO</th>
@@ -53,6 +54,7 @@
                       <td>{{ $pago->huesped->nombre }} {{ $pago->huesped->apellido }}</td>
                       <td>{{ $pago->subtotal }}</td>
                       <td>{{ $pago->impuesto }}</td>
+                      <td>{{$pago->anticipo_estado}} <i class="fas fa-eye"></i></td>
                       <td>{{ $pago->total }}</td>
                       <td>{{ $pago->fecha->format('Y-m-d') }}</td>
                       <td>

@@ -81,6 +81,7 @@ Route::post('/reservas/validar-codigo', [ReservaController::class, 'validarCodig
 Route::get('/buscar-habitaciones', [HabitacionesController::class, 'buscarHabitaciones']);
 
 
-
-
+Route::get('/api/pagos/comprobante/{numeroReserva}', [PagoController::class, 'show']);
+Route::post('/api/pagos', [PagoController::class, 'store']);
+Route::put('/api/pagos/{numeroReserva}', [PagoController::class, 'actualizar'])->name('api.pagos.update');
 

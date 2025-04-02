@@ -153,6 +153,7 @@ class ReservaController extends Controller
             'total' => $request->total,
             'fecha' => now(),
             'estado' => 'Pendiente',
+            'anticipo_estado' => 'Pendiente'
         ]);
 
         DB::commit();

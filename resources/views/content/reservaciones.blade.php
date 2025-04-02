@@ -377,6 +377,11 @@
         <button class="btn btn-danger" onclick="enviarCodigoCancelacion('${reservas[0].numero_reserva}')">Cancelar todas las reservas</button>
         <p>Nota: Solo puede cancelar una habitación con la opción "Cancelar Reserva"</p>
     </div>
+    <div id="anticipoImg" class="card text-center p-3" style="display:none;">
+    <p>Por favor proporcione la imagen del comprobante de pago del anticipo (200 MNX)</p>
+    <input type="file" class="form-control"  name="imgAnticipo" accept="image/*">
+    <div id="uploadStatus" class="mt-2 small"></div>
+    </div>
 
                 <div id="resumenReserva" class="card shadow p-4" style="display: none;">
     <h5 class="text-center font-weight-bold mb-4">Resumen de la reserva</h5>
@@ -464,6 +469,7 @@
             </div>
             <div class="modal-body">
                 <p>La reserva se ha creado correctamente.</p>
+                <p>Por favor proporcione el ticket de pago, en la seccion de buscar reserva</p>
                 <p>Se ha enviado un PDF con los detalles de la reserva al correo proporcionado.</p>
             </div>
             <div class="modal-footer">
@@ -541,17 +547,21 @@ function buscarReserva(numeroReserva) {
         });
 }
 
-function mostrarReserva(reservas) {
+async function mostrarReserva(reservas) {
     document.getElementById('apartado1').style.display = 'none';
     document.getElementById('apartado2').style.display = 'block';
     document.getElementById('resumenReserva').style.display = 'none';
+    document.getElementById('anticipoImg').style.display = 'block';
 
     const contenedorReservas = document.getElementById('contenedorReservas');
     const habitacionesContainer = document.getElementById('habitacionesContainer');
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
     const btnCancelarTodos = document.getElementById('btnCancelarTodos');
 
-
+    const inputImagen = document.querySelector('input[name="imgAnticipo"]');
+    inputImagen.onchange = function(e) {
+        subirComprobantePago(e.target.files[0], reserva.numeroReserva);
+    };
         // Verificar si los elementos existen antes de manipularlos
         if (!contenedorReservas || !habitacionesContainer || !mensajeSinAlojamientos || !btnCancelarTodos) {
         console.error('Uno o más elementos no se encontraron en el DOM.');
@@ -675,11 +685,10 @@ function mostrarReserva(reservas) {
         if (reservas && reservas.length > 0) {
                 // Mostrar las reservas en el resumen
                     document.getElementById('resumenReserva').style.display = 'block';
-
+                    document.getElementById('anticipoImg').style.display = 'none';
 
             } else {
                 // Mostrar mensaje de "Sin reservas"
-                resumenContainer.innerHTML = '<p class="text-muted">No tienes reservas activas</p>';
                 mensajeSinAlojamientos.style.display = 'block';
             }
 
@@ -688,7 +697,335 @@ function mostrarReserva(reservas) {
         // Limpiar el campo de búsqueda
         document.getElementById('inputBuscarReserva').value = '';
     });
+
+    document.getElementById('anticipoImg').style.display = 'block';
+    const tieneComprobante = await verificarYMostrarComprobante(reservas[0].numero_reserva);
+    
+    // Configurar input solo si no hay comprobante
+    if (!tieneComprobante) {
+        const inputFile = document.querySelector('input[name="imgAnticipo"]');
+        inputFile.onchange = (e) => manejarSubidaComprobante(e, reservas[0].numero_reserva);
+    }   
 }
+
+
+// Definir el input al inicio del código
+const inputImagen = document.querySelector('input[name="imgAnticipo"]');
+
+// Función unificada para manejar comprobantes
+async function verificarYMostrarComprobante(numeroReserva) {
+    const uploadStatus = document.getElementById('uploadStatus');
+    const btnActualizar = document.createElement('button');
+    
+    try {
+        // Limpiar estado anterior
+        uploadStatus.innerHTML = '';
+        document.querySelectorAll('.comprobante-preview').forEach(el => el.remove());
+        
+        // Obtener datos del comprobante
+        const response = await fetch(`/api/pagos/comprobante/${numeroReserva}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            const errorMsg = errorData?.message || 'Error al verificar el comprobante';
+            throw new Error(errorMsg);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.comprobante) {
+            // Mostrar vista previa del comprobante existente
+            const previewHTML = `
+                <div class="comprobante-preview mt-3">
+                    <div class="card">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-check-circle"></i> Comprobante existente</span>
+                            <button id="btnActualizarComprobante" class="btn btn-sm btn-warning">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="${data.comprobante.url}" 
+                                 class="img-thumbnail mb-2" 
+                                 style="max-height: 200px; cursor: pointer"
+                                 onclick="ampliarImagen('${data.comprobante.url}')">
+                            <p class="mb-1"><strong>Estado:</strong> ${data.comprobante.estado}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            uploadStatus.insertAdjacentHTML('beforeend', previewHTML);
+            
+            // Configurar botón de actualización
+            document.getElementById('btnActualizarComprobante').addEventListener('click', () => {
+                inputImagen.disabled = false;
+                inputImagen.click(); // Abrir el selector de archivos
+            });
+            
+            // Configurar input para permitir actualización
+            inputImagen.onchange = (e) => manejarSubidaComprobante(e, numeroReserva);
+            inputImagen.disabled = false;
+            inputImagen.value = ''; // Limpiar el input
+            
+            return true;
+        } else {
+            // Mostrar mensaje para subir nuevo comprobante
+            uploadStatus.innerHTML = `
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> Por favor suba el comprobante de pago
+                </div>
+            `;
+            
+            // Configurar input para nuevo comprobante
+            inputImagen.onchange = (e) => manejarSubidaComprobante(e, numeroReserva);
+            inputImagen.disabled = false;
+            
+            return false;
+        }
+    } catch (error) {
+        console.error('Error al verificar comprobante:', error);
+        uploadStatus.innerHTML = `
+            <div class="alert alert-danger mt-3">
+                <i class="fas fa-exclamation-triangle"></i> ${error.message}
+            </div>
+        `;
+        
+        // Configurar input para nuevo comprobante en caso de error
+        inputImagen.onchange = (e) => manejarSubidaComprobante(e, numeroReserva);
+        inputImagen.disabled = false;
+        
+        return false;
+    }
+}
+
+// Función para manejar la subida/actualización de comprobantes
+async function manejarSubidaComprobante(event, numeroReserva) {
+    const file = event.target.files[0];
+    const uploadStatus = document.getElementById('uploadStatus');
+    
+    if (!file) return;
+    
+    // Validaciones
+    if (!file.type.match('image.*')) {
+        uploadStatus.innerHTML = crearAlerta('Formato no válido', 'Solo imágenes JPEG, PNG o JPG', 'danger');
+        return;
+    }
+    
+    if (file.size > 2 * 1024 * 1024) {
+        uploadStatus.innerHTML = crearAlerta('Archivo muy grande', 'El tamaño máximo es 2MB', 'danger');
+        return;
+    }
+    
+    // Mostrar vista previa temporal
+    const previewURL = URL.createObjectURL(file);
+    const previewHTML = `
+        <div class="comprobante-preview-temp mt-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-upload"></i> Nuevo comprobante
+                </div>
+                <div class="card-body text-center">
+                    <img src="${previewURL}" class="img-thumbnail" style="max-height: 150px;">
+                    <p class="small text-muted mt-2">${file.name}</p>
+                    <button id="btnConfirmarSubida" class="btn btn-success mt-2">
+                        <i class="fas fa-check"></i> Confirmar actualización
+                    </button>
+                    <button id="btnCancelarSubida" class="btn btn-danger mt-2 ml-2">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Limpiar previas y mostrar nueva vista previa
+    document.querySelectorAll('.comprobante-preview, .comprobante-preview-temp').forEach(el => el.remove());
+    uploadStatus.insertAdjacentHTML('beforeend', previewHTML);
+    
+    // Configurar botones de confirmación
+    document.getElementById('btnConfirmarSubida').addEventListener('click', async () => {
+        await subirComprobantePago(file, numeroReserva);
+    });
+    
+    document.getElementById('btnCancelarSubida').addEventListener('click', () => {
+        document.querySelector('.comprobante-preview-temp').remove();
+        inputImagen.value = '';
+        verificarYMostrarComprobante(numeroReserva); // Volver a mostrar el estado actual
+    });
+}
+
+// Función para subir/actualizar el comprobante
+async function subirComprobantePago(archivo, numeroReserva) {
+    const formData = new FormData();
+    formData.append('comprobante', archivo);
+    formData.append('numero_reserva', numeroReserva);
+    formData.append('monto', '200');
+    formData.append('_method', 'PUT'); // Para actualización
+
+    Swal.fire({
+        title: 'Procesando comprobante...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const response = await fetch(`/api/pagos/${numeroReserva}`, {
+            method: 'POST', // Usamos POST pero con _method=PUT
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al actualizar el comprobante');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: '¡Comprobante actualizado!',
+            text: 'El comprobante se ha actualizado correctamente',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        // Volver a cargar la vista del comprobante
+        verificarYMostrarComprobante(numeroReserva);
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Error al actualizar el comprobante'
+        });
+        console.error('Error:', error);
+    }
+}
+
+// Función auxiliar para crear alertas
+function crearAlerta(titulo, mensaje, tipo) {
+    return `
+        <div class="alert alert-${tipo} mt-3">
+            <strong>${titulo}:</strong> ${mensaje}
+        </div>
+    `;
+}
+
+// Función para ampliar imagen
+function ampliarImagen(url) {
+    Swal.fire({
+        imageUrl: url,
+        imageAlt: 'Comprobante de pago',
+        showConfirmButton: false,
+        background: 'transparent',
+        backdrop: `rgba(0,0,0,0.8)`,
+        showCloseButton: true
+    });
+}
+
+// Función para mostrar el comprobante existente
+async function mostrarComprobanteExistente(numeroReserva) {
+    const uploadStatus = document.getElementById('uploadStatus');
+    const inputFile = document.querySelector('input[name="imgAnticipo"]');
+    
+    try {
+        // Limpiar estado anterior
+        uploadStatus.innerHTML = '';
+        document.querySelectorAll('.comprobante-preview').forEach(el => el.remove());
+        
+        // Obtener datos del comprobante
+        const response = await fetch(`comprobantes/${numeroReserva}`);
+        const data = await response.json();
+        
+        if (data.success && data.comprobante) {
+            // Mostrar vista previa
+            const previewHTML = `
+                <div class="comprobante-preview mt-3">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <i class="fas fa-check-circle"></i> Comprobante ya subido
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="${data.comprobante.url}" 
+                                 class="img-thumbnail mb-2" 
+                                 style="max-height: 200px; cursor: pointer"
+                                 onclick="ampliarImagen('${data.comprobante.url}')">
+                            <p class="mb-1"><strong>Estado:</strong> ${data.comprobante.estado}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('anticipoImg').insertAdjacentHTML('beforeend', previewHTML);
+            
+            // Deshabilitar input de subida
+            inputFile.disabled = true;
+            return true;
+        } else {
+            // Mostrar mensaje para subir nuevo comprobante
+            uploadStatus.innerHTML = `
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> Por favor suba el comprobante de pago
+                </div>
+            `;
+            return false;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        uploadStatus.innerHTML = `
+            <div class="alert alert-warning mt-3">
+                <i class="fas fa-exclamation-triangle"></i> No se pudo verificar el comprobante
+            </div>
+        `;
+        return false;
+    }
+}
+
+inputImagen.onchange = function(e) {
+        if (e.target.files && e.target.files[0]) {
+            // Validar el archivo antes de subir
+            const file = e.target.files[0];
+            if (!file.type.match('image.*')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Formato no válido',
+                    text: 'Por favor sube una imagen (JPEG, PNG, JPG)'
+                });
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) { // 2MB máximo
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Archivo muy grande',
+                    text: 'El tamaño máximo permitido es 2MB'
+                });
+                return;
+            }
+            
+            // Mostrar vista previa
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const preview = document.createElement('div');
+                preview.innerHTML = `
+                    <div class="mt-3">
+                        <img src="${event.target.result}" class="img-thumbnail" style="max-height: 150px;">
+                        <p class="text-muted small mt-1">${file.name}</p>
+                    </div>
+                `;
+                document.getElementById('anticipoImg').appendChild(preview);
+            };
+            reader.readAsDataURL(file);
+            
+            // Subir el comprobante automáticamente
+            subirComprobantePago(file, reservas[0].numero_reserva);
+        }
+    };
+
+
+
 function enviarCodigoCancelacion(numeroReserva) {
     fetch('/reservas/cancelar-todas', {
         method: 'POST',
@@ -1060,7 +1397,6 @@ document.addEventListener('DOMContentLoaded', function() {
         tarjetasHabitaciones.forEach(tarjeta => {
             tarjeta.style.display = 'block';
         });
-
         // Ocultar el botón "Continuar" y mostrar el botón "Reservar ahora"
         document.getElementById('btnContinuar').style.display = 'none';
         document.getElementById('btnReservarAhora').style.display = 'block';
@@ -1296,6 +1632,8 @@ function buscarHabitaciones(checkin, checkout) {
     const mensajeSinAlojamientos = document.getElementById('mensajeSinAlojamientos');
 
     document.getElementById('btnCancelarTodos').style.display = 'none';
+    document.getElementById('anticipoImg').style.display = 'none';
+
 
 // Ocultar el contenedor de reservas
 contenedorReservas.style.display = 'none';
