@@ -54,7 +54,7 @@
                       <td>{{ $pago->huesped->nombre }} {{ $pago->huesped->apellido }}</td>
                       <td>{{ $pago->subtotal }}</td>
                       <td>{{ $pago->impuesto }}</td>
-                      <td>{{$pago->anticipo_estado}} <i class="fas fa-eye"></i></td>
+                      <td>{{$pago->anticipo_estado}} <i class="fas fa-eye" onclick="ampliarImagen('{{ $pago->anticipo }}')"></i></td>
                       <td>{{ $pago->total }}</td>
                       <td>{{ $pago->fecha->format('Y-m-d') }}</td>
                       <td>
@@ -134,7 +134,16 @@ function habilitarSelect(id) {
         select.innerHTML += '<option value="Cancelado">Cancelado</option>';
     }
 }
-
+function ampliarImagen(url) {
+    Swal.fire({
+        imageUrl: url,
+        imageAlt: 'Comprobante de pago',
+        showConfirmButton: false,
+        background: 'transparent',
+        backdrop: `rgba(0,0,0,0.8)`,
+        showCloseButton: true
+    });
+}
 function actualizarEstado(select) {
     const id = select.id.split('_')[1];
     const nuevoEstado = select.value;

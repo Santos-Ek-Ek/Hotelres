@@ -197,6 +197,7 @@ public function actualizar(Request $request, $numeroReserva)
         // Actualizar el registro
         $pago->update([
             'anticipo' => $relativePath,
+            'anticipo_estado' => 'Pagado'
         ]);
 
         return response()->json([
