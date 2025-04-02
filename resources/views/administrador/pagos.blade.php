@@ -191,7 +191,7 @@ function actualizarEstado(select) {
                 if (row.cells.length >= 7) {
                     const numeroReserva = row.cells[0].textContent.toLowerCase();
                     const nombreHuesped = row.cells[1].textContent.toLowerCase();
-                    const selectEstado = row.cells[6].querySelector('select');
+                    const selectEstado = row.cells[7].querySelector('select');
 
                     // Verificar si el select existe
                     if (selectEstado) {
